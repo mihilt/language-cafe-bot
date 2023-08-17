@@ -1,10 +1,14 @@
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, userMention } from 'discord.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 client.on('ready', () => {
@@ -13,11 +17,12 @@ client.on('ready', () => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
+  // if (!message.content.startsWith('!ws')) return;
 
   console.log(message);
 
   if (message.content === 'ping') {
-    await message.reply('pong');
+    await message.reply(`${userMention(message.author.id)} pong!`);
   }
 });
 
