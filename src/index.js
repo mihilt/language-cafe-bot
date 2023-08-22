@@ -2,6 +2,8 @@ import { Client, GatewayIntentBits, userMention, Events, Collection } from 'disc
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import Keyv from 'keyv';
+import { KeyvFile } from 'keyv-file';
 
 import config from './config/config.json' assert { type: 'json' };
 
@@ -21,6 +23,21 @@ client.commands = new Collection();
 
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
+
+const keyv = new Keyv({
+  store: new KeyvFile({
+    filename: `${__dirname}/db/db.json`,
+    writeDelay: 100, // ms, batch write to disk in a specific duration, enhance write performance.
+    encode: JSON.stringify, // serialize function
+    decode: JSON.parse, // deserialize function
+  }),
+});
+
+keyv.on('error', (err) => console.error('Keyv connection error:', err));
+
+if (!(await keyv.has('user'))) {
+  await keyv.set('user', []);
+}
 
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
@@ -119,9 +136,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
-  // if (!message.content.startsWith('!ws')) return;
+  console.log(message);
+  if (!message.content.startsWith('!ws')) return;
 
-  // console.log(message);
+  if (message.content.includes('!ws-study-check-in')) {
+    const users = await keyv.get('user');
+    const user = users[message.author.id];
+
+    let point = user?.point ?? 0;
+    point += 1;
+
+    await keyv.set('user', {
+      ...users,
+      [message.author.id]: {
+        point,
+      },
+    });
+
+    await message.reply(`You have ${point} points!`);
+  }
 
   if (message.content === 'ping') {
     await message.reply(`${userMention(message.author.id)} pong! ✅`);
