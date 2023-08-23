@@ -2,8 +2,7 @@ import { Client, GatewayIntentBits, userMention, Events, Collection } from 'disc
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import Keyv from 'keyv';
-import { KeyvFile } from 'keyv-file';
+import keyv from './db/keyv.js';
 
 import config from './config/config.json' assert { type: 'json' };
 
@@ -23,15 +22,6 @@ client.commands = new Collection();
 
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
-
-const keyv = new Keyv({
-  store: new KeyvFile({
-    filename: `${__dirname}/db/db.json`,
-    writeDelay: 100, // ms, batch write to disk in a specific duration, enhance write performance.
-    encode: JSON.stringify, // serialize function
-    decode: JSON.parse, // deserialize function
-  }),
-});
 
 keyv.on('error', (err) => console.error('Keyv connection error:', err));
 
@@ -136,12 +126,47 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
-  console.log(message);
+
   if (!message.content.startsWith('!ws')) return;
 
   if (message.content.includes('!ws-study-check-in')) {
     const users = await keyv.get('user');
     const user = users[message.author.id];
+
+    const currentDate = new Date();
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(currentDate.getDate() + 1);
+    nextDay.setHours(23, 59, 59, 0);
+    const expiredTimestamp = nextDay.getTime();
+    const currentTimestamp = currentDate.getTime();
+
+    // check if user.lastAttendanceTimestamp and currentTimestamp is in the same day
+    if (new Date(user?.lastAttendanceTimestamp).getDate() === currentDate.getDate()) {
+      const ableToAttend = new Date(currentDate);
+      ableToAttend.setDate(currentDate.getDate() + 1);
+      ableToAttend.setHours(0, 0, 0, 0);
+      const ableToAttendTimestamp = ableToAttend.getTime();
+
+      await message.react('❌');
+      await message.reply(
+        `You already attended today.\nAttendable time: <t:${ableToAttendTimestamp
+          .toString()
+          .slice(0, 10)}:R>`,
+      );
+      return;
+    }
+
+    let additionalContent = '';
+
+    if (user?.expiredTimestamp < currentTimestamp) {
+      user.point = 0;
+      additionalContent = `\n\nYour points have been initialized. (last attendance: <t:${new Date(
+        user.lastAttendanceTimestamp,
+      )
+        .getTime()
+        .toString()
+        .slice(0, 10)}:R>)`;
+    }
 
     let point = user?.point ?? 0;
     point += 1;
@@ -150,14 +175,21 @@ client.on('messageCreate', async (message) => {
       ...users,
       [message.author.id]: {
         point,
+        lastAttendanceTimestamp: currentTimestamp,
+        expiredTimestamp,
       },
     });
 
-    await message.reply(`You have ${point} points!`);
-  }
+    const content =
+      `<@${message.author.id}> attended for ${point} days in a row. ✅\nExpired time: <t:${new Date(
+        expiredTimestamp,
+      )
+        .getTime()
+        .toString()
+        .slice(0, 10)}:R>` + additionalContent;
 
-  if (message.content === 'ping') {
-    await message.reply(`${userMention(message.author.id)} pong! ✅`);
+    await message.react('✅');
+    await message.reply(content);
   }
 });
 

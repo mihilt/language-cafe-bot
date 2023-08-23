@@ -1,7 +1,7 @@
 node_modules
 src/config/*.json
 !src/config/*.example.json
-src/db/*
+src/db/data/*
 
 # gitkeep
 !.gitkeep
