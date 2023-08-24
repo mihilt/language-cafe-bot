@@ -1,6 +1,6 @@
 node_modules
 src/config/*.json
-!src/config/*.example.json
+!src/config/config_example.json
 src/db/data/*
 
 # gitkeep
