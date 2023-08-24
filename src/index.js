@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, userMention, Events, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, userMention, Events, Collection, bold } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -134,33 +134,38 @@ client.on('messageCreate', async (message) => {
     const user = users[message.author.id];
 
     const currentDate = new Date();
-    const nextDay = new Date(currentDate);
-    nextDay.setDate(currentDate.getDate() + 1);
-    nextDay.setHours(23, 59, 59, 0);
+    const nextDayTemp = new Date(currentDate);
+    nextDayTemp.setDate(currentDate.getDate() + 1);
+    nextDayTemp.setHours(23, 59, 59, 0);
+    const nextDay = new Date(nextDayTemp);
+
     const expiredTimestamp = nextDay.getTime();
     const currentTimestamp = currentDate.getTime();
 
     // check if user.lastAttendanceTimestamp and currentTimestamp is in the same day
     if (new Date(user?.lastAttendanceTimestamp).getDate() === currentDate.getDate()) {
-      const ableToAttend = new Date(currentDate);
-      ableToAttend.setDate(currentDate.getDate() + 1);
-      ableToAttend.setHours(0, 0, 0, 0);
-      const ableToAttendTimestamp = ableToAttend.getTime();
+      const ableToAttendDate = new Date(currentDate);
+      ableToAttendDate.setDate(currentDate.getDate() + 1);
+      ableToAttendDate.setHours(0, 0, 0, 0);
+      const ableToAttendTimestamp = ableToAttendDate.getTime();
 
       await message.react('❌');
       await message.reply(
-        `You already attended today.\nAttendable time: <t:${ableToAttendTimestamp
+        `<@${
+          message.author.id
+        }> You have already logged your study session today.\n\nCome back in <t:${ableToAttendTimestamp
           .toString()
-          .slice(0, 10)}:R>`,
+          .slice(0, 10)}:R> to increase your streak!`,
       );
       return;
     }
 
     let additionalContent = '';
 
+    // check if user.expiredTimestamp is less than currentTimestamp (user has missed a day) reset streak
     if (user?.expiredTimestamp < currentTimestamp) {
       user.point = 0;
-      additionalContent = `\n\nYour points have been initialized. (last attendance: <t:${new Date(
+      additionalContent = `\n\nYour streak has been updated (last study log: <t:${new Date(
         user.lastAttendanceTimestamp,
       )
         .getTime()
@@ -181,12 +186,14 @@ client.on('messageCreate', async (message) => {
     });
 
     const content =
-      `<@${message.author.id}> attended for ${point} days in a row. ✅\nExpired time: <t:${new Date(
-        expiredTimestamp,
-      )
+      `<@${
+        message.author.id
+      }> studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
+        point,
+      )} 🔥\n\nCome back tomorrow to increase your streak! (until <t:${new Date(expiredTimestamp)
         .getTime()
         .toString()
-        .slice(0, 10)}:R>` + additionalContent;
+        .slice(0, 10)}:R>)` + additionalContent;
 
     await message.react('✅');
     await message.reply(content);

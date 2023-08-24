@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.vscode/
+
+.dockerignore
+Dockerfile
+
+.gitignore
+.eslintrc
+
+# db.json
+src/db/data/db.json

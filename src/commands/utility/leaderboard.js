@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, bold } from 'discord.js';
 import keyv from '../../db/keyv.js';
 
 export default {
@@ -12,6 +12,7 @@ export default {
       return {
         id: key,
         point: userObject[key].point,
+        lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
         expiredTimestamp: userObject[key].expiredTimestamp,
       };
     });
@@ -41,17 +42,21 @@ export default {
 
     let content = rankedUserList
       .map((user, index) => {
-        return `${index + 1}. <@${user.id}> (${user.point})`;
+        return `${bold(index + 1)}. <@${user.id}> (Streak: ${bold(
+          user.point,
+        )}, Last attendance: <t:${user.lastAttendanceTimestamp.toString().slice(0, 10)}:R>)`;
       })
       .join('\n');
 
+    if (content) content = `# Study Leaderboard (Top 10)\n\n${content}`;
+
     if (currentUser) {
-      content += `\n\nYour rank is #${filteredUserList.indexOf(currentUser) + 1} with ${
-        currentUser.point
-      } points`;
+      content += `\n\nYour rank is #${bold(filteredUserList.indexOf(currentUser) + 1)} with ${bold(
+        currentUser.point,
+      )} streak`;
     }
 
-    if (!content) content = 'No one has points yet!';
+    if (!content) content = 'No one has logged their study session yet';
 
     await interaction.reply({ content, ephemeral: true });
   },
