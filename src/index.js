@@ -1,10 +1,15 @@
-import { Client, GatewayIntentBits, userMention, Events, Collection, bold } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, bold } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { readFile } from 'node:fs/promises';
 import keyv from './db/keyv.js';
 
-import config from './config/config.json' assert { type: 'json' };
+const configUrl =
+  process.env.NODE_ENV === 'production' ? './config/config_pro.json' : './config/config_dev.json';
+
+const fileUrl = new URL(configUrl, import.meta.url);
+const config = JSON.parse(await readFile(fileUrl, 'utf8'));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,9 +34,11 @@ if (!(await keyv.has('user'))) {
   await keyv.set('user', []);
 }
 
+// eslint-disable-next-line no-restricted-syntax
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
+  // eslint-disable-next-line no-restricted-syntax
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
 
@@ -52,6 +59,7 @@ for (const folder of commandFolders) {
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith('.js'));
 
+// eslint-disable-next-line no-restricted-syntax
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
 
@@ -96,10 +104,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (now < expirationTime) {
       const expiredTimestamp = Math.round(expirationTime / 1000);
-      return interaction.reply({
+      interaction.reply({
         content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
         ephemeral: true,
       });
+      return;
     }
   }
 
@@ -162,7 +171,7 @@ client.on('messageCreate', async (message) => {
 
     let additionalContent = '';
 
-    // check if user.expiredTimestamp is less than currentTimestamp (user has missed a day) reset streak
+    // check if user.expiredTimestamp is less than currentTimestamp reset streak
     if (user?.expiredTimestamp < currentTimestamp) {
       user.point = 0;
       additionalContent = `\n\nYour streak has been updated (last study log: <t:${new Date(
@@ -185,15 +194,14 @@ client.on('messageCreate', async (message) => {
       },
     });
 
-    const content =
-      `<@${
-        message.author.id
-      }> studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
-        point,
-      )} 🔥\n\nCome back tomorrow to increase your streak! (until <t:${new Date(expiredTimestamp)
-        .getTime()
-        .toString()
-        .slice(0, 10)}:R>)` + additionalContent;
+    const content = `<@${
+      message.author.id
+    }> studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
+      point,
+    )} 🔥\n\nCome back tomorrow to increase your streak! (until <t:${new Date(expiredTimestamp)
+      .getTime()
+      .toString()
+      .slice(0, 10)}:R>)${additionalContent}`;
 
     await message.react('✅');
     await message.reply(content);

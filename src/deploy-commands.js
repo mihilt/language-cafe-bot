@@ -2,8 +2,13 @@ import { REST, Routes } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
+import { readFile } from 'node:fs/promises';
 
-import config from './config/config.json' assert { type: 'json' };
+const configUrl =
+  process.env.NODE_ENV === 'production' ? './config/config_pro.json' : './config/config_dev.json';
+
+const fileUrl = new URL(configUrl, import.meta.url);
+const config = JSON.parse(await readFile(fileUrl, 'utf8'));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,14 +19,17 @@ const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 (async () => {
+  // eslint-disable-next-line no-restricted-syntax
   for (const folder of commandFolders) {
     // Grab all the command files from the commands directory you created earlier
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
     // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+    // eslint-disable-next-line no-restricted-syntax
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
 
+      // eslint-disable-next-line no-await-in-loop
       const command = (await import(filePath)).default;
 
       if ('data' in command && 'execute' in command) {

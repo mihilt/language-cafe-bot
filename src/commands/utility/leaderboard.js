@@ -8,19 +8,17 @@ export default {
     const userObject = await keyv.get('user');
     const propertyNames = Object.keys(userObject);
 
-    const userList = propertyNames.map((key) => {
-      return {
-        id: key,
-        point: userObject[key].point,
-        lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
-        expiredTimestamp: userObject[key].expiredTimestamp,
-      };
-    });
+    const userList = propertyNames.map((key) => ({
+      id: key,
+      point: userObject[key].point,
+      lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
+      expiredTimestamp: userObject[key].expiredTimestamp,
+    }));
 
     const currentTimestamp = Date.now();
-    const expiredUserList = userList.filter((user) => {
-      return userObject[user.id].expiredTimestamp < currentTimestamp;
-    });
+    const expiredUserList = userList.filter(
+      (user) => userObject[user.id].expiredTimestamp < currentTimestamp,
+    );
 
     expiredUserList.forEach((user) => {
       delete userObject[user.id];
@@ -28,24 +26,19 @@ export default {
 
     await keyv.set('user', userObject);
 
-    const filteredUserList = userList.filter((user) => {
-      return !expiredUserList.includes(user);
-    });
+    const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
 
-    const rankedUserList = filteredUserList
-      .sort((a, b) => {
-        return b.point - a.point;
-      })
-      .slice(0, 10);
+    const rankedUserList = filteredUserList.sort((a, b) => b.point - a.point).slice(0, 10);
 
     const currentUser = filteredUserList.find((user) => user.id === interaction.user.id);
 
     let content = rankedUserList
-      .map((user, index) => {
-        return `${bold(index + 1)}. <@${user.id}> (Streak: ${bold(
-          user.point,
-        )}, Last attendance: <t:${user.lastAttendanceTimestamp.toString().slice(0, 10)}:R>)`;
-      })
+      .map(
+        (user, index) =>
+          `${bold(index + 1)}. <@${user.id}> (Streak: ${bold(
+            user.point,
+          )}, Last attendance: <t:${user.lastAttendanceTimestamp.toString().slice(0, 10)}:R>)`,
+      )
       .join('\n');
 
     if (content) content = `# Study Leaderboard (Top 10)\n\n${content}`;
