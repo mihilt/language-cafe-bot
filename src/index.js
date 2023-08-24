@@ -169,17 +169,9 @@ client.on('messageCreate', async (message) => {
       return;
     }
 
-    let additionalContent = '';
-
     // check if user.expiredTimestamp is less than currentTimestamp reset streak
     if (user?.expiredTimestamp < currentTimestamp) {
       user.point = 0;
-      additionalContent = `\n\nYour streak has been updated (last study log: <t:${new Date(
-        user.lastAttendanceTimestamp,
-      )
-        .getTime()
-        .toString()
-        .slice(0, 10)}:R>)`;
     }
 
     let point = user?.point ?? 0;
@@ -201,7 +193,7 @@ client.on('messageCreate', async (message) => {
     )} 🔥\n\nCome back tomorrow to increase your streak! (until <t:${new Date(expiredTimestamp)
       .getTime()
       .toString()
-      .slice(0, 10)}:R>)${additionalContent}`;
+      .slice(0, 10)}:R>)`;
 
     await message.react('✅');
     await message.reply(content);
