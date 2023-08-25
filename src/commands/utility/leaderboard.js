@@ -3,7 +3,9 @@ import keyv from '../../db/keyv.js';
 
 export default {
   cooldown: 5,
-  data: new SlashCommandBuilder().setName('leaderboard').setDescription('Check the leaderboard'),
+  data: new SlashCommandBuilder()
+    .setName('leaderboard-study-check-in')
+    .setDescription("Check #study-check-in's streak leaderboard."),
   async execute(interaction) {
     const userObject = await keyv.get('user');
     const propertyNames = Object.keys(userObject);
@@ -39,14 +41,14 @@ export default {
         (user, index) =>
           `${bold(index + 1)}. <@${user.id}> (Streak: ${bold(
             user.point,
-          )}, Last attendance: <t:${user.lastAttendanceTimestamp.toString().slice(0, 10)}:R>)`,
+          )}, Last check in: <t:${user.lastAttendanceTimestamp.toString().slice(0, 10)}:R>)`,
       )
       .join('\n');
 
-    if (content) content = `# Study Leaderboard (Top 10)\n\n${content}`;
+    if (content) content = `# Study-Check-In Leaderboard (Top 10)\n\n${content}`;
 
     if (currentUser) {
-      content += `\n\nYou are rank #${bold(
+      content += `\n\n<@${currentUser.id}>, you are rank #${bold(
         filteredUserList.indexOf(currentUser) + 1,
       )} with a ${bold(currentUser.point)} day streak.`;
     }
@@ -58,6 +60,8 @@ export default {
       description: content,
     };
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({
+      embeds: [embed],
+    });
   },
 };

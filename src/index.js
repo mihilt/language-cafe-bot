@@ -165,7 +165,7 @@ client.on('messageCreate', async (message) => {
         title: 'Study Check In',
         description: `<@${
           message.author.id
-        }> You have already logged your study session today.\nCome back in <t:${ableToAttendTimestamp
+        }>, you have already logged your study session today.\nCome back <t:${ableToAttendTimestamp
           .toString()
           .slice(0, 10)}:R> to increase your streak!`,
       };
@@ -191,21 +191,16 @@ client.on('messageCreate', async (message) => {
       },
     });
 
-    let content = `<@${
+    const content = `<@${
       message.author.id
-    }> studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
+    }>, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
       point,
-    )} 🔥\n\nCome back tomorrow to increase your streak! (until <t:${new Date(expiredTimestamp)
+    )} 🔥\n\nCome back tomorrow to increase your streak!\nStreak expires: (<t:${new Date(
+      expiredTimestamp,
+    )
       .getTime()
       .toString()
       .slice(0, 10)}:R>)`;
-
-    // put message if your streak expired
-    if (point === 1 && user?.lastAttendanceTimestamp) {
-      content += `\n\nOh no! Your streak has been reset back to 0.\nLog your study plans to start another streak.\nYour last attendance was <t:${user.lastAttendanceTimestamp
-        .toString()
-        .slice(0, 10)}:R>`;
-    }
 
     await message.react('✅');
 
@@ -216,6 +211,25 @@ client.on('messageCreate', async (message) => {
     };
 
     await message.reply({ embeds: [embed] });
+
+    // put message if your streak expired
+    if (point === 1 && user?.lastAttendanceTimestamp) {
+      const additionalContent = `<@${
+        message.author.id
+      }>, your streak was reset to 0 due to missing one or more days previously.\nYour streak has been updated to ${bold(
+        1,
+      )} after logging today's session.\n\nYour last study session was logged <t:${user.lastAttendanceTimestamp
+        .toString()
+        .slice(0, 10)}:R>.`;
+
+      const additionalEmbed = {
+        color: 0x65a69e,
+        title: 'Study Check In',
+        description: additionalContent,
+      };
+
+      await message.reply({ embeds: [additionalEmbed] });
+    }
   }
 });
 
