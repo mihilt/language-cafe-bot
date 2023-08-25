@@ -138,7 +138,7 @@ client.on('messageCreate', async (message) => {
 
   if (!message.content.startsWith('!lc')) return;
 
-  if (message.content.includes('!lc-study-check-in')) {
+  if (message.content.startsWith('!lc-study-check-in')) {
     const users = await keyv.get('user');
     const user = users[message.author.id];
 
@@ -191,7 +191,7 @@ client.on('messageCreate', async (message) => {
       },
     });
 
-    const content = `<@${
+    let content = `<@${
       message.author.id
     }> studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
       point,
@@ -199,6 +199,13 @@ client.on('messageCreate', async (message) => {
       .getTime()
       .toString()
       .slice(0, 10)}:R>)`;
+
+    // put message if your streak expired
+    if (point === 1 && user?.lastAttendanceTimestamp) {
+      content += `\n\nOh no! Your streak has been reset back to 0.\nLog your study plans to start another streak.\nYour last attendance was <t:${user.lastAttendanceTimestamp
+        .toString()
+        .slice(0, 10)}:R>`;
+    }
 
     await message.react('✅');
 

@@ -8,7 +8,9 @@ export default {
     const userObject = await keyv.get('user');
     const propertyNames = Object.keys(userObject);
 
-    const userList = propertyNames.map((key) => ({
+    const havePointsPropertyNames = propertyNames.filter((key) => userObject[key].point > 0);
+
+    const userList = havePointsPropertyNames.map((key) => ({
       id: key,
       point: userObject[key].point,
       lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
@@ -21,7 +23,7 @@ export default {
     );
 
     expiredUserList.forEach((user) => {
-      delete userObject[user.id];
+      userObject[user.id].point = 0;
     });
 
     await keyv.set('user', userObject);
@@ -44,12 +46,12 @@ export default {
     if (content) content = `# Study Leaderboard (Top 10)\n\n${content}`;
 
     if (currentUser) {
-      content += `\n\nYour rank is #${bold(filteredUserList.indexOf(currentUser) + 1)} with ${bold(
-        currentUser.point,
-      )} streak`;
+      content += `\n\nYou are rank #${bold(
+        filteredUserList.indexOf(currentUser) + 1,
+      )} with a ${bold(currentUser.point)} day streak.`;
     }
 
-    if (!content) content = 'No one has logged their study session yet';
+    if (!content) content = 'No one has an active streak yet.';
 
     const embed = {
       color: 0x65a69e,
