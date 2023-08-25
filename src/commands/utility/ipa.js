@@ -24,27 +24,36 @@ export default {
       if (!ipaElements.length || !ipaElements[0].textContent) throw new Error();
 
       const ipaArray = [];
+      const dialect = [];
+
       for (let i = 0; i < ipaElements.length; i++) {
         ipaArray.push(ipaElements[i].textContent);
+        dialect.push(ipaElements[i].parentElement.getElementsByClassName('extiw'));
       }
 
-      ipaArray.forEach((ipa, index) => {
-        // eslint-disable-next-line no-useless-escape
-        ipaArray[index] = ipa.replace(/[\/\[\]]/g, '');
+      const dialectContent = dialect.map((e) => {
+        if (e.length) {
+          const tempArray = [];
+          for (let i = 0; i < e.length; i++) {
+            if (e[i].textContent !== 'key') tempArray.push(e[i].textContent);
+          }
+          return tempArray.join(', ');
+        }
+        return '';
       });
 
-      const ipaContent = ipaArray.map((ipa, index) => `${index + 1}. ${ipa}`);
-
-      const fields = ipaContent.map((ipa) => ({
-        name: '',
-        value: ipa,
-        inline: true,
-      }));
+      const ipaContent = ipaArray
+        // filter ipa start with -
+        .filter((ipa) => !ipa.startsWith('-'))
+        .map((ipa, index) => {
+          if (dialectContent[index] === '') return `${ipa}`;
+          return `${ipa} (${dialectContent[index]})`;
+        });
 
       const embed = {
         color: 0x65a69e,
         title: `IPA for ${input}`,
-        fields,
+        description: ipaContent.join('\n'),
       };
 
       await interaction.reply({ embeds: [embed] });
