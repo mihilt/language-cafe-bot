@@ -1,5 +1,5 @@
-IMAGE_NAME="wonsigi-bot"
-CONTAINER_NAME="wonsigi-bot"
+IMAGE_NAME="language-cafe-bot"
+CONTAINER_NAME="language-cafe-bot"
 
 # decompress build.tar
 echo "=> Decompress build.tar..."
@@ -19,7 +19,7 @@ sleep 2
 
 # run container
 echo "=> Run container..."
-docker run -v ~/docker-data/wonsigi-bot/db:/app/src/db/data --rm -d -p 4000:4000 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -v ~/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 4000:4000 --name $CONTAINER_NAME $IMAGE_NAME
 
 # remove dangling images
 echo "=> Remove dangling images..."

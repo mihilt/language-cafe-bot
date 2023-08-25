@@ -1,8 +1,8 @@
 import { Client, Collection, Events, GatewayIntentBits, bold } from 'discord.js';
 import fs from 'fs';
+import { readFile } from 'node:fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { readFile } from 'node:fs/promises';
 import keyv from './db/keyv.js';
 
 const configUrl =
@@ -136,9 +136,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
-  if (!message.content.startsWith('!ws')) return;
+  if (!message.content.startsWith('!lc')) return;
 
-  if (message.content.includes('!ws-study-check-in')) {
+  if (message.content.includes('!lc-study-check-in')) {
     const users = await keyv.get('user');
     const user = users[message.author.id];
 
@@ -159,13 +159,18 @@ client.on('messageCreate', async (message) => {
       const ableToAttendTimestamp = ableToAttendDate.getTime();
 
       await message.react('❌');
-      await message.reply(
-        `<@${
+
+      const embad = {
+        color: 0x65a69e,
+        title: 'Study Check In',
+        description: `<@${
           message.author.id
-        }> You have already logged your study session today.\n\nCome back in <t:${ableToAttendTimestamp
+        }> You have already logged your study session today.\nCome back in <t:${ableToAttendTimestamp
           .toString()
           .slice(0, 10)}:R> to increase your streak!`,
-      );
+      };
+
+      await message.reply({ embeds: [embad] });
       return;
     }
 
@@ -196,7 +201,14 @@ client.on('messageCreate', async (message) => {
       .slice(0, 10)}:R>)`;
 
     await message.react('✅');
-    await message.reply(content);
+
+    const embed = {
+      color: 0x65a69e,
+      title: 'Study Check In',
+      description: content,
+    };
+
+    await message.reply({ embeds: [embed] });
   }
 });
 

@@ -51,6 +51,11 @@ export default {
 
     if (!content) content = 'No one has logged their study session yet';
 
-    await interaction.reply({ content, ephemeral: true });
+    const embed = {
+      color: 0x65a69e,
+      description: content,
+    };
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   },
 };
