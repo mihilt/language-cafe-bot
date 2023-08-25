@@ -14,6 +14,7 @@
     "object-curly-newline": "off",
     "no-underscore-dangle": "off",
     "operator-linebreak": "off",
-    "no-plusplus": "off"
+    "no-plusplus": "off",
+    "function-paren-newline": "off"
   }
 }
