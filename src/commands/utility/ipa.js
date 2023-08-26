@@ -15,6 +15,7 @@ const data = new SlashCommandBuilder()
 export default {
   data,
   async execute(interaction) {
+    await interaction.deferReply();
     const input = interaction.options.getString('input');
 
     try {
@@ -109,7 +110,7 @@ export default {
         description: content,
       };
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       if (error.response && error.response.status === 404) {
         await interaction.reply({
