@@ -8,6 +8,7 @@ const data = new SlashCommandBuilder()
   .addStringOption((option) =>
     option
       .setName('input')
+      .setMaxLength(20)
       .setDescription('The word to get the Transcription of')
       .setRequired(true),
   );
@@ -17,9 +18,10 @@ export default {
   async execute(interaction) {
     await interaction.deferReply();
     const input = interaction.options.getString('input');
+    const inputForUrl = input.replace(/ /g, '_');
 
     try {
-      const url = `https://en.wiktionary.org/wiki/${input}`;
+      const url = `https://en.wiktionary.org/wiki/${inputForUrl}`;
 
       const wiktionaryRes = await axios.get(url);
 
@@ -102,7 +104,13 @@ export default {
         .map((group) => `**${group.language}**\n${group.ipa.join('\n')}`)
         .join('\n\n');
 
-      content += `\n\n[Data from Wiktionary](${url})`;
+      if (content === '') {
+        content +=
+          "It looks like the Wiktionary page for the word you entered doesn't have an IPA transcription available.\n\n";
+        content += `However, you can visit the word's Wiktionary page by clicking [here](${url}) for additional information.`;
+      }
+
+      content += `\n\n[See more on Wiktionary](${url})`;
 
       const embed = {
         color: 0x65a69e,
@@ -113,7 +121,7 @@ export default {
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        await interaction.reply({
+        await interaction.editReply({
           embeds: [
             {
               color: 0x65a69e,
