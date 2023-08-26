@@ -195,12 +195,12 @@ client.on('messageCreate', async (message) => {
       message.author.id
     }>, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
       point,
-    )} 🔥\n\nCome back tomorrow to increase your streak!\nStreak expires: (<t:${new Date(
+    )} 🔥\n\nCome back tomorrow to increase your streak!\nStreak expires <t:${new Date(
       expiredTimestamp,
     )
       .getTime()
       .toString()
-      .slice(0, 10)}:R>)`;
+      .slice(0, 10)}:R>`;
 
     await message.react('✅');
 
