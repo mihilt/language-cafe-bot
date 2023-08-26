@@ -4,9 +4,12 @@ import { JSDOM } from 'jsdom';
 
 const data = new SlashCommandBuilder()
   .setName('ipa')
-  .setDescription('Get the IPA of a word')
+  .setDescription('Get the Transcription of a word')
   .addStringOption((option) =>
-    option.setName('input').setDescription('The word to get the IPA of').setRequired(true),
+    option
+      .setName('input')
+      .setDescription('The word to get the Transcription of')
+      .setRequired(true),
   );
 
 export default {
@@ -15,45 +18,95 @@ export default {
     const input = interaction.options.getString('input');
 
     try {
-      const wiktionaryRes = await axios.get(`https://en.wiktionary.org/wiki/${input}`);
+      const url = `https://en.wiktionary.org/wiki/${input}`;
 
-      const { window } = new JSDOM(wiktionaryRes.data);
+      const wiktionaryRes = await axios.get(url);
+
+      const dom = new JSDOM(wiktionaryRes.data);
+
+      const { window } = dom;
       const { document } = window;
-      const ipaElements = document.getElementsByClassName('IPA');
 
-      if (!ipaElements.length || !ipaElements[0].textContent) throw new Error();
+      const h2Elements = document.querySelector('.mw-parser-output').querySelectorAll('H2');
 
-      const ipaArray = [];
-      const dialect = [];
+      const extractedGroups = [];
 
-      for (let i = 0; i < ipaElements.length; i++) {
-        ipaArray.push(ipaElements[i].textContent);
-        dialect.push(ipaElements[i].parentElement.getElementsByClassName('extiw'));
-      }
+      h2Elements.forEach((h2, index) => {
+        const nextH2 = h2Elements[index + 1]; // Get the next h2 element
 
-      const dialectContent = dialect.map((e) => {
-        if (e.length) {
-          const tempArray = [];
-          for (let i = 0; i < e.length; i++) {
-            if (e[i].textContent !== 'key') tempArray.push(e[i].textContent);
+        let currentElement = h2.nextSibling;
+        const groupFragment = dom.window.document.createDocumentFragment();
+
+        // Loop until we reach the next h2 or null
+        while (currentElement !== nextH2 && currentElement !== null) {
+          if (currentElement.nodeType === dom.window.Node.ELEMENT_NODE) {
+            groupFragment.appendChild(currentElement.cloneNode(true));
           }
-          return tempArray.join(', ');
+          currentElement = currentElement.nextSibling;
         }
-        return '';
+
+        if (groupFragment.childNodes.length > 0) {
+          extractedGroups.push(groupFragment);
+        }
       });
 
-      const ipaContent = ipaArray
-        // filter ipa start with -
-        .filter((ipa) => !ipa.startsWith('-'))
-        .map((ipa, index) => {
-          if (dialectContent[index] === '') return `${ipa}`;
-          return `${ipa} (${dialectContent[index]})`;
-        });
+      const languageGroup = [];
+
+      extractedGroups.forEach((group, index) => {
+        if (
+          group.querySelector('.IPA') ||
+          h2Elements[index].querySelector('.mw-headline')?.textContent
+        ) {
+          const ipaElements = group.querySelectorAll('.IPA');
+
+          const ipaArray = [];
+          const dialect = [];
+
+          for (let i = 0; i < ipaElements.length; i++) {
+            if (ipaElements[i].textContent) {
+              ipaArray.push(ipaElements[i].textContent);
+              dialect.push(ipaElements[i].parentElement.getElementsByClassName('extiw'));
+            }
+          }
+
+          const dialectContent = dialect.map((e) => {
+            if (e?.length) {
+              const tempArray = [];
+              for (let i = 0; i < e.length; i++) {
+                if (e[i].textContent !== 'key') tempArray.push(e[i].textContent);
+              }
+              return tempArray.join(', ');
+            }
+            return '';
+          });
+
+          const ipaContent = ipaArray
+            // filter ipa start with -
+            .filter((ipa) => !ipa.startsWith('-'))
+            .map((ipa, i) => {
+              if (dialectContent[i] === '') return `${ipa}`;
+              return `${ipa} (${dialectContent[i]})`;
+            });
+
+          languageGroup.push({
+            language: h2Elements[index].querySelector('.mw-headline').textContent,
+            ipa: ipaContent,
+          });
+        }
+      });
+
+      const filteredLanguageGroup = languageGroup.filter((group) => group.ipa.length);
+
+      let content = filteredLanguageGroup
+        .map((group) => `**${group.language}**\n${group.ipa.join('\n')}`)
+        .join('\n\n');
+
+      content += `\n\n[Data from Wiktionary](${url})`;
 
       const embed = {
         color: 0x65a69e,
-        title: `IPA for ${input}`,
-        description: ipaContent.join('\n'),
+        title: `Transcription for ${input}`,
+        description: content,
       };
 
       await interaction.reply({ embeds: [embed] });
