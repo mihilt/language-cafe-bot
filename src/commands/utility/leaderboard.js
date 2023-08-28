@@ -62,6 +62,7 @@ export default {
 
     await interaction.reply({
       embeds: [embed],
+      ephemeral: true,
     });
   },
 };

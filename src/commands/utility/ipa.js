@@ -14,6 +14,7 @@ const data = new SlashCommandBuilder()
   );
 
 export default {
+  cooldown: 5,
   data,
   async execute(interaction) {
     await interaction.deferReply();
@@ -84,8 +85,7 @@ export default {
           });
 
           const ipaContent = ipaArray
-            // filter ipa start with -
-            .filter((ipa) => !ipa.startsWith('-'))
+            .filter((ipa) => ipa.startsWith('/') || ipa.startsWith('['))
             .map((ipa, i) => {
               if (dialectContent[i] === '') return `${ipa}`;
               return `${ipa} (${dialectContent[i]})`;

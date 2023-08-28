@@ -1,4 +1,4 @@
-import { Client, Collection, Events, GatewayIntentBits, bold } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
 import fs from 'fs';
 import { readFile } from 'node:fs/promises';
 import path from 'path';
@@ -129,106 +129,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         content: 'There was an error while executing this command!',
         ephemeral: true,
       });
-    }
-  }
-});
-
-client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
-
-  if (!message.content.startsWith('!lc')) return;
-
-  if (message.content.startsWith('!lc-study-check-in')) {
-    const users = await keyv.get('user');
-    const user = users[message.author.id];
-
-    const currentDate = new Date();
-    const nextDayTemp = new Date(currentDate);
-    nextDayTemp.setDate(currentDate.getDate() + 1);
-    nextDayTemp.setHours(23, 59, 59, 0);
-    const nextDay = new Date(nextDayTemp);
-
-    const expiredTimestamp = nextDay.getTime();
-    const currentTimestamp = currentDate.getTime();
-
-    // check if user.lastAttendanceTimestamp and currentTimestamp is in the same day
-    if (new Date(user?.lastAttendanceTimestamp).getDate() === currentDate.getDate()) {
-      const ableToAttendDate = new Date(currentDate);
-      ableToAttendDate.setDate(currentDate.getDate() + 1);
-      ableToAttendDate.setHours(0, 0, 0, 0);
-      const ableToAttendTimestamp = ableToAttendDate.getTime();
-
-      await message.react('❌');
-
-      const embad = {
-        color: 0x65a69e,
-        title: 'Study Check In',
-        description: `<@${
-          message.author.id
-        }>, you have already logged your study session today.\nCome back <t:${ableToAttendTimestamp
-          .toString()
-          .slice(0, 10)}:R> to increase your streak!`,
-      };
-
-      await message.reply({ embeds: [embad] });
-      return;
-    }
-
-    // check if user.expiredTimestamp is less than currentTimestamp reset streak
-    if (user?.expiredTimestamp < currentTimestamp) {
-      user.point = 0;
-    }
-
-    let point = user?.point ?? 0;
-    point += 1;
-
-    await keyv.set('user', {
-      ...users,
-      [message.author.id]: {
-        point,
-        lastAttendanceTimestamp: currentTimestamp,
-        expiredTimestamp,
-      },
-    });
-
-    const content = `<@${
-      message.author.id
-    }>, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
-      point,
-    )} 🔥\n\nCome back tomorrow to increase your streak!\nStreak expires <t:${new Date(
-      expiredTimestamp,
-    )
-      .getTime()
-      .toString()
-      .slice(0, 10)}:R>`;
-
-    await message.react('✅');
-
-    const embed = {
-      color: 0x65a69e,
-      title: 'Study Check In',
-      description: content,
-    };
-
-    await message.reply({ embeds: [embed] });
-
-    // put message if your streak expired
-    if (point === 1 && user?.lastAttendanceTimestamp) {
-      const additionalContent = `<@${
-        message.author.id
-      }>, your streak was reset to 0 due to missing one or more days previously.\nYour streak has been updated to ${bold(
-        1,
-      )} after logging today's session.\n\nYour last study session was logged <t:${user.lastAttendanceTimestamp
-        .toString()
-        .slice(0, 10)}:R>.`;
-
-      const additionalEmbed = {
-        color: 0x65a69e,
-        title: 'Study Check In',
-        description: additionalContent,
-      };
-
-      await message.reply({ embeds: [additionalEmbed] });
     }
   }
 });
