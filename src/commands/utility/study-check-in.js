@@ -2,7 +2,6 @@ import { SlashCommandBuilder, bold } from 'discord.js';
 import keyv from '../../db/keyv.js';
 
 export default {
-  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('study-check-in')
     .setDescription("Check in to #study-check-in's streak leaderboard."),

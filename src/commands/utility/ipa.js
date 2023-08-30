@@ -14,7 +14,6 @@ const data = new SlashCommandBuilder()
   );
 
 export default {
-  cooldown: 5,
   data,
   async execute(interaction) {
     await interaction.deferReply();
