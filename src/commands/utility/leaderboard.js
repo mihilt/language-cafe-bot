@@ -2,7 +2,6 @@ import { SlashCommandBuilder, bold } from 'discord.js';
 import keyv from '../../db/keyv.js';
 
 export default {
-  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName('leaderboard-study-check-in')
     .setDescription("Check #study-check-in's streak leaderboard."),
@@ -32,7 +31,9 @@ export default {
 
     const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
 
-    const rankedUserList = filteredUserList.sort((a, b) => b.point - a.point).slice(0, 10);
+    const rankedUserList = filteredUserList
+      .sort((a, b) => Number(b.point) - Number(a.point))
+      .slice(0, 10);
 
     const currentUser = filteredUserList.find((user) => user.id === interaction.user.id);
 
