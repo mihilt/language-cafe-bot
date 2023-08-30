@@ -6,6 +6,16 @@ export default async (message) => {
     startMessage: message.id,
   });
 
-  await message.react('783705863381975070');
-  await message.react('783705940230144001');
+  const plusOneEmoji = '783705863381975070';
+  const minusOneEmoji = '783705940230144001';
+
+  if (
+    !message.guild.emojis.cache.has(plusOneEmoji) ||
+    !message.guild.emojis.cache.has(minusOneEmoji)
+  ) {
+    return;
+  }
+
+  await message.react(plusOneEmoji);
+  await message.react(minusOneEmoji);
 };
