@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SlashCommandBuilder } from 'discord.js';
 import { JSDOM } from 'jsdom';
-import channelLog, { generateInteractionMessage } from '../../util/channel-log.js';
+import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
 
 const data = new SlashCommandBuilder()
   .setName('etymology')
@@ -20,7 +20,7 @@ export default {
     await interaction.deferReply();
     const input = interaction.options.getString('input');
 
-    channelLog(generateInteractionMessage(interaction, `input: ${input}`));
+    channelLog(generateInteractionCreateLogContent(interaction, `input: ${input}`));
 
     const inputForUrl = input.replace(/ /g, '_');
 
@@ -96,6 +96,11 @@ export default {
       }
 
       content += `\n[See more on Wiktionary](${url})`;
+
+      if (content.length > 4096) {
+        content = `There's too much content.\n\nHowever, you can visit the word's Wiktionary page by clicking [here](${url}) for additional information.`;
+        content += `\n\n[See more on Wiktionary](${url})`;
+      }
 
       const embed = {
         color: 0x65a69e,
