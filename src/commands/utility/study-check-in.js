@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
 import keyv from '../../db/keyv.js';
+import channelLog, { generateInteractionMessage } from '../../util/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,7 +20,18 @@ export default {
     const currentTimestamp = currentDate.getTime();
 
     // check if user.lastAttendanceTimestamp and currentTimestamp is in the same day
-    if (new Date(user?.lastAttendanceTimestamp).getDate() === currentDate.getDate()) {
+    const lastAttendanceDay = new Date(user?.lastAttendanceTimestamp).getDate();
+    const currentDay = currentDate.getDate();
+    const isSameDay = lastAttendanceDay === currentDay;
+
+    channelLog(
+      generateInteractionMessage(
+        interaction,
+        `lastAttendanceDay: ${lastAttendanceDay}, currentDay: ${currentDay}, isSameDay: ${isSameDay}`,
+      ),
+    );
+
+    if (isSameDay) {
       const ableToAttendDate = new Date(currentDate);
       ableToAttendDate.setDate(currentDate.getDate() + 1);
       ableToAttendDate.setHours(0, 0, 0, 0);

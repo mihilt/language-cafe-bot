@@ -1,9 +1,9 @@
 IMAGE_NAME="language-cafe-bot"
 CONTAINER_NAME="language-cafe-bot"
 
-# decompress build.tar
-echo "=> Decompress build.tar..."
-tar -xf ./build.tar
+# decompress language-cafe-bot.tar
+echo "=> Decompress language-cafe-bot.tar..."
+tar -xf ./language-cafe-bot.tar
 
 sleep 2
 

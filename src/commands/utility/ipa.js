@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { SlashCommandBuilder } from 'discord.js';
 import { JSDOM } from 'jsdom';
+import channelLog, { generateInteractionMessage } from '../../util/channel-log.js';
 
 const data = new SlashCommandBuilder()
   .setName('ipa')
@@ -18,6 +19,9 @@ export default {
   async execute(interaction) {
     await interaction.deferReply();
     const input = interaction.options.getString('input');
+
+    channelLog(generateInteractionMessage(interaction, `input: ${input}`));
+
     const inputForUrl = input.replace(/ /g, '_');
 
     try {

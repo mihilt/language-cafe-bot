@@ -1,5 +1,5 @@
 import { Events } from 'discord.js';
-import suggestionBoxMessageCreate from '../messageCreate/suggestion-box.js';
+import suggestionBoxMessageCreate from '../service/messageCreate/suggestion-box.js';
 
 export default {
   name: Events.MessageCreate,
