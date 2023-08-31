@@ -1,19 +1,12 @@
 import { Collection } from 'discord.js';
 import fs from 'fs';
-import { readFile } from 'node:fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import client from './client/index.js';
+import config from './config/index.js';
 import keyv from './db/keyv.js';
 
-const configUrl =
-  process.env.NODE_ENV === 'production' ? './config/config_pro.json' : './config/config_dev.json';
-
-const fileUrl = new URL(configUrl, import.meta.url);
-const config = JSON.parse(await readFile(fileUrl, 'utf8'));
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 client.cooldowns = new Collection();
 client.commands = new Collection();

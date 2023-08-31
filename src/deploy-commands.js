@@ -2,16 +2,9 @@ import { REST, Routes } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
-import { readFile } from 'node:fs/promises';
+import config from './config/index.js';
 
-const configUrl =
-  process.env.NODE_ENV === 'production' ? './config/config_pro.json' : './config/config_dev.json';
-
-const fileUrl = new URL(configUrl, import.meta.url);
-const config = JSON.parse(await readFile(fileUrl, 'utf8'));
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier

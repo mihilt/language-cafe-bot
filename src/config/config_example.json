@@ -1,4 +1,7 @@
 {
   "DISCORD_TOKEN": "",
-  "CLIENT_ID": ""
+  "CLIENT_ID": "",
+
+  "LOG_SERVER_ID": "",
+  "LOG_CHANNEL_ID": ""
 }

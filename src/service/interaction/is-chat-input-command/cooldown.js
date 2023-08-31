@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import client from '../../client/index.js';
+import client from '../../../client/index.js';
 
 export default async (interaction) => {
   const command = interaction.client.commands.get(interaction.commandName);

@@ -1,4 +1,4 @@
-import pollEmojiArray from '../../util/poll-emoji-array.js';
+import pollEmojiArray from '../../../data/poll-emoji-array.js';
 
 export default async (interaction) => {
   const messageContent = interaction.fields.getTextInputValue('messageContent');
