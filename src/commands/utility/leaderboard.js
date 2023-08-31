@@ -1,13 +1,13 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
 import keyv from '../../db/keyv.js';
-import channelLog, { generateInteractionMessage } from '../../util/channel-log.js';
+import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()
     .setName('leaderboard-study-check-in')
     .setDescription("Check #study-check-in's streak leaderboard."),
   async execute(interaction) {
-    channelLog(generateInteractionMessage(interaction));
+    channelLog(generateInteractionCreateLogContent(interaction));
 
     const userObject = await keyv.get('user');
     const propertyNames = Object.keys(userObject);

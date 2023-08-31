@@ -16,9 +16,15 @@ export default (content) => {
     });
 };
 
-export const generateInteractionMessage = (interaction, additionalMessage) =>
-  `time: <t:${Date.now().toString().slice(0, 10)}:F>\nserver: ${
+export const generateInteractionCreateLogContent = (interaction, additionalMessage) =>
+  `### Interaction Message\ntime: <t:${Date.now().toString().slice(0, 10)}:F>\nserver: ${
     interaction.guild.name
   }\nchannel: \`#${interaction.channel.name}\`\ncommand: \`/${interaction.commandName}\`\nuser: <@${
     interaction.user.id
   }>${additionalMessage ? `\n\`\`\`${additionalMessage}\`\`\`` : ''}`;
+
+export const generateMessageCreateLogContent = (message, additionalMessage) =>
+  `### Create Message\ntime: <t:${Date.now().toString().slice(0, 10)}:F>\nserver: ${
+    message.guild.name
+  }\nchannel: \`#${message.channel.name}\`\nuser: <@${message.author.id}>
+${additionalMessage ? `\n\`\`\`${additionalMessage}\`\`\`` : ''}`;

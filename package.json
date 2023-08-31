@@ -5,9 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start:dev": "NODE_ENV=development nodemon .",
+    "start:dev": "nodemon .",
     "start": "NODE_ENV=production node .",
-    "deploy-commands:dev": "NODE_ENV=development node src/deploy-commands.js",
+    "deploy-commands:dev": "node src/deploy-commands.js",
     "deploy-commands": "NODE_ENV=production node src/deploy-commands.js"
   },
   "keywords": [],
