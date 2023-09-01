@@ -1,4 +1,4 @@
-import { bold } from 'discord.js';
+import { bold, time, userMention } from 'discord.js';
 import { studyCheckInKeyv } from '../../db/keyvInstances.js';
 import channelLog, { generateMessageCreateLogContent } from '../../util/channel-log.js';
 
@@ -36,11 +36,11 @@ export default async (message) => {
     const embad = {
       color: 0x65a69e,
       title: 'Study Check In',
-      description: `<@${
-        message.author.id
-      }>, you have already logged your study session today.\nCome back after <t:${ableToAttendTimestamp
-        .toString()
-        .slice(0, 10)}:F> to increase your streak!\n### This message will be deleted in 1 minute.`,
+      description: `${userMention(
+        message.author.id,
+      )}, you have already logged your study session today.\nCome back after ${time(
+        Number(ableToAttendTimestamp.toString().slice(0, 10), 'F'),
+      )} to increase your streak!\n### This message will be deleted in 1 minute.`,
     };
 
     const replyMessage = await message.reply({ embeds: [embad] });
@@ -68,16 +68,15 @@ export default async (message) => {
     },
   });
 
-  const content = `<@${
-    message.author.id
-  }>, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
+  const content = `${userMention(
+    message.author.id,
+  )}, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
     point,
-  )} 🔥\n\nCome back after <t:${ableToAttendTimestamp
-    .toString()
-    .slice(0, 10)}:F> to increase your streak!\nStreak expires on <t:${new Date(expiredTimestamp)
-    .getTime()
-    .toString()
-    .slice(0, 10)}:F>\n### This message will be deleted in 1 minute.`;
+  )} 🔥\n\nCome back after ${time(
+    Number(ableToAttendTimestamp.toString().slice(0, 10), 'F'),
+  )} to increase your streak!\nStreak expires on ${time(
+    Number(new Date(expiredTimestamp).getTime().toString().slice(0, 10), 'F'),
+  )}.\n### This message will be deleted in 1 minute.`;
 
   const embed = {
     color: 0x65a69e,
@@ -94,13 +93,13 @@ export default async (message) => {
 
   // put message if your streak expired
   if (point === 1 && user?.lastAttendanceTimestamp) {
-    const additionalContent = `<@${
-      message.author.id
-    }>, your streak was reset to 0 due to missing one or more days previously.\nYour streak has been updated to ${bold(
+    const additionalContent = `${userMention(
+      message.author.id,
+    )}, your streak was reset to 0 due to missing one or more days previously.\nYour streak has been updated to ${bold(
       1,
-    )} after logging today's session.\n\nYour last study session was logged on <t:${user.lastAttendanceTimestamp
-      .toString()
-      .slice(0, 10)}:F>.\n### This message will be deleted in 1 minute.`;
+    )} after logging today's session.\n\nYour last study session was logged on ${time(
+      Number(user.lastAttendanceTimestamp.toString().slice(0, 10), 'F'),
+    )}.\n### This message will be deleted in 1 minute.`;
 
     const additionalEmbed = {
       color: 0x65a69e,
