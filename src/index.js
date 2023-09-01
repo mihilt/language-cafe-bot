@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import client from './client/index.js';
 import config from './config/index.js';
-import keyv from './db/keyv.js';
+import { studyCheckInKeyv } from './db/keyvInstances.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -14,10 +14,11 @@ client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
-keyv.on('error', (err) => console.error('Keyv connection error:', err));
+// init file db file
+studyCheckInKeyv.on('error', (err) => console.error('studyCheckInKeyv connection error:', err));
 
-if (!(await keyv.has('user'))) {
-  await keyv.set('user', []);
+if (!(await studyCheckInKeyv.has('user'))) {
+  await studyCheckInKeyv.set('user', []);
 }
 
 // eslint-disable-next-line no-restricted-syntax

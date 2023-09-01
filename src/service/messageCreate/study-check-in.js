@@ -1,9 +1,9 @@
 import { bold } from 'discord.js';
-import keyv from '../../db/keyv.js';
+import { studyCheckInKeyv } from '../../db/keyvInstances.js';
 import channelLog, { generateMessageCreateLogContent } from '../../util/channel-log.js';
 
 export default async (message) => {
-  const users = await keyv.get('user');
+  const users = await studyCheckInKeyv.get('user');
   const user = users[message.author.id];
 
   const currentDate = new Date();
@@ -59,7 +59,7 @@ export default async (message) => {
   let point = user?.point ?? 0;
   point += 1;
 
-  await keyv.set('user', {
+  await studyCheckInKeyv.set('user', {
     ...users,
     [message.author.id]: {
       point,
