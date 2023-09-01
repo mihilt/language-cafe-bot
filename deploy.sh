@@ -45,3 +45,7 @@ docker run -v ~/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 400
 # remove dangling images
 echo "=> Remove dangling images..."
 docker rmi $(docker images -f "dangling=true" -q)
+
+# show logs
+echo "=> Show logs..."
+docker logs -f $CONTAINER_NAME
