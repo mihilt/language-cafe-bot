@@ -23,16 +23,16 @@ export default async (message) => {
   channelLog(
     generateMessageCreateLogContent(
       message,
-      `command: \`!lc-study-check-in\`\n\nlastAttendanceDay: ${lastAttendanceDay}\ncurrentDay: ${currentDay}\nisSameDay: ${isSameDay}`,
+      `command: \`!lc-streak\`\n\nlastAttendanceDay: ${lastAttendanceDay}\ncurrentDay: ${currentDay}\nisSameDay: ${isSameDay}`,
     ),
   );
 
-  if (isSameDay) {
-    const ableToAttendDate = new Date(currentDate);
-    ableToAttendDate.setDate(currentDate.getDate() + 1);
-    ableToAttendDate.setHours(0, 0, 0, 0);
-    const ableToAttendTimestamp = ableToAttendDate.getTime();
+  const ableToAttendDate = new Date(currentDate);
+  ableToAttendDate.setDate(currentDate.getDate() + 1);
+  ableToAttendDate.setHours(0, 0, 0, 0);
+  const ableToAttendTimestamp = ableToAttendDate.getTime();
 
+  if (isSameDay) {
     const embad = {
       color: 0x65a69e,
       title: 'Study Check In',
@@ -40,10 +40,7 @@ export default async (message) => {
         message.author.id
       }>, you have already logged your study session today.\nCome back after <t:${ableToAttendTimestamp
         .toString()
-        .slice(
-          0,
-          10,
-        )}:F> to increase your streak!\n\n**This message will be deleted in 1 minute.**`,
+        .slice(0, 10)}:F> to increase your streak!\n### This message will be deleted in 1 minute.`,
     };
 
     const replyMessage = await message.reply({ embeds: [embad] });
@@ -75,12 +72,12 @@ export default async (message) => {
     message.author.id
   }>, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
     point,
-  )} 🔥\n\nCome back tomorrow to increase your streak!\nStreak expires on <t:${new Date(
-    expiredTimestamp,
-  )
+  )} 🔥\n\nCome back after <t:${ableToAttendTimestamp
+    .toString()
+    .slice(0, 10)}:F> to increase your streak!\nStreak expires on <t:${new Date(expiredTimestamp)
     .getTime()
     .toString()
-    .slice(0, 10)}:F>\n\n**This message will be deleted in 1 minute.**`;
+    .slice(0, 10)}:F>\n### This message will be deleted in 1 minute.`;
 
   const embed = {
     color: 0x65a69e,
@@ -103,7 +100,7 @@ export default async (message) => {
       1,
     )} after logging today's session.\n\nYour last study session was logged on <t:${user.lastAttendanceTimestamp
       .toString()
-      .slice(0, 10)}:F>.\n\n**This message will be deleted in 1 minute.**`;
+      .slice(0, 10)}:F>.\n### This message will be deleted in 1 minute.`;
 
     const additionalEmbed = {
       color: 0x65a69e,

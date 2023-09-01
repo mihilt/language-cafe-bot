@@ -4,7 +4,7 @@ export default async (interaction) => {
   const messageContent = interaction.fields.getTextInputValue('messageContent');
   const startDate = interaction.fields.getTextInputValue('startDate');
   const startHours = interaction.fields.getTextInputValue('startHours');
-  const gmt = interaction.fields.getTextInputValue('gmt');
+  const utc = interaction.fields.getTextInputValue('utc');
   const numberOfPolls = interaction.fields.getTextInputValue('numberOfPolls');
 
   // check if startDate is valid date
@@ -29,20 +29,20 @@ export default async (interaction) => {
     return;
   }
 
-  // check if gmt is valid +/-HH:MM
-  const gmtHours = parseInt(gmt.slice(1, 3), 10);
-  const gmtMinutes = parseInt(gmt.slice(4, 6), 10);
-  const gmtSign = gmt[0];
-  if ((gmtSign !== '+' && gmtSign !== '-') || Number.isNaN(gmtHours) || Number.isNaN(gmtMinutes)) {
+  // check if utc is valid +/-HH:MM
+  const utcHours = parseInt(utc.slice(1, 3), 10);
+  const utcMinutes = parseInt(utc.slice(4, 6), 10);
+  const utcSign = utc[0];
+  if ((utcSign !== '+' && utcSign !== '-') || Number.isNaN(utcHours) || Number.isNaN(utcMinutes)) {
     await interaction.reply({
-      content: 'Please enter a valid gmt.',
+      content: 'Please enter a valid utc.',
       ephemeral: true,
     });
     return;
   }
 
-  const realGmtHours = gmtSign === '+' ? gmtHours : -gmtHours;
-  const realGmtMinutes = gmtSign === '+' ? gmtMinutes : -gmtMinutes;
+  const realUtcHours = utcSign === '+' ? utcHours : -utcHours;
+  const realUtcMinutes = utcSign === '+' ? utcMinutes : -utcMinutes;
 
   // check if numberOfPolls is valid number
   const number = parseInt(numberOfPolls, 10);
@@ -56,7 +56,7 @@ export default async (interaction) => {
 
   // date with hours
   const dateWithHours = new Date(date);
-  dateWithHours.setHours(hours - realGmtHours, -realGmtMinutes, 0, 0);
+  dateWithHours.setHours(hours - realUtcHours, -realUtcMinutes, 0, 0);
 
   const listContents = pollEmojiArray
     .slice(0, numberOfPolls)
@@ -80,7 +80,7 @@ export default async (interaction) => {
   pollEmojiArray.slice(0, numberOfPolls).forEach((emoji) => message.react(emoji));
 
   await interaction.reply({
-    content: 'Poll has been generated. (This message will be deleted in 10 seconds))',
+    content: 'Poll has been generated.\n\n**This message will be deleted in 10 seconds.**',
     ephemeral: true,
   });
 

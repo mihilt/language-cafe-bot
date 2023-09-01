@@ -12,8 +12,7 @@ export default {
       suggestionBoxMessageCreate(message);
     }
 
-    // if message start with !lc-study-chech-in
-    if (message.content.startsWith('!lc-study-check-in')) {
+    if (message.content.startsWith('!lc-streak')) {
       studyCheckIn(message);
     }
   },
