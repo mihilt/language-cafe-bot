@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
-import keyv from '../../db/keyv.js';
+import { studyCheckInKeyv } from '../../db/keyvInstances.js';
 import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
 
 export default {
@@ -9,7 +9,7 @@ export default {
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
 
-    const userObject = await keyv.get('user');
+    const userObject = await studyCheckInKeyv.get('user');
     const propertyNames = Object.keys(userObject);
 
     const havePointsPropertyNames = propertyNames.filter((key) => userObject[key].point > 0);
@@ -30,7 +30,7 @@ export default {
       userObject[user.id].point = 0;
     });
 
-    await keyv.set('user', userObject);
+    await studyCheckInKeyv.set('user', userObject);
 
     const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
 
