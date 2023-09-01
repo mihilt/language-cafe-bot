@@ -1,4 +1,4 @@
-import { Collection } from 'discord.js';
+import { Collection, time } from 'discord.js';
 import client from '../../../client/index.js';
 
 export default async (interaction) => {
@@ -28,7 +28,9 @@ export default async (interaction) => {
     if (now < expirationTime) {
       const expiredTimestamp = Math.round(expirationTime / 1000);
       interaction.reply({
-        content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
+        content: `Please wait, you are on a cooldown for \`${
+          command.data.name
+        }\`. You can use it again ${time(Number(expiredTimestamp, 'R'))}.`,
         ephemeral: true,
       });
       return {

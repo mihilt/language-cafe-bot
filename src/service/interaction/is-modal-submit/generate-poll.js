@@ -1,3 +1,4 @@
+import { time } from 'discord.js';
 import pollEmojiArray from '../../../data/poll-emoji-array.js';
 
 export default async (interaction) => {
@@ -62,7 +63,10 @@ export default async (interaction) => {
     .slice(0, numberOfPolls)
     .map(
       (emoji, index) =>
-        `${emoji} <t:${(dateWithHours.getTime() + 3600000 * index).toString().slice(0, 10)}:F>`,
+        `${emoji} ${time(
+          Number((dateWithHours.getTime() + 3600000 * index).toString().slice(0, 10)),
+          'F',
+        )}`,
     )
     .join('\n');
 
