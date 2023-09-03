@@ -22,6 +22,8 @@ export default {
     }));
 
     const currentTimestamp = Date.now();
+
+    // reset streak if expiredTimestamp is less than currentTimestamp
     const expiredUserList = userList.filter(
       (user) => userObject[user.id].expiredTimestamp < currentTimestamp,
     );
@@ -30,7 +32,8 @@ export default {
       userObject[user.id].point = 0;
     });
 
-    await studyCheckInKeyv.set('user', userObject);
+    // eslint-disable-next-line no-unused-expressions
+    expiredUserList.length && (await studyCheckInKeyv.set('user', userObject));
 
     const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
 
