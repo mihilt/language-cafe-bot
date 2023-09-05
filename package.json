@@ -8,7 +8,8 @@
     "start:dev": "nodemon .",
     "start": "NODE_ENV=production node .",
     "deploy-commands:dev": "node src/deploy-commands.js",
-    "deploy-commands": "NODE_ENV=production node src/deploy-commands.js"
+    "deploy-commands": "NODE_ENV=production node src/deploy-commands.js",
+    "sync-sqlite": "node src/sync-sqlite.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,9 @@
     "jsdom": "^22.1.0",
     "keyv": "^4.5.3",
     "keyv-file": "^0.2.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sequelize": "^6.32.1",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "eslint": "^8.48.0",
