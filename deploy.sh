@@ -46,6 +46,10 @@ docker run -v ~/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 400
 echo "=> Remove dangling images..."
 docker rmi $(docker images -f "dangling=true" -q)
 
+# put timestamp to tar file
+echo "=> Put timestamp to tar file..."
+mv ./language-cafe-bot.tar ./language-cafe-bot-$(date +%Y%m%d%H%M%S).tar
+
 # show logs
 echo "=> Show logs..."
 docker logs -f $CONTAINER_NAME
