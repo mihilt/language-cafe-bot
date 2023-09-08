@@ -1,6 +1,8 @@
 import { SlashCommandBuilder, bold, time, userMention } from 'discord.js';
 import { studyCheckInKeyv } from '../../db/keyvInstances.js';
-import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()

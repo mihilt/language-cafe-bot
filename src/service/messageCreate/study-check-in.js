@@ -1,6 +1,6 @@
 import { bold, time, userMention } from 'discord.js';
 import { studyCheckInKeyv } from '../../db/keyvInstances.js';
-import channelLog, { generateMessageCreateLogContent } from '../../util/channel-log.js';
+import channelLog, { generateMessageCreateLogContent } from '../utils/channel-log.js';
 
 export default async (message) => {
   const users = await studyCheckInKeyv.get('user');

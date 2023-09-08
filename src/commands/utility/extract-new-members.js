@@ -1,6 +1,9 @@
 import { SlashCommandBuilder, userMention } from 'discord.js';
 import NewMember from '../../models/NewMember.js';
-import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
+import { checkMaxContentLength } from '../../utils/index.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,13 +22,28 @@ export default {
         .join(' ')}`;
     }
 
+    let contentWithCodeBlock = `\`\`\`${content}\`\`\``;
+
+    contentWithCodeBlock = checkMaxContentLength({ length: 4096, content: contentWithCodeBlock });
+
     await interaction.reply({
-      content: `\`\`\`${content}\`\`\``,
+      embeds: [
+        {
+          color: 0x65a69e,
+          title: 'Extract New Members',
+          description: contentWithCodeBlock,
+          footer: {
+            text: 'Click copy icon to copy the content.',
+          },
+        },
+      ],
       ephemeral: true,
     });
 
     await NewMember.destroy({ truncate: true });
 
-    channelLog(generateInteractionCreateLogContent(interaction, `content: ${content}`));
+    channelLog(
+      generateInteractionCreateLogContent(interaction, `content: ${contentWithCodeBlock}`),
+    );
   },
 };

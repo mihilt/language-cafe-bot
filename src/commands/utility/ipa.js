@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { SlashCommandBuilder } from 'discord.js';
 import { JSDOM } from 'jsdom';
-import channelLog, { generateInteractionCreateLogContent } from '../../util/channel-log.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
+import { checkMaxContentLength } from '../../utils/index.js';
 
 const data = new SlashCommandBuilder()
   .setName('ipa')
@@ -113,12 +116,10 @@ export default {
         content += `However, you can visit the word's Wiktionary page by clicking [here](${url}) for additional information.`;
       }
 
-      content += `\n\n[See more on Wiktionary](${url})`;
+      const additionalContent = `\n[See more on Wiktionary](${url})`;
+      content += additionalContent;
 
-      if (content.length > 4096) {
-        content = `There's too much content.\n\nHowever, you can visit the word's Wiktionary page by clicking [here](${url}) for additional information.`;
-        content += `\n\n[See more on Wiktionary](${url})`;
-      }
+      content = checkMaxContentLength({ length: 4096, content, additionalContent });
 
       const embed = {
         color: 0x65a69e,
