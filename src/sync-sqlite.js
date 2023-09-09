@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import sequelize from './db/sqliteInstance.js';
+// import sequelize from './db/sqliteInstance.js';
 
-sequelize.sync({ force: true });
-sequelize.sync({ alter: true });
+// sequelize.sync({ force: true });
+// sequelize.sync({ alter: true });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const modelsPath = path.join(__dirname, 'models');
@@ -16,7 +16,7 @@ for (const file of modelFiles) {
 
   (async () => {
     const model = (await import(filePath)).default;
-    model.sync({ force: true });
+    // model.sync({ force: true });
     model.sync({ alter: true });
   })();
 }
