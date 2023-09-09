@@ -74,7 +74,7 @@ export default async (interaction) => {
     embeds: [
       {
         color: 0x65a69e,
-        title: 'Register LanguageExchange Partner List',
+        title: 'Register Language Exchange Partner List',
         description: content,
       },
     ],

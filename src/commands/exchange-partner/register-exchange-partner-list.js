@@ -6,7 +6,6 @@ export default {
     .setName('register-exchange-partner-list')
     .setDescription('Register exchange partner list'),
 
-  // eslint-disable-next-line no-unused-vars, no-empty-function
   async execute(interaction) {
     registerExchangePartnerList(interaction);
   },
