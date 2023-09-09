@@ -1,5 +1,8 @@
 import { SlashCommandBuilder, userMention } from 'discord.js';
 import ExchangePartner from '../../models/ExchangePartner.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -7,6 +10,8 @@ export default {
     .setDescription('Delete exchange partner list'),
 
   async execute(interaction) {
+    channelLog(generateInteractionCreateLogContent(interaction));
+
     ExchangePartner.destroy({ where: { id: interaction.user.id } });
 
     const content = `${userMention(

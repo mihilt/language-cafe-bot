@@ -1,6 +1,9 @@
 import { SlashCommandBuilder, userMention } from 'discord.js';
 import { Op } from 'sequelize';
 import ExchangePartner from '../../models/ExchangePartner.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -8,6 +11,8 @@ export default {
     .setDescription('Get exchange partner list'),
 
   async execute(interaction) {
+    channelLog(generateInteractionCreateLogContent(interaction));
+
     const clientTargetLanguage = await ExchangePartner.findOne({
       where: { id: interaction.user.id },
       attributes: ['targetLanguage'],
@@ -43,15 +48,17 @@ export default {
 
     let content = '';
 
-    if (partnersList) {
+    if (partnersList.length > 0) {
       content = `${userMention(
         interaction.user.id,
       )}, Your language exchange partner list is as follows.\n\n${partnersList
         .map(
           (partner) =>
-            `${userMention(partner.id)}\nTarget Language: ${
+            `${userMention(partner.id)}\n\`\`\`Target Language: ${
               partner.targetLanguage
-            }\nOffer Language: ${partner.offerLanguage}\nIntroduction: ${partner.introduction}\n\n`,
+            }\nOffer Language: ${partner.offerLanguage}\nIntroduction: ${
+              partner.introduction
+            }\`\`\`\n`,
         )
         .join('')}`;
     } else {
