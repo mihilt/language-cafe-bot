@@ -1,4 +1,4 @@
-import { userMention } from 'discord.js';
+import { bold, userMention } from 'discord.js';
 import ExchangePartner from '../../../models/ExchangePartner.js';
 
 export default async (interaction) => {
@@ -68,7 +68,11 @@ export default async (interaction) => {
 
   const content = `${userMention(
     interaction.member.user.id,
-  )} registered language exchange partner list.\nTarget language: ${refinedTargetLanguage}\nOffer language: ${refinedOfferLanguage}\nIntroduction: ${introduction}`;
+  )} registered language exchange partner list.\n\n${bold(
+    'Target language',
+  )}\n\`\`\`${refinedTargetLanguage}\`\`\`\n${bold(
+    'Offer language',
+  )}\n\`\`\`${refinedOfferLanguage}\`\`\`\n${bold('Introduction')}\n\`\`\`${introduction}\`\`\``;
 
   await interaction.reply({
     embeds: [
