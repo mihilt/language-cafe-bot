@@ -2,19 +2,19 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default async (interaction) => {
   const modal = new ModalBuilder()
-    .setCustomId('register-exchange-partner-list')
+    .setCustomId('register-exchange-listing')
     .setTitle('Register exchange partner list');
 
   const targetLanguage = new TextInputBuilder()
     .setCustomId('targetLanguage')
-    .setLabel("Put target language's flag emoji.")
+    .setLabel("Put target languages' flag emoji.")
     .setPlaceholder('ex: 🇰🇷🇯🇵')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(40);
 
-  const offerLanguage = new TextInputBuilder()
-    .setCustomId('offerLanguage')
-    .setLabel("Put offer language's flag emoji.")
+  const offeredLanguage = new TextInputBuilder()
+    .setCustomId('offeredLanguage')
+    .setLabel("Put offered languages' flag emoji.")
     .setPlaceholder('ex: 🇺🇸🇪🇸')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(40);
@@ -31,7 +31,7 @@ export default async (interaction) => {
 
   modal.addComponents(
     new ActionRowBuilder().addComponents(targetLanguage),
-    new ActionRowBuilder().addComponents(offerLanguage),
+    new ActionRowBuilder().addComponents(offeredLanguage),
     new ActionRowBuilder().addComponents(introduction),
   );
 

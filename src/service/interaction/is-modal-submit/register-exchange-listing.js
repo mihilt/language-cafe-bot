@@ -3,7 +3,7 @@ import ExchangePartner from '../../../models/ExchangePartner.js';
 
 export default async (interaction) => {
   const targetLanguage = interaction.fields.getTextInputValue('targetLanguage');
-  const offerLanguage = interaction.fields.getTextInputValue('offerLanguage');
+  const offeredLanguage = interaction.fields.getTextInputValue('offeredLanguage');
   const introduction = interaction.fields.getTextInputValue('introduction');
 
   // filter if it is not flag emoji char 🇦 🇧 🇨 🇩 🇪 🇫 🇬 🇭 🇮 🇯 🇰 🇱 🇲 🇳 🇴 🇵 🇶 🇷 🇸 🇹 🇺 🇻 🇼 🇽 🇾 🇿
@@ -14,7 +14,7 @@ export default async (interaction) => {
     '',
   );
 
-  const refinedOfferLanguage = offerLanguage.replace(
+  const refinedOfferedLanguage = offeredLanguage.replace(
     // eslint-disable-next-line no-misleading-character-class
     /[^🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿]/gu,
     '',
@@ -23,16 +23,16 @@ export default async (interaction) => {
   // check if targetLanguage is valid flag emoji
   if (refinedTargetLanguage.length % 4 !== 0) {
     await interaction.reply({
-      content: 'Please enter a valid target language.',
+      content: 'Please enter a valid target language(s).',
       ephemeral: true,
     });
     return;
   }
 
-  // check if offerLanguage is valid flag emoji
-  if (refinedOfferLanguage.length % 4 !== 0) {
+  // check if offeredLanguage is valid flag emoji
+  if (refinedOfferedLanguage.length % 4 !== 0) {
     await interaction.reply({
-      content: 'Please enter a valid offer language.',
+      content: 'Please enter a valid offered language(s).',
       ephemeral: true,
     });
     return;
@@ -48,7 +48,7 @@ export default async (interaction) => {
     await ExchangePartner.update(
       {
         targetLanguage: refinedTargetLanguage,
-        offerLanguage: refinedOfferLanguage,
+        offeredLanguage: refinedOfferedLanguage,
         introduction,
       },
       {
@@ -61,7 +61,7 @@ export default async (interaction) => {
     await ExchangePartner.create({
       id: interaction.member.user.id,
       targetLanguage: refinedTargetLanguage,
-      offerLanguage: refinedOfferLanguage,
+      offeredLanguage: refinedOfferedLanguage,
       introduction,
     });
   }
@@ -69,10 +69,10 @@ export default async (interaction) => {
   const content = `${userMention(
     interaction.member.user.id,
   )} registered language exchange partner list.\n\n${bold(
-    'Target language',
+    'Target language(s)',
   )}\n\`\`\`${refinedTargetLanguage}\`\`\`\n${bold(
-    'Offer language',
-  )}\n\`\`\`${refinedOfferLanguage}\`\`\`\n${bold('Introduction')}\n\`\`\`${introduction}\`\`\``;
+    'Offered language(s)',
+  )}\n\`\`\`${refinedOfferedLanguage}\`\`\`\n${bold('Introduction')}\n\`\`\`${introduction}\`\`\``;
 
   await interaction.reply({
     embeds: [

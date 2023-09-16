@@ -10,7 +10,7 @@ export default sequelize.define('exchangePartner', {
     type: Sequelize.STRING,
     required: true,
   },
-  offerLanguage: {
+  offeredLanguage: {
     type: Sequelize.STRING,
     required: true,
   },
