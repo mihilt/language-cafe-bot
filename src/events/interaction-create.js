@@ -1,7 +1,7 @@
 import { Events } from 'discord.js';
 import cooldown from '../service/interaction/is-chat-input-command/cooldown.js';
 import GeneratePollModalSubmit from '../service/interaction/is-modal-submit/generate-poll.js';
-import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-exchange-partner-list.js';
+import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-exchange-listing.js';
 import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
 
 export default {
@@ -24,7 +24,7 @@ export default {
         return;
       }
 
-      if (interaction.customId === 'register-exchange-partner-list') {
+      if (interaction.customId === 'register-exchange-listing') {
         channelLog(
           generateInteractionCreateLogContent(
             interaction,

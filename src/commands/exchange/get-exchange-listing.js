@@ -7,7 +7,7 @@ import channelLog, {
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('get-exchange-partner-list')
+    .setName('get-exchange-listing')
     .setDescription('Get exchange partner list'),
 
   async execute(interaction) {
@@ -31,7 +31,7 @@ export default {
     const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.match(/.{1,4}/g);
 
     const dynamicSearchConditions = clientTargetLanguageArray.map((keyword) => ({
-      offerLanguage: {
+      offeredLanguage: {
         [Op.substring]: keyword,
       },
     }));
@@ -51,18 +51,18 @@ export default {
     if (partnersList.length > 0) {
       content = `${userMention(
         interaction.user.id,
-      )}, Your language exchange partner list is as follows.\n\n${partnersList
+      )}, your exchange partner matches are as follows.\n\n${partnersList
         .map(
           (partner) =>
-            `${userMention(partner.id)}\n\`\`\`Target Language: ${
+            `${userMention(partner.id)}\n\`\`\`Target Language(s): ${
               partner.targetLanguage
-            }\nOffer Language: ${partner.offerLanguage}\nIntroduction: ${
+            }\nOffered Language(s): ${partner.offeredLanguage}\nIntroduction: ${
               partner.introduction
             }\`\`\`\n`,
         )
         .join('')}`;
     } else {
-      content = 'There is no language exchange partner list for you.';
+      content = 'You have not submitted your language exchange partner listing yet.';
     }
 
     await interaction.reply({
