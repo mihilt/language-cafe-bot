@@ -89,7 +89,9 @@ export default {
       const filteredLanguageGroup = languageGroup.filter((group) => group.etymology.length);
 
       let content = filteredLanguageGroup
-        .map((group) => `**${group.language}**\n${group.etymology.join('\n')}`)
+        .map(
+          (group) => `**${group.language}**\n${group.etymology.join('\n').replace(/\*/g, '\\*')}`,
+        )
         .join('\n');
 
       if (content === '') {
