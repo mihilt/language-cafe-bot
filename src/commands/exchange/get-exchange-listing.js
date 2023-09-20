@@ -62,7 +62,7 @@ export default {
         )
         .join('')}`;
     } else {
-      content = 'You have not submitted your language exchange partner listing yet.';
+      content = 'There are no exchange partner matches.';
     }
 
     await interaction.reply({
