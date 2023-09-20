@@ -7,17 +7,17 @@ export default async (interaction) => {
 
   const targetLanguage = new TextInputBuilder()
     .setCustomId('targetLanguage')
-    .setLabel("Put target languages' flag emoji.")
-    .setPlaceholder('ex: 🇰🇷🇯🇵')
+    .setLabel('Put target languages')
+    .setPlaceholder('ex: Korean, Japanese')
     .setStyle(TextInputStyle.Short)
-    .setMaxLength(40);
+    .setMaxLength(100);
 
   const offeredLanguage = new TextInputBuilder()
     .setCustomId('offeredLanguage')
-    .setLabel("Put offered languages' flag emoji.")
-    .setPlaceholder('ex: 🇺🇸🇪🇸')
+    .setLabel('Put offered languages')
+    .setPlaceholder('ex: English, Spanish')
     .setStyle(TextInputStyle.Short)
-    .setMaxLength(40);
+    .setMaxLength(100);
 
   const introduction = new TextInputBuilder()
     .setCustomId('introduction')
@@ -26,7 +26,6 @@ export default async (interaction) => {
       "I'm looking for language exchange partners to learn Korean and Japanese.\nI can teach you English ...",
     )
     .setStyle(TextInputStyle.Paragraph)
-    .setMinLength(10)
     .setMaxLength(500);
 
   modal.addComponents(

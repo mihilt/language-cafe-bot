@@ -1,42 +1,58 @@
 import { bold, userMention } from 'discord.js';
 import ExchangePartner from '../../../models/ExchangePartner.js';
+import languages from '../../../data/languages.js';
 
 export default async (interaction) => {
   const targetLanguage = interaction.fields.getTextInputValue('targetLanguage');
   const offeredLanguage = interaction.fields.getTextInputValue('offeredLanguage');
   const introduction = interaction.fields.getTextInputValue('introduction');
 
-  // filter if it is not flag emoji char 🇦 🇧 🇨 🇩 🇪 🇫 🇬 🇭 🇮 🇯 🇰 🇱 🇲 🇳 🇴 🇵 🇶 🇷 🇸 🇹 🇺 🇻 🇼 🇽 🇾 🇿
-
-  const refinedTargetLanguage = targetLanguage.replace(
-    // eslint-disable-next-line no-misleading-character-class
-    /[^🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿]/gu,
-    '',
+  // check if targetLanguage is invalid
+  const targetLanguageArray = targetLanguage.split(',').map((language) => language.trim());
+  const invalidTargetLanguage = targetLanguageArray.filter(
+    (language) => !languages.includes(language),
   );
 
-  const refinedOfferedLanguage = offeredLanguage.replace(
-    // eslint-disable-next-line no-misleading-character-class
-    /[^🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿]/gu,
-    '',
-  );
-
-  // check if targetLanguage is valid flag emoji
-  if (refinedTargetLanguage.length % 4 !== 0) {
+  if (invalidTargetLanguage.length > 0) {
     await interaction.reply({
-      content: 'Please enter a valid target language(s).',
+      embeds: [
+        {
+          color: 0x65a69e,
+          title: 'Register Language Exchange Partner List',
+          description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage.join(
+            ', ',
+          )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
+        },
+      ],
       ephemeral: true,
     });
     return;
   }
 
-  // check if offeredLanguage is valid flag emoji
-  if (refinedOfferedLanguage.length % 4 !== 0) {
+  // check if offeredLanguage is invalid
+  const offeredLanguageArray = offeredLanguage.split(',').map((language) => language.trim());
+  const invalidOfferedLanguage = offeredLanguageArray.filter(
+    (language) => !languages.includes(language),
+  );
+
+  if (invalidOfferedLanguage.length > 0) {
     await interaction.reply({
-      content: 'Please enter a valid offered language(s).',
+      embeds: [
+        {
+          color: 0x65a69e,
+          title: 'Register Language Exchange Partner List',
+          description: `Please enter a valid offered language(s).\n\nInvalid language(s): ${invalidOfferedLanguage.join(
+            ', ',
+          )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
+        },
+      ],
       ephemeral: true,
     });
     return;
   }
+
+  const refinedTargetLanguage = targetLanguageArray.join(', ');
+  const refinedOfferedLanguage = offeredLanguageArray.join(', ');
 
   const exchangePartner = await ExchangePartner.findOne({
     where: {
