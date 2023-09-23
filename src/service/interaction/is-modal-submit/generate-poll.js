@@ -64,7 +64,7 @@ export default async (interaction) => {
     .map(
       (emoji, index) =>
         `${emoji} ${time(
-          Number((dateWithHours.getTime() + 3600000 * index).toString().slice(0, 10)),
+          +(dateWithHours.getTime() + 3600000 * index).toString().slice(0, 10),
           'F',
         )}`,
     )

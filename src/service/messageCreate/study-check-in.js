@@ -39,7 +39,8 @@ export default async (message) => {
       description: `${userMention(
         message.author.id,
       )}, you have already logged your study session today.\nCome back after ${time(
-        Number(ableToAttendTimestamp.toString().slice(0, 10), 'F'),
+        +ableToAttendTimestamp.toString().slice(0, 10),
+        'F',
       )} to increase your streak!\n### This message will be deleted in 1 minute.`,
     };
 
@@ -105,9 +106,11 @@ export default async (message) => {
   )}, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
     point,
   )} 🔥\n\nCome back after ${time(
-    Number(ableToAttendTimestamp.toString().slice(0, 10), 'F'),
+    +ableToAttendTimestamp.toString().slice(0, 10),
+    'F',
   )} to increase your streak!\nStreak expires on ${time(
-    Number(new Date(expiredTimestamp).getTime().toString().slice(0, 10), 'F'),
+    +new Date(expiredTimestamp).getTime().toString().slice(0, 10),
+    'F',
   )}.\n### This message will be deleted in 1 minute.`;
 
   const embed = {
@@ -130,7 +133,8 @@ export default async (message) => {
     )}, your streak was reset to 0 due to missing one or more days previously.\nYour streak has been updated to ${bold(
       1,
     )} after logging today's session.\n\nYour last study session was logged on ${time(
-      Number(user.lastAttendanceTimestamp.toString().slice(0, 10), 'F'),
+      +user.lastAttendanceTimestamp.toString().slice(0, 10),
+      'F',
     )}.\n### This message will be deleted in 1 minute.`;
 
     const additionalEmbed = {
