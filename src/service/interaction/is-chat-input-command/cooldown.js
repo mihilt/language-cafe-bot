@@ -30,7 +30,7 @@ export default async (interaction) => {
       interaction.reply({
         content: `Please wait, you are on a cooldown for \`${
           command.data.name
-        }\`. You can use it again ${time(Number(expiredTimestamp, 'R'))}.`,
+        }\`. You can use it again ${time(expiredTimestamp, 'R')}.`,
         ephemeral: true,
       });
       return {

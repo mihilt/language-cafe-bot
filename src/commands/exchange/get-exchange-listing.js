@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, userMention } from 'discord.js';
+import { SlashCommandBuilder, time, userMention } from 'discord.js';
 import { Op } from 'sequelize';
 import ExchangePartner from '../../models/ExchangePartner.js';
 import channelLog, {
@@ -59,7 +59,10 @@ export default {
 
     if (partnersList.length < 5 && targetLanguageDynamicSearchConditions.length > 0) {
       const newSearchCondition = {
-        [Op.or]: offeredLanguageDynamicSearchConditions,
+        [Op.and]: [
+          { [Op.or]: offeredLanguageDynamicSearchConditions },
+          { id: { [Op.notIn]: partnersList.map((partner) => partner.id) } },
+        ],
       };
 
       const additionalPartners = await ExchangePartner.findAll({
@@ -109,13 +112,17 @@ export default {
               partner.targetLanguage
             }\`\`\`\nOffered Language(s)\`\`\`${
               partner.offeredLanguage
-            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\``,
+            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\`\nLast updated at ${time(
+              +new Date(partner.updatedAt).getTime().toString().slice(0, 10),
+              'F',
+            )}`,
             author: {
               name: partnerObject?.username,
               icon_url: partnerObject?.avatarURL(),
             },
           },
         ],
+        ephemeral: true,
       });
     });
   },

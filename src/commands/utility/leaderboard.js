@@ -54,10 +54,7 @@ export default {
         (user, index) =>
           `${bold(index + 1)}. ${userMention(user.id)} (Streak: ${bold(
             user.point,
-          )}, Last check in: ${time(
-            Number(user.lastAttendanceTimestamp.toString().slice(0, 10)),
-            'R',
-          )})`,
+          )}, Last check in: ${time(+user.lastAttendanceTimestamp.toString().slice(0, 10), 'R')})`,
       )
       .join('\n');
 
