@@ -5,7 +5,11 @@ const sequelize = new Sequelize({
   host: 'localhost',
 
   storage: './src/db/data/database.sqlite',
-  logging: process.env.NODE_ENV !== 'production',
+  logging: (msg) => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(msg);
+    }
+  },
 });
 
 export default sequelize;

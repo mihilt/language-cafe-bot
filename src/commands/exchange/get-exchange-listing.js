@@ -4,6 +4,7 @@ import ExchangePartner from '../../models/ExchangePartner.js';
 import channelLog, {
   generateInteractionCreateLogContent,
 } from '../../service/utils/channel-log.js';
+import client from '../../client/index.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -70,23 +71,17 @@ export default {
       partnersList = partnersList.concat(additionalPartners);
     }
 
-    let content = '';
-
-    if (partnersList.length > 0) {
-      content = `${userMention(
-        interaction.user.id,
-      )}, your exchange partner matches are as follows.\n\n${partnersList
-        .map(
-          (partner) =>
-            `${userMention(partner.id)}\n\`\`\`Target Language(s): ${
-              partner.targetLanguage
-            }\nOffered Language(s): ${partner.offeredLanguage}\nIntroduction: ${
-              partner.introduction
-            }\`\`\`\n`,
-        )
-        .join('')}`;
-    } else {
-      content = 'There are no exchange partner matches.';
+    if (!partnersList.length > 0) {
+      await interaction.reply({
+        embeds: [
+          {
+            color: 0x65a69e,
+            title: 'Get Language Exchange Partner List',
+            description: 'There are no exchange partner matches.',
+          },
+        ],
+        ephemeral: true,
+      });
     }
 
     await interaction.reply({
@@ -94,10 +89,34 @@ export default {
         {
           color: 0x65a69e,
           title: 'Get Language Exchange Partner List',
-          description: content,
+          description: `${userMention(
+            interaction.user.id,
+          )}, your exchange partner matches are as follows.`,
         },
       ],
       ephemeral: true,
+    });
+
+    partnersList.forEach(async (partner, index) => {
+      const partnerObject = await client.users.fetch(partner.id);
+
+      await interaction.followUp({
+        embeds: [
+          {
+            color: 0x65a69e,
+            title: `#${index + 1} Exchange Partner`,
+            description: `${userMention(partner.id)}\n\nTarget Language(s)\`\`\`${
+              partner.targetLanguage
+            }\`\`\`\nOffered Language(s)\`\`\`${
+              partner.offeredLanguage
+            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\``,
+            author: {
+              name: partnerObject?.username,
+              icon_url: partnerObject?.avatarURL(),
+            },
+          },
+        ],
+      });
     });
   },
 };
