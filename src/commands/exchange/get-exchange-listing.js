@@ -15,7 +15,7 @@ export default {
 
     const clientTargetLanguage = await ExchangePartner.findOne({
       where: { id: interaction.user.id },
-      attributes: ['targetLanguage'],
+      attributes: ['targetLanguage', 'offeredLanguage'],
     });
 
     if (!clientTargetLanguage) {
@@ -28,23 +28,47 @@ export default {
       return;
     }
 
-    const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.match(/.{1,4}/g);
+    const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.split(', ');
+    const clientOfferedLanguageArray = clientTargetLanguage.offeredLanguage.split(', ');
 
-    const dynamicSearchConditions = clientTargetLanguageArray.map((keyword) => ({
+    const offeredLanguageDynamicSearchConditions = clientTargetLanguageArray.map((keyword) => ({
       offeredLanguage: {
         [Op.substring]: keyword,
       },
     }));
 
+    const targetLanguageDynamicSearchConditions = clientOfferedLanguageArray.map((keyword) => ({
+      targetLanguage: {
+        [Op.substring]: keyword,
+      },
+    }));
+
     const finalSearchCondition = {
-      [Op.or]: dynamicSearchConditions,
+      [Op.and]: [
+        { [Op.or]: offeredLanguageDynamicSearchConditions },
+        { [Op.or]: targetLanguageDynamicSearchConditions },
+      ],
     };
 
-    const partnersList = await ExchangePartner.findAll({
+    let partnersList = await ExchangePartner.findAll({
       where: finalSearchCondition,
-      order: [['updatedAt', 'ASC']],
+      order: [['updatedAt', 'DESC']],
       limit: 5,
     });
+
+    if (partnersList.length < 5 && targetLanguageDynamicSearchConditions.length > 0) {
+      const newSearchCondition = {
+        [Op.or]: offeredLanguageDynamicSearchConditions,
+      };
+
+      const additionalPartners = await ExchangePartner.findAll({
+        where: newSearchCondition,
+        order: [['updatedAt', 'DESC']],
+        limit: 5 - partnersList.length,
+      });
+
+      partnersList = partnersList.concat(additionalPartners);
+    }
 
     let content = '';
 

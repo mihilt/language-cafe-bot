@@ -29,6 +29,7 @@ export default async (interaction) => {
     .setCustomId('utc')
     .setLabel('Put utc. format: +/-HH:MM')
     .setPlaceholder('+09:00')
+    .setValue('-05:00')
     .setStyle(TextInputStyle.Short)
     .setMinLength(6)
     .setMaxLength(6);
@@ -36,7 +37,7 @@ export default async (interaction) => {
   const numberOfPolls = new TextInputBuilder()
     .setCustomId('numberOfPolls')
     .setLabel('Put number of polls. (1~20)')
-    .setPlaceholder('20')
+    .setPlaceholder('10')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(2);
 
