@@ -68,6 +68,38 @@ export default async (message) => {
     },
   });
 
+  if (point % 10 === 0) {
+    const proverbs = [
+      'Success is the sum of small efforts, repeated day in and day out.',
+      "Rome wasn't built in a day, but they were laying bricks every hour.",
+      'Slow and steady wins the race.',
+      'Little strokes fell great oaks',
+      'Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill',
+      'It does not matter how slowly you go as long as you do not stop. - Confucius',
+      'The journey of a thousand miles begins with one step. - Lao Tzu',
+      'Perseverance is not a long race; it is many short races one after the other. - Walter Elliot',
+      'Success is the sum of small efforts, repeated day in and day out. - Robert Collier',
+      'Patience, persistence, and perspiration make an unbeatable combination for success. - Napoleon Hill',
+      'Success is no accident. It is hard work, perseverance, learning, studying, sacrifice, and most of all, love of what you are doing or learning to do. - Pelé',
+    ];
+
+    message.reply({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: `${userMention(message.author.id)} has just reached a streak of ${bold(
+            point,
+          )}. Good job!\n\n*${
+            proverbs[Math.floor(Math.random() * proverbs.length)]
+          }*\n\nKeep it up!`,
+          thumbnail: {
+            url: message.author.avatarURL(),
+          },
+        },
+      ],
+    });
+  }
+
   const content = `${userMention(
     message.author.id,
   )}, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
