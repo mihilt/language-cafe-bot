@@ -96,6 +96,10 @@ export default async (interaction) => {
         color: 0x65a69e,
         title: 'Register Language Exchange Partner List',
         description: content,
+        author: {
+          name: `${interaction.member.user.globalName}(${interaction.member.user.username}#${interaction.member.user.discriminator})`,
+          icon_url: interaction.member.user.avatarURL(),
+        },
       },
     ],
   });
