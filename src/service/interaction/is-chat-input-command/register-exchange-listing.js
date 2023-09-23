@@ -8,14 +8,14 @@ export default async (interaction) => {
   const targetLanguage = new TextInputBuilder()
     .setCustomId('targetLanguage')
     .setLabel('Put target languages')
-    .setPlaceholder('ex: Korean, Japanese')
+    .setPlaceholder('ex: Korean, Japanese (*Put comma to separate languages)')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(100);
 
   const offeredLanguage = new TextInputBuilder()
     .setCustomId('offeredLanguage')
     .setLabel('Put offered languages')
-    .setPlaceholder('ex: English, Spanish')
+    .setPlaceholder('ex: English, Spanish (*Put comma to separate languages)')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(100);
 
