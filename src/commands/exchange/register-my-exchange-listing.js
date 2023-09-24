@@ -4,7 +4,7 @@ import registerExchangePartnerList from '../../service/interaction/is-chat-input
 export default {
   data: new SlashCommandBuilder()
     .setName('register-my-exchange-listing')
-    .setDescription('Register exchange partner list'),
+    .setDescription('Register exchange partner listing'),
 
   async execute(interaction) {
     registerExchangePartnerList(interaction);

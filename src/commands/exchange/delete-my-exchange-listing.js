@@ -16,7 +16,7 @@ export default {
 
     const content = `${userMention(
       interaction.user.id,
-    )}, you were removed from the list of language exchange partners.`;
+    )}, your language exchange partner listing was removed from our database.`;
 
     await interaction.reply({
       embeds: [
