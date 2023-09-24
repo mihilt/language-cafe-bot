@@ -23,7 +23,7 @@ export default async (interaction) => {
             .map((e) => `\`${e}\``)
             .join(
               ', ',
-            )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
+            )}\n\nYou can check the list of language options we have in our database by using the \`/get-language-list\` command.`,
         },
       ],
       ephemeral: true,
@@ -45,7 +45,7 @@ export default async (interaction) => {
           title: 'Register Language Exchange Partner List',
           description: `Please enter a valid offered language(s).\n\nInvalid language(s): ${invalidOfferedLanguage.join(
             ', ',
-          )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
+          )}\n\nYou can check the list of language options we have in our database by using the \`/get-language-list\` command.`,
         },
       ],
       ephemeral: true,
