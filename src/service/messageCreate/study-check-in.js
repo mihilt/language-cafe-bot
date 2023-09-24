@@ -69,7 +69,7 @@ export default async (message) => {
     },
   });
 
-  if (point % 10 === 0) {
+  if (point % 30 === 0 || point % 100 === 0) {
     const proverbs = [
       'Success is the sum of small efforts, repeated day in and day out.',
       "Rome wasn't built in a day, but they were laying bricks every hour.",
