@@ -10,7 +10,7 @@ export default {
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
 
-    const content = `These are the list of languages that will be accepted in an exchange partner listing.\nIf you would like another language that is not here to be added, please let us know in #public-server-help.\n\n${languages
+    const content = `These are the list of languages that will be accepted in an exchange partner listing.\nIf you would like another language that is not here to be added, please let us know in \`#public-server-help\`.\n\n${languages
       .map((language) => `- ${language}`)
       .join('\n')}`;
 

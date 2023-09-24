@@ -2,7 +2,7 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default async (interaction) => {
   const modal = new ModalBuilder()
-    .setCustomId('register-exchange-listing')
+    .setCustomId('register-my-exchange-listing')
     .setTitle('Register exchange partner list');
 
   const targetLanguage = new TextInputBuilder()
