@@ -19,9 +19,11 @@ export default async (interaction) => {
         {
           color: 0x65a69e,
           title: 'Register Language Exchange Partner List',
-          description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage.join(
-            ', ',
-          )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
+          description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage
+            .map((e) => `\`${e}\``)
+            .join(
+              ', ',
+            )}\n\nYou can check the language list by using \`/get-language-list\` command.`,
         },
       ],
       ephemeral: true,

@@ -8,7 +8,7 @@ import client from '../../client/index.js';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('get-exchange-listing')
+    .setName('get-exchange-listings')
     .setDescription('Get exchange partner list'),
 
   async execute(interaction) {
@@ -21,9 +21,15 @@ export default {
 
     if (!clientTargetLanguage) {
       await interaction.reply({
-        content: `${userMention(
-          interaction.user.id,
-        )}, you have not registered your language exchange partner list.`,
+        embeds: [
+          {
+            color: 0x65a69e,
+            title: 'Get Language Exchange Partner List',
+            description: `${userMention(
+              interaction.user.id,
+            )}, you have not registered your language exchange partner list.`,
+          },
+        ],
         ephemeral: true,
       });
       return;
@@ -85,6 +91,8 @@ export default {
         ],
         ephemeral: true,
       });
+
+      return;
     }
 
     await interaction.reply({
@@ -112,7 +120,7 @@ export default {
               partner.targetLanguage
             }\`\`\`\nOffered Language(s)\`\`\`${
               partner.offeredLanguage
-            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\`\nLast updated at ${time(
+            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\`\nLast updated: ${time(
               +new Date(partner.updatedAt).getTime().toString().slice(0, 10),
               'F',
             )}`,

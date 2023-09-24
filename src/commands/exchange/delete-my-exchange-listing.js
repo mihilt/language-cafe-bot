@@ -6,7 +6,7 @@ import channelLog, {
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('delete-exchange-listing')
+    .setName('delete-my-exchange-listing')
     .setDescription('Delete exchange partner list'),
 
   async execute(interaction) {
