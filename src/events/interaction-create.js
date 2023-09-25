@@ -1,4 +1,14 @@
-import { Events } from 'discord.js';
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Events,
+  time,
+  userMention,
+} from 'discord.js';
+import { Op } from 'sequelize';
+import client from '../client/index.js';
+import ExchangePartner from '../models/ExchangePartner.js';
 import cooldown from '../service/interaction/is-chat-input-command/cooldown.js';
 import GeneratePollModalSubmit from '../service/interaction/is-modal-submit/generate-poll.js';
 import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-my-exchange-listing.js';
@@ -33,6 +43,133 @@ export default {
         );
         RegisterExchangePartnerListModalSubmit(interaction);
       }
+    }
+
+    if (interaction.isButton()) {
+      const clientTargetLanguage = await ExchangePartner.findOne({
+        where: { id: interaction.user.id },
+        attributes: ['targetLanguage', 'offeredLanguage'],
+      });
+
+      if (!clientTargetLanguage) {
+        await interaction.update({
+          embeds: [
+            {
+              color: 0x65a69e,
+              title: 'Get Language Exchange Partner List',
+              description: `${userMention(
+                interaction.user.id,
+              )}, you have not registered your language exchange partner list.`,
+            },
+          ],
+          components: [],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.split(', ');
+
+      const offeredLanguageDynamicSearchConditions = clientTargetLanguageArray.map((keyword) => ({
+        offeredLanguage: {
+          [Op.substring]: keyword,
+        },
+      }));
+
+      const SearchCondition = {
+        [Op.and]: [{ [Op.or]: offeredLanguageDynamicSearchConditions }],
+      };
+
+      const partnerListLength = await ExchangePartner.count({
+        where: SearchCondition,
+      });
+
+      if (partnerListLength === 0) {
+        await interaction.update({
+          embeds: [
+            {
+              color: 0x65a69e,
+              title: 'Get Language Exchange Partner List',
+              description: 'There are no exchange partner matches.',
+            },
+          ],
+          components: [],
+          ephemeral: true,
+        });
+
+        return;
+      }
+
+      const { customId } = interaction;
+      const previous = interaction.message;
+      const currentPage = previous.embeds[0].title.split('/')[0];
+
+      let offset;
+      if (customId === 'first') {
+        offset = 0;
+      } else if (customId === 'previous') {
+        offset = currentPage - 2;
+      } else if (customId === 'next') {
+        offset = currentPage;
+      } else if (customId === 'last') {
+        offset = partnerListLength - 1;
+      }
+
+      const page = +offset + 1;
+
+      const partner = await ExchangePartner.findOne({
+        where: SearchCondition,
+        order: [['updatedAt', 'DESC']],
+        offset,
+      });
+
+      const partnerObject = await client.users.fetch(partner.id);
+
+      await interaction.update({
+        embeds: [
+          {
+            color: 0x65a69e,
+            title: `${page}/${partnerListLength}`,
+            description: `${userMention(partnerObject.id)}\n\nTarget Language(s)\`\`\`${
+              partner.targetLanguage
+            }\`\`\`\nOffered Language(s)\`\`\`${
+              partner.offeredLanguage
+            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\`\nLast updated: ${time(
+              +new Date(partner.updatedAt).getTime().toString().slice(0, 10),
+              'F',
+            )}`,
+            author: {
+              name: `${partnerObject?.globalName}(${partnerObject?.username}#${partnerObject?.discriminator})`,
+              icon_url: partnerObject?.avatarURL(),
+            },
+          },
+        ],
+        components: [
+          new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setCustomId('first')
+              .setLabel('<<')
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(page === 1),
+            new ButtonBuilder()
+              .setCustomId('previous')
+              .setLabel('<')
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(page === 1),
+            new ButtonBuilder()
+              .setCustomId('next')
+              .setLabel('>')
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(page === partnerListLength),
+            new ButtonBuilder()
+              .setCustomId('last')
+              .setLabel('>>')
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(page === partnerListLength),
+          ),
+        ],
+        ephemeral: true,
+      });
     }
   },
 };
