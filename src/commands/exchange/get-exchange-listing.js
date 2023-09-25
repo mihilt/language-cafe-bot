@@ -64,7 +64,9 @@ export default {
           {
             color: 0x65a69e,
             title: 'Get Language Exchange Partner List',
-            description: 'There are no exchange partner matches.',
+            description: `${userMention(
+              interaction.user.id,
+            )}, there are no exchange partner matches.`,
           },
         ],
         ephemeral: true,
@@ -84,15 +86,25 @@ export default {
       embeds: [
         {
           color: 0x65a69e,
-          title: `1/${partnerListLength}`,
-          description: `${userMention(partnerObject.id)}\n\nTarget Language(s)\`\`\`${
-            partner.targetLanguage
-          }\`\`\`\nOffered Language(s)\`\`\`${partner.offeredLanguage}\`\`\`\nIntroduction\`\`\`\n${
-            partner.introduction
-          }\`\`\`\nLast updated: ${time(
-            +new Date(partner.updatedAt).getTime().toString().slice(0, 10),
-            'F',
-          )}`,
+          title: `1/${partnerListLength} Partner`,
+          fields: [
+            {
+              name: 'Target Language(s)',
+              value: `\`\`\`${partner.targetLanguage}\`\`\``,
+            },
+            {
+              name: 'Offered Language(s)',
+              value: `\`\`\`${partner.offeredLanguage}\`\`\``,
+            },
+            {
+              name: 'Introduction',
+              value: `\`\`\`${partner.introduction}\`\`\``,
+            },
+            {
+              name: 'Last updated',
+              value: time(partner.updatedAt, 'F'),
+            },
+          ],
           author: {
             name: `${partnerObject?.globalName}(${partnerObject?.username}#${partnerObject?.discriminator})`,
             icon_url: partnerObject?.avatarURL(),
@@ -111,8 +123,16 @@ export default {
             .setLabel('<')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(true),
-          new ButtonBuilder().setCustomId('next').setLabel('>').setStyle(ButtonStyle.Primary),
-          new ButtonBuilder().setCustomId('last').setLabel('>>').setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setCustomId('next')
+            .setLabel('>')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(partnerListLength === 1),
+          new ButtonBuilder()
+            .setCustomId('last')
+            .setLabel('>>')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(partnerListLength === 1),
         ),
       ],
       ephemeral: true,

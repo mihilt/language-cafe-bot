@@ -1,6 +1,6 @@
-import { bold, userMention } from 'discord.js';
-import ExchangePartner from '../../../models/ExchangePartner.js';
+import { userMention } from 'discord.js';
 import languages from '../../../data/languages.js';
+import ExchangePartner from '../../../models/ExchangePartner.js';
 
 export default async (interaction) => {
   const targetLanguage = interaction.fields.getTextInputValue('targetLanguage');
@@ -84,20 +84,35 @@ export default async (interaction) => {
     });
   }
 
-  const content = `${userMention(
-    interaction.member.user.id,
-  )} registered language exchange partner list.\n\n${bold(
-    'Target language(s)',
-  )}\n\`\`\`${refinedTargetLanguage}\`\`\`\n${bold(
-    'Offered language(s)',
-  )}\n\`\`\`${refinedOfferedLanguage}\`\`\`\n${bold('Introduction')}\n\`\`\`${introduction}\`\`\``;
-
   await interaction.reply({
     embeds: [
       {
         color: 0x65a69e,
         title: 'Register Language Exchange Partner List',
-        description: content,
+        fields: [
+          {
+            name: '',
+            value: `${userMention(
+              interaction.member.user.id,
+            )} registered language exchange partner list.`,
+          },
+          {
+            name: '',
+            value: '',
+          },
+          {
+            name: 'Target Language(s)',
+            value: `\`\`\`${refinedTargetLanguage}\`\`\``,
+          },
+          {
+            name: 'Offered Language(s)',
+            value: `\`\`\`${refinedOfferedLanguage}\`\`\``,
+          },
+          {
+            name: 'Introduction',
+            value: `\`\`\`${introduction}\`\`\``,
+          },
+        ],
         author: {
           name: `${interaction.member.user.globalName}(${interaction.member.user.username}#${interaction.member.user.discriminator})`,
           icon_url: interaction.member.user.avatarURL(),

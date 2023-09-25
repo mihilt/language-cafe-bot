@@ -46,6 +46,13 @@ export default {
     }
 
     if (interaction.isButton()) {
+      channelLog(
+        generateInteractionCreateLogContent(
+          interaction,
+          `customId: ${interaction.customId}\ninteraction.isButton() is true`,
+        ),
+      );
+
       const clientTargetLanguage = await ExchangePartner.findOne({
         where: { id: interaction.user.id },
         attributes: ['targetLanguage', 'offeredLanguage'],
@@ -90,7 +97,9 @@ export default {
             {
               color: 0x65a69e,
               title: 'Get Language Exchange Partner List',
-              description: 'There are no exchange partner matches.',
+              description: `${userMention(
+                interaction.user.id,
+              )}, there are no exchange partner matches.`,
             },
           ],
           components: [],
@@ -123,21 +132,57 @@ export default {
         offset,
       });
 
+      if (!partner) {
+        await interaction.update({
+          embeds: [
+            {
+              color: 0x65a69e,
+              title: 'Get Language Exchange Partner List',
+              description: `${userMention(
+                interaction.user.id,
+              )}, there are no exchange partner matches.`,
+            },
+          ],
+          components: [],
+          ephemeral: true,
+        });
+
+        return;
+      }
+
       const partnerObject = await client.users.fetch(partner.id);
 
       await interaction.update({
         embeds: [
           {
             color: 0x65a69e,
-            title: `${page}/${partnerListLength}`,
-            description: `${userMention(partnerObject.id)}\n\nTarget Language(s)\`\`\`${
-              partner.targetLanguage
-            }\`\`\`\nOffered Language(s)\`\`\`${
-              partner.offeredLanguage
-            }\`\`\`\nIntroduction\`\`\`\n${partner.introduction}\`\`\`\nLast updated: ${time(
-              +new Date(partner.updatedAt).getTime().toString().slice(0, 10),
-              'F',
-            )}`,
+            title: `${page}/${partnerListLength} Partner`,
+            fields: [
+              {
+                name: '',
+                value: `${userMention(partnerObject.id)}`,
+              },
+              {
+                name: '',
+                value: '',
+              },
+              {
+                name: 'Target Language(s)',
+                value: `\`\`\`${partner.targetLanguage}\`\`\``,
+              },
+              {
+                name: 'Offered Language(s)',
+                value: `\`\`\`${partner.offeredLanguage}\`\`\``,
+              },
+              {
+                name: 'Introduction',
+                value: `\`\`\`${partner.introduction}\`\`\``,
+              },
+              {
+                name: '\u200B',
+                value: `Last updated: ${time(partner.updatedAt, 'F')}`,
+              },
+            ],
             author: {
               name: `${partnerObject?.globalName}(${partnerObject?.username}#${partnerObject?.discriminator})`,
               icon_url: partnerObject?.avatarURL(),
