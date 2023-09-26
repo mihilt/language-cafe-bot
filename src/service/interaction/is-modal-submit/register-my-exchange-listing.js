@@ -2,13 +2,27 @@ import { userMention } from 'discord.js';
 import languages from '../../../data/languages.js';
 import ExchangePartner from '../../../models/ExchangePartner.js';
 
+const convertToProperCase = (input) => {
+  const words = input.toLowerCase().split(' ');
+  const capitalizedWords = words.map((word) => {
+    const firstChar = word.charAt(0).toUpperCase();
+    const remainingChars = word.slice(1);
+    return firstChar + remainingChars;
+  });
+  return capitalizedWords.join(' ');
+};
+
 export default async (interaction) => {
   const targetLanguage = interaction.fields.getTextInputValue('targetLanguage');
   const offeredLanguage = interaction.fields.getTextInputValue('offeredLanguage');
   const introduction = interaction.fields.getTextInputValue('introduction');
 
   // check if targetLanguage is invalid
-  const targetLanguageArray = targetLanguage.split(',').map((language) => language.trim());
+  const targetLanguageArray = targetLanguage
+    .split(',')
+    .map((language) => language.trim())
+    .map(convertToProperCase);
+
   const invalidTargetLanguage = targetLanguageArray.filter(
     (language) => !languages.includes(language),
   );
@@ -32,7 +46,11 @@ export default async (interaction) => {
   }
 
   // check if offeredLanguage is invalid
-  const offeredLanguageArray = offeredLanguage.split(',').map((language) => language.trim());
+  const offeredLanguageArray = offeredLanguage
+    .split(',')
+    .map((language) => language.trim())
+    .map(convertToProperCase);
+
   const invalidOfferedLanguage = offeredLanguageArray.filter(
     (language) => !languages.includes(language),
   );
