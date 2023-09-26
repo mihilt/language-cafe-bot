@@ -87,6 +87,7 @@ export default {
         {
           color: 0x65a69e,
           title: `1/${partnerListLength} Partner`,
+          description: `${userMention(partnerObject.id)}`,
           fields: [
             {
               name: 'Target Language(s)',
@@ -114,22 +115,22 @@ export default {
       components: [
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
-            .setCustomId('first')
+            .setCustomId('get-exchange-partner-first')
             .setLabel('<<')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(true),
           new ButtonBuilder()
-            .setCustomId('previous')
+            .setCustomId('get-exchange-partner-previous')
             .setLabel('<')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(true),
           new ButtonBuilder()
-            .setCustomId('next')
+            .setCustomId('get-exchange-partner-next')
             .setLabel('>')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(partnerListLength === 1),
           new ButtonBuilder()
-            .setCustomId('last')
+            .setCustomId('get-exchange-partner-last')
             .setLabel('>>')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(partnerListLength === 1),
