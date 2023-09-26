@@ -107,17 +107,10 @@ export default async (interaction) => {
       {
         color: 0x65a69e,
         title: 'Register Language Exchange Partner List',
+        description: `${userMention(
+          interaction.member.user.id,
+        )} registered language exchange partner list.`,
         fields: [
-          {
-            name: '',
-            value: `${userMention(
-              interaction.member.user.id,
-            )} registered language exchange partner list.`,
-          },
-          {
-            name: '',
-            value: '',
-          },
           {
             name: 'Target Language(s)',
             value: `\`\`\`${refinedTargetLanguage}\`\`\``,
