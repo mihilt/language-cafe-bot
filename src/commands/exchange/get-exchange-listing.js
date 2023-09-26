@@ -43,6 +43,7 @@ export default {
     }
 
     const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.split(', ');
+    const clientOfferedLanguageArray = clientTargetLanguage.offeredLanguage.split(', ');
 
     const offeredLanguageDynamicSearchConditions = clientTargetLanguageArray.map((keyword) => ({
       offeredLanguage: {
@@ -50,8 +51,17 @@ export default {
       },
     }));
 
+    const targetLanguageDynamicSearchConditions = clientOfferedLanguageArray.map((keyword) => ({
+      targetLanguage: {
+        [Op.substring]: keyword,
+      },
+    }));
+
     const SearchCondition = {
-      [Op.and]: [{ [Op.or]: offeredLanguageDynamicSearchConditions }],
+      [Op.and]: [
+        { [Op.or]: offeredLanguageDynamicSearchConditions },
+        { [Op.or]: targetLanguageDynamicSearchConditions },
+      ],
     };
 
     const partnerListLength = await ExchangePartner.count({
