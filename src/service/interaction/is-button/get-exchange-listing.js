@@ -17,7 +17,7 @@ export default async (interaction) => {
           title: 'Get Language Exchange Partner List',
           description: `${userMention(
             interaction.user.id,
-          )}, you have not registered your language exchange partner list.`,
+          )}, you have not registered your language exchange partner listing yet.`,
         },
       ],
       components: [],
