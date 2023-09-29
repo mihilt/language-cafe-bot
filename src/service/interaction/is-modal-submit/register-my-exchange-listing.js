@@ -109,7 +109,7 @@ export default async (interaction) => {
         title: 'Register Language Exchange Partner List',
         description: `${userMention(
           interaction.member.user.id,
-        )} registered language exchange partner list.`,
+        )} has registered their language exchange partner listing.`,
         fields: [
           {
             name: 'Target Language(s)',
