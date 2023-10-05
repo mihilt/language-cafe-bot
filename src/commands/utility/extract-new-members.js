@@ -17,9 +17,7 @@ export default {
     if (members.length === 0) {
       content = 'There are no new members.';
     } else {
-      content += `Welcome everyone! What languages are you interested in learning? ${members
-        .map((member) => userMention(member.id))
-        .join(' ')}`;
+      content += members.map((member) => userMention(member.id)).join(' ');
     }
 
     let contentWithCodeBlock = `\`\`\`${content}\`\`\``;

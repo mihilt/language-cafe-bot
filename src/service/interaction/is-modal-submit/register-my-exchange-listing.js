@@ -128,6 +128,10 @@ export default async (interaction) => {
           name: `${interaction.member.user.globalName}(${interaction.member.user.username}#${interaction.member.user.discriminator})`,
           icon_url: interaction.member.user.avatarURL(),
         },
+        footer: {
+          icon_url: interaction.guild.iconURL(),
+          text: 'use /help-exchange-partner command to register your own exchange partner listing',
+        },
       },
     ],
   });
