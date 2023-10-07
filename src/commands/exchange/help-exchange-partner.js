@@ -1,4 +1,7 @@
 import { SlashCommandBuilder, bold } from 'discord.js';
+import channelLog, {
+  generateInteractionCreateLogContent,
+} from '../../service/utils/channel-log.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -6,6 +9,8 @@ export default {
     .setDescription('Get help on how to use language exchange partner commands'),
 
   async execute(interaction) {
+    channelLog(generateInteractionCreateLogContent(interaction));
+
     const contents = `### New Find Exchange Partner Message Format\n\nPlease follow the following steps to be put in our exchange partner database so you can find a partner easier\n\n1. Send ${bold(
       '/register-my-exchange-listing',
     )} in this channel, fill out the questions, then click Done (if you are learning a smaller language, first send ${bold(
