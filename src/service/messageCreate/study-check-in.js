@@ -60,12 +60,15 @@ export default async (message) => {
   let point = user?.point ?? 0;
   point += 1;
 
+  const highestPoint = (user?.highestPoint ?? 0) > point ? user?.highestPoint : point;
+
   await studyCheckInKeyv.set('user', {
     ...users,
     [message.author.id]: {
       point,
       lastAttendanceTimestamp: currentTimestamp,
       expiredTimestamp,
+      highestPoint,
     },
   });
 
