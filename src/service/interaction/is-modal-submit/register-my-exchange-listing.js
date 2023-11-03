@@ -139,8 +139,9 @@ export default async (interaction) => {
       {
         color: 0x65a69e,
         title: 'You have successfully registered your language exchange partner listing.',
-        description:
-          '\nTry to find your exchange partner by using the `/get-exchange-listing` command.',
+        description: `\nNow, send the ${bold(
+          '/get-exchange-listings',
+        )} slash command to show all potential exchange partners.\n\nIf nobody shows up, that just means that there isn't a perfect match for you in our database yet. Make sure to come back in the future to try again!`,
       },
     ],
     ephemeral: true,
