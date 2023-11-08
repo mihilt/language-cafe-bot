@@ -172,7 +172,7 @@ export default async (interaction) => {
         title,
         description,
         image: {
-          url: 'https://media.discordapp.net/attachments/1069942934381793330/1164765573327093810/ezgif.com-crop_1.gif?ex=65446778&is=6531f278&hm=f56cf6b2fc88b9720aa4b1e1154c8cf2e2429465e5d3b8e821af1741f0c47e6e&=&width=750&height=411',
+          url: 'https://cdn.discordapp.com/attachments/1144589131813503037/1171258140436746250/image.png?ex=655c0625&is=65499125&hm=5fa203e6c18b561452d09c22758f9a1f5edbad3ff6af99885ccd0f464e90f640&',
         },
       },
     ],
