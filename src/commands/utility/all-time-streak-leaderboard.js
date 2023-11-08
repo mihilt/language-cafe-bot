@@ -18,29 +18,12 @@ export default {
 
     const userList = havePointsPropertyNames.map((key) => ({
       id: key,
-      point: userObject[key].highestPoint,
       lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
       expiredTimestamp: userObject[key].expiredTimestamp,
       highestPoint: userObject[key].highestPoint,
     }));
 
-    const currentTimestamp = Date.now();
-
-    // reset streak if expiredTimestamp is less than currentTimestamp
-    const expiredUserList = userList.filter(
-      (user) => userObject[user.id].expiredTimestamp < currentTimestamp,
-    );
-
-    expiredUserList.forEach((user) => {
-      userObject[user.id].highestPoint = 0;
-    });
-
-    // eslint-disable-next-line no-unused-expressions
-    expiredUserList.length && (await studyCheckInKeyv.set('user', userObject));
-
-    const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
-
-    const rankedUserList = filteredUserList
+    const rankedUserList = userList
       .sort(
         (a, b) =>
           Number(b.highestPoint) - Number(a.highestPoint) ||
@@ -48,7 +31,7 @@ export default {
       )
       .slice(0, 10);
 
-    const currentUser = filteredUserList.find((user) => user.id === interaction.user.id);
+    const currentUser = userList.find((user) => user.id === interaction.user.id);
 
     let content = rankedUserList
       .map(
@@ -63,7 +46,7 @@ export default {
 
     if (currentUser) {
       content += `\n\n${userMention(currentUser.id)}, you are rank #${bold(
-        filteredUserList.indexOf(currentUser) + 1,
+        userList.indexOf(currentUser) + 1,
       )} with a ${bold(currentUser.highestPoint)} day streak.`;
     }
 
