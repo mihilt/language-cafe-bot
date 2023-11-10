@@ -153,7 +153,7 @@ export default async (interaction) => {
 
   const description = `We have updated our Exchange Partner process! Send the slash command ${bold(
     '/register-my-exchange-listing',
-  )} to input your language exchange listing in our database.\n\nHave questions on how to do so? Please follow the tutorial GIF below for the basics and check out https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for more details.`;
+  )} to input your language exchange listing in our database.\n\nHave questions on how to do so? Please take a look at the photo below for the basics and check out https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for more details.`;
 
   const currentMessages = await interaction.client.channels.cache
     .get(channelId)
