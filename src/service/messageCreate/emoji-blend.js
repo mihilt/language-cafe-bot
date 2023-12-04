@@ -1,8 +1,9 @@
+import { Chance } from 'chance';
 import emojiList from '../../data/random-emojis.js';
 
 const generateRandomThreeUniqueEmoji = () => {
   const emojiSet = new Set();
-  const oneToThree = Math.floor(Math.random() * 3) + 1;
+  const oneToThree = Chance().weighted([1, 2, 3], [10, 20, 70]);
 
   while (emojiSet.size < oneToThree) {
     const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
