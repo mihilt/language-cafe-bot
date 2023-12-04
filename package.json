@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.5.1",
+    "chance": "^1.1.11",
     "discord.js": "^14.13.0",
     "jsdom": "^22.1.0",
     "keyv": "^4.5.4",
