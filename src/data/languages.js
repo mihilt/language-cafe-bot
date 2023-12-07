@@ -106,4 +106,5 @@ export default [
   'Old Church Slavonic',
   'Coptic',
   'Phoenician',
+  'Urak Lawoi’',
 ];

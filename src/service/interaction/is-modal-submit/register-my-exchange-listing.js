@@ -1,4 +1,4 @@
-import { bold, userMention } from 'discord.js';
+import { userMention } from 'discord.js';
 import config from '../../../config/index.js';
 import languages from '../../../data/languages.js';
 import ExchangePartner from '../../../models/ExchangePartner.js';
@@ -139,9 +139,7 @@ export default async (interaction) => {
       {
         color: 0x65a69e,
         title: 'You have successfully registered your language exchange partner listing.',
-        description: `\nNow, send the ${bold(
-          '/get-exchange-listings',
-        )} slash command to show all potential exchange partners.\n\nIf nobody shows up, that just means that there isn't a perfect match for you in our database yet. Make sure to come back in the future to try again!`,
+        description: `Now, click the blue text right here </get-exchange-listings:${config.GET_EXCHANGE_LISTINGS_COMMAND_ID}> and send it to show all potential exchange partners.\n\nIf nobody shows up, that just means that there isn't a perfect match for you in our database yet. Make sure to come back in the future to try again!`,
       },
     ],
     ephemeral: true,
@@ -151,9 +149,7 @@ export default async (interaction) => {
 
   const title = 'Find Exchange Partner Message Format';
 
-  const description = `We have updated our Exchange Partner process! Send the slash command ${bold(
-    '/register-my-exchange-listing',
-  )} to input your language exchange listing in our database.\n\nHave questions on how to do so? Please take a look at the photo below for the basics and check out https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for more details.`;
+  const description = `Click the blue text here </register-my-exchange-listing:${config.REGISTER_MY_EXCHANGE_LISTING_COMMAND_ID}> and send it to input your language exchange listing in our database.\n\nHave questions on how to do so? Please take a look at the photo below for the basics and check out https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for more details.`;
 
   const currentMessages = await interaction.client.channels.cache
     .get(channelId)
