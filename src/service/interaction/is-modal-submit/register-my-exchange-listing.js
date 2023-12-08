@@ -149,7 +149,7 @@ export default async (interaction) => {
 
   const title = 'Find Exchange Partner Message Format';
 
-  const description = `Click the blue text here </register-my-exchange-listing:${config.REGISTER_MY_EXCHANGE_LISTING_COMMAND_ID}> and send it to input your language exchange listing in our database.\n\nHave questions on how to do so? Please take a look at the photo below for the basics and check out https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for more details.`;
+  const description = `Click the blue text here </register-my-exchange-listing:${config.REGISTER_MY_EXCHANGE_LISTING_COMMAND_ID}> and send it to input your language exchange listing in our database.\n\nStill have questions? Click the link here https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for a step-by-step explanation and video tutorial.`;
 
   const currentMessages = await interaction.client.channels.cache
     .get(channelId)
@@ -167,9 +167,6 @@ export default async (interaction) => {
         color: 0x65a69e,
         title,
         description,
-        image: {
-          url: 'https://cdn.discordapp.com/attachments/1144589131813503037/1171258140436746250/image.png?ex=655c0625&is=65499125&hm=5fa203e6c18b561452d09c22758f9a1f5edbad3ff6af99885ccd0f464e90f640&',
-        },
       },
     ],
   });
