@@ -16,8 +16,11 @@ export default async (message) => {
   const currentTimestamp = currentDate.getTime();
 
   // check if user.lastAttendanceTimestamp and currentTimestamp is in the same day
-  const lastAttendanceDay = new Date(user?.lastAttendanceTimestamp).getDate();
-  const currentDay = currentDate.getDate();
+  const lastAttendanceDay = user?.lastAttendanceTimestamp
+    ? new Date(user?.lastAttendanceTimestamp)?.toISOString().split('T')[0]
+    : null;
+  const currentDay = currentDate?.toISOString().split('T')[0];
+
   const isSameDay = lastAttendanceDay === currentDay;
 
   channelLog(
@@ -47,20 +50,36 @@ export default async (message) => {
     const replyMessage = await message.reply({ embeds: [embad] });
     setTimeout(() => {
       replyMessage.delete();
-    }, 60000);
+    }, 1000 * 60);
 
     return;
   }
 
-  // check if user.expiredTimestamp is less than currentTimestamp reset streak
+  let freezePoint = user?.freezePoint ?? 0;
+
   if (user?.expiredTimestamp < currentTimestamp) {
-    user.point = 0;
+    const differenceDays = Math.ceil(
+      (currentTimestamp - user.expiredTimestamp) / (1000 * 60 * 60 * 24),
+    );
+
+    freezePoint -= differenceDays;
+
+    if (freezePoint < 0) {
+      freezePoint = 0;
+      user.point = 0;
+    }
   }
 
   let point = user?.point ?? 0;
   point += 1;
 
   const highestPoint = (user?.highestPoint ?? 0) > point ? user?.highestPoint : point;
+
+  const isPointMultipleOf7 = point % 7 === 0;
+
+  if (isPointMultipleOf7) {
+    freezePoint = freezePoint < 3 ? freezePoint + 1 : freezePoint;
+  }
 
   await studyCheckInKeyv.set('user', {
     ...users,
@@ -69,6 +88,7 @@ export default async (message) => {
       lastAttendanceTimestamp: currentTimestamp,
       expiredTimestamp,
       highestPoint,
+      freezePoint,
     },
   });
 
@@ -104,32 +124,8 @@ export default async (message) => {
     });
   }
 
-  const content = `${userMention(
-    message.author.id,
-  )}, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
-    point,
-  )} 🔥\n\nCome back after ${time(
-    +ableToAttendTimestamp.toString().slice(0, 10),
-    'F',
-  )} to increase your streak!\nStreak expires on ${time(
-    +new Date(expiredTimestamp).getTime().toString().slice(0, 10),
-    'F',
-  )}.\n### This message will be deleted in 1 minute.`;
+  const additionalEmbeds = [];
 
-  const embed = {
-    color: 0x65a69e,
-    title: 'Study Check In',
-    description: content,
-  };
-
-  message.react('🔥');
-
-  const replyMessage = await message.reply({ embeds: [embed] });
-  setTimeout(() => {
-    replyMessage.delete();
-  }, 60000);
-
-  // put message if your streak expired
   if (point === 1 && user?.lastAttendanceTimestamp) {
     const additionalContent = `${userMention(
       message.author.id,
@@ -142,13 +138,43 @@ export default async (message) => {
 
     const additionalEmbed = {
       color: 0x65a69e,
-      title: 'Study Check In',
+      title: 'Your streak has been reset',
       description: additionalContent,
     };
 
-    const additionalReplyMessage = await message.reply({ embeds: [additionalEmbed] });
-    setTimeout(() => {
-      additionalReplyMessage.delete();
-    }, 60000);
+    additionalEmbeds.push(additionalEmbed);
   }
+
+  let content = `${userMention(
+    message.author.id,
+  )}, you studied for ${point} day(s) in a row!\nStudy streak increased to ${bold(
+    point,
+  )} 🔥\n\nCome back after ${time(
+    +ableToAttendTimestamp.toString().slice(0, 10),
+    'F',
+  )} to increase your streak!\nStreak expires on ${time(
+    +new Date(expiredTimestamp).getTime().toString().slice(0, 10),
+    'F',
+  )}.\n`;
+
+  const additionalContent = `\n${bold('Streak Freezes')}\nYou currently have ${bold(
+    freezePoint,
+  )} streak freezes 🧊\n\nA streak freeze will be used automatically if you miss logging your studies for a day.`;
+
+  content += additionalContent;
+
+  content += '\n### This message will be deleted in 1 minute.';
+
+  const embed = {
+    color: 0x65a69e,
+    title: 'Study Check In',
+    description: content,
+  };
+
+  message.react('🔥');
+
+  const replyMessage = await message.reply({ embeds: [embed, ...additionalEmbeds] });
+  setTimeout(() => {
+    replyMessage.delete();
+  }, 1000 * 60);
 };
