@@ -16,6 +16,6 @@ export default async (message) => {
     return;
   }
 
-  await message.react(plusOneEmoji);
-  await message.react(minusOneEmoji);
+  await message.react(plusOneEmoji).catch(() => {});
+  await message.react(minusOneEmoji).catch(() => {});
 };
