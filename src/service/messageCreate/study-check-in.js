@@ -171,7 +171,7 @@ export default async (message) => {
     description: content,
   };
 
-  message.react('🔥');
+  message.react('🔥').catch(() => {});
 
   const replyMessage = await message.reply({ embeds: [embed, ...additionalEmbeds] });
   setTimeout(() => {

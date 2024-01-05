@@ -81,7 +81,7 @@ export default async (interaction) => {
     embeds: [embed],
   });
 
-  pollEmojiArray.slice(0, numberOfPolls).forEach((emoji) => message.react(emoji));
+  pollEmojiArray.slice(0, numberOfPolls).forEach((emoji) => message.react(emoji).catch(() => {}));
 
   await interaction.reply({
     content: 'Poll has been generated.\n\n**This message will be deleted in 10 seconds.**',

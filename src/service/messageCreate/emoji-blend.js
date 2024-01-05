@@ -50,7 +50,7 @@ export default async (message) => {
   );
 
   if (isMessageIncludesEmoji) {
-    await message.react('✅');
+    await message.react('✅').catch(() => {});
     sendMessage();
   }
 };
