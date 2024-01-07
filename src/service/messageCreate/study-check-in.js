@@ -75,9 +75,9 @@ export default async (message) => {
 
   const highestPoint = (user?.highestPoint ?? 0) > point ? user?.highestPoint : point;
 
-  const isPointMultipleOf14 = point % 14 === 0;
+  const isPointMultipleOf7 = point % 7 === 0;
 
-  if (isPointMultipleOf14) {
+  if (isPointMultipleOf7) {
     freezePoint = freezePoint < 3 ? freezePoint + 1 : freezePoint;
   }
 
