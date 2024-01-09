@@ -66,16 +66,20 @@ export default {
     const pointRank = pointRankedUserList.indexOf(currentUser) + 1;
     const highestPointRank = heighestPointRankedUserList.indexOf(currentUser) + 1;
 
-    const content = `### Streak Information\n\nStreak point: ${bold(
-      currentUser.point,
-    )}  (Rank: ${bold(`#${pointRank}`)})\nHighest streak point: ${bold(
-      currentUser.highestPoint,
-    )} (Rank: ${bold(`#${highestPointRank}`)})\n\nFreeze point: ${bold(
-      currentUser.freezePoint,
-    )}\n\nLast check in: ${time(
-      +currentUser.lastAttendanceTimestamp.toString().slice(0, 10),
-      'F',
-    )}\nExpired date: ${time(+currentUser.expiredTimestamp.toString().slice(0, 10), 'F')}`;
+    let content = '';
+
+    if (currentUser) {
+      content += `### Streak Information\n\nStreak point: ${bold(currentUser.point)}  (Rank: ${bold(
+        `#${pointRank}`,
+      )})\nHighest streak point: ${bold(currentUser.highestPoint)} (Rank: ${bold(
+        `#${highestPointRank}`,
+      )})\n\nFreeze point: ${bold(currentUser.freezePoint)}\n\nLast check in: ${time(
+        +currentUser.lastAttendanceTimestamp.toString().slice(0, 10),
+        'F',
+      )}\nExpired date: ${time(+currentUser.expiredTimestamp.toString().slice(0, 10), 'F')}`;
+    } else {
+      content += '### Streak Information\n\nYou have no streak.';
+    }
 
     await interaction.reply({
       embeds: [
