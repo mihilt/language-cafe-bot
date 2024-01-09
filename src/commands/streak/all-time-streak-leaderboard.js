@@ -23,17 +23,15 @@ export default {
       highestPoint: userObject[key].highestPoint,
     }));
 
-    const rankedUserList = userList
-      .sort(
-        (a, b) =>
-          Number(b.highestPoint) - Number(a.highestPoint) ||
-          Number(b.lastAttendanceTimestamp) - Number(a.lastAttendanceTimestamp),
-      )
-      .slice(0, 10);
+    const rankedUserList = [...userList].sort(
+      (a, b) =>
+        Number(b.highestPoint) - Number(a.highestPoint) ||
+        Number(b.lastAttendanceTimestamp) - Number(a.lastAttendanceTimestamp),
+    );
 
-    const currentUser = userList.find((user) => user.id === interaction.user.id);
+    const slicedRankedUserList = rankedUserList.slice(0, 10);
 
-    let content = rankedUserList
+    let content = slicedRankedUserList
       .map(
         (user, index) =>
           `${bold(index + 1)}. ${userMention(user.id)} (Streak: ${bold(
@@ -44,9 +42,11 @@ export default {
 
     if (content) content = `## All-time Study-Check-In Leaderboard (Top 10)\n\n${content}`;
 
+    const currentUser = userList.find((user) => user.id === interaction.user.id);
+
     if (currentUser) {
       content += `\n\n${userMention(currentUser.id)}, you are rank #${bold(
-        userList.indexOf(currentUser) + 1,
+        rankedUserList.indexOf(currentUser) + 1,
       )} with a ${bold(currentUser.highestPoint)} day streak.`;
     }
 
