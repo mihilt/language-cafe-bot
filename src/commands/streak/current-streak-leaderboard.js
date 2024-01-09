@@ -21,25 +21,34 @@ export default {
       point: userObject[key].point,
       lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
       expiredTimestamp: userObject[key].expiredTimestamp,
+      freezePoint: userObject[key].freezePoint || 0,
     }));
 
     const currentTimestamp = Date.now();
 
-    // reset streak if expiredTimestamp is less than currentTimestamp
-    const expiredUserList = userList.filter(
-      (user) => userObject[user.id].expiredTimestamp < currentTimestamp,
-    );
+    const calculatedUserList = userList
+      .map((user) => {
+        if (user.expiredTimestamp < currentTimestamp) {
+          const differenceDays = Math.ceil(
+            (currentTimestamp - user.expiredTimestamp) / (1000 * 60 * 60 * 24),
+          );
 
-    expiredUserList.forEach((user) => {
-      userObject[user.id].point = 0;
-    });
+          const freezePoint = user.freezePoint - differenceDays;
 
-    // eslint-disable-next-line no-unused-expressions
-    expiredUserList.length && (await studyCheckInKeyv.set('user', userObject));
+          if (freezePoint < 0) {
+            return {
+              ...user,
+              point: 0,
+              freezePoint: 0,
+            };
+          }
+        }
 
-    const filteredUserList = userList.filter((user) => !expiredUserList.includes(user));
+        return user;
+      })
+      .filter((user) => user.point > 0);
 
-    const rankedUserList = filteredUserList
+    const rankedUserList = calculatedUserList
       .sort(
         (a, b) =>
           Number(b.point) - Number(a.point) ||
@@ -47,7 +56,7 @@ export default {
       )
       .slice(0, 10);
 
-    const currentUser = filteredUserList.find((user) => user.id === interaction.user.id);
+    const currentUser = calculatedUserList.find((user) => user.id === interaction.user.id);
 
     let content = rankedUserList
       .map(
@@ -62,7 +71,7 @@ export default {
 
     if (currentUser) {
       content += `\n\n${userMention(currentUser.id)}, you are rank #${bold(
-        filteredUserList.indexOf(currentUser) + 1,
+        calculatedUserList.indexOf(currentUser) + 1,
       )} with a ${bold(currentUser.point)} day streak.`;
     }
 
