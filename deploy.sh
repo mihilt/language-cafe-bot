@@ -40,7 +40,7 @@ sleep 2
 
 # run container
 echo "=> Run container..."
-docker run -v ~/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 4000:4000 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -v /opt/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 4000:4000 --name $CONTAINER_NAME $IMAGE_NAME
 
 # remove dangling images
 echo "=> Remove dangling images..."
