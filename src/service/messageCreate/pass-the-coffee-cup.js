@@ -13,6 +13,8 @@ export default async (message) => {
     .map((userCollection) => userCollection.map((user) => user.id))
     .flat();
 
+  userIdArray.splice(userIdArray.indexOf(message.author.id), 1);
+
   const randomUserId = userIdArray[Math.floor(Math.random() * userIdArray.length)];
 
   const content = `${userMention(randomUserId)} pass the coffee cup!`;
