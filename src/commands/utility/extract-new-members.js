@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, userMention } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder, userMention } from 'discord.js';
 import NewMember from '../../models/NewMember.js';
 import channelLog, {
   generateInteractionCreateLogContent,
@@ -8,7 +8,8 @@ import { checkMaxContentLength } from '../../utils/index.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('extract-new-members')
-    .setDescription('Extract new members'),
+    .setDescription('Extract new members')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
 
   execute: async (interaction) => {
     const members = await NewMember.findAll();
