@@ -4,18 +4,48 @@ import config from '../../config/index.js';
 const { PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: enrollmentMessageId } = config;
 
 export default async (message) => {
+  if (message.content.includes('<@')) return;
+
+  const messageAuthorId = message.author.id;
+
   const enrollmentMessage = await message.channel.messages.fetch(enrollmentMessageId);
-  const usersPromise = enrollmentMessage.reactions.cache.map((reaction) => reaction.users.fetch());
+  const reactedUsersPromise = enrollmentMessage.reactions.cache.map((reaction) =>
+    reaction.users.fetch(),
+  );
 
-  const usersCollection = await Promise.all(usersPromise);
+  const reactedUsersCollection = await Promise.all(reactedUsersPromise);
 
-  const userIdArray = usersCollection
+  const reactedUserIdArray = reactedUsersCollection
     .map((userCollection) => userCollection.map((user) => user.id))
     .flat();
 
-  userIdArray.splice(userIdArray.indexOf(message.author.id), 1);
+  if (reactedUserIdArray.includes(messageAuthorId)) {
+    reactedUserIdArray.splice(reactedUserIdArray.indexOf(message.author.id), 1);
+  } else {
+    return;
+  }
 
-  const randomUserId = userIdArray[Math.floor(Math.random() * userIdArray.length)];
+  const currentMessages = await message.channel.messages.fetch({
+    limit: reactedUserIdArray.length,
+  });
+
+  const currentMessagesAuthorIdArray = currentMessages
+    .filter((currentMessage) => !currentMessage.author.bot)
+    .map((currentMessage) => currentMessage.author.id);
+
+  if (currentMessagesAuthorIdArray.includes(messageAuthorId)) {
+    currentMessagesAuthorIdArray.splice(currentMessagesAuthorIdArray.indexOf(message.author.id), 1);
+  }
+
+  const distinctCurrentMessagesAuthorIdArray = [...new Set(currentMessagesAuthorIdArray)];
+
+  distinctCurrentMessagesAuthorIdArray.forEach((currentAuthorId) => {
+    if (reactedUserIdArray.includes(currentAuthorId)) {
+      reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentAuthorId), 1);
+    }
+  });
+
+  const randomUserId = reactedUserIdArray[Math.floor(Math.random() * reactedUserIdArray.length)];
 
   const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
