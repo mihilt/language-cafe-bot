@@ -9,7 +9,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('extract-new-members')
     .setDescription('Extract new members')
-    .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   execute: async (interaction) => {
     const members = await NewMember.findAll();
