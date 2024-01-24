@@ -1,7 +1,8 @@
 import { userMention } from 'discord.js';
 import config from '../../config/index.js';
 
-const { PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: enrollmentMessageId } = config;
+const { PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: enrollmentMessageId, CLIENT_ID: clientId } =
+  config;
 
 export default async (message) => {
   const messageAuthorId = message.author.id;
@@ -27,9 +28,11 @@ export default async (message) => {
     limit: reactedUserIdArray.length,
   });
 
-  const currentMessagesAuthorIdArray = currentMessages
-    .filter((currentMessage) => !currentMessage.author.bot)
-    .map((currentMessage) => currentMessage.author.id);
+  const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
+    currentMessage.author.id === clientId
+      ? currentMessage.content.match(/<@(\d+)>/)[1]
+      : currentMessage.author.id,
+  );
 
   if (currentMessagesAuthorIdArray.includes(messageAuthorId)) {
     currentMessagesAuthorIdArray.splice(currentMessagesAuthorIdArray.indexOf(message.author.id), 1);
@@ -40,22 +43,6 @@ export default async (message) => {
   distinctCurrentMessagesAuthorIdArray.forEach((currentAuthorId) => {
     if (reactedUserIdArray.includes(currentAuthorId)) {
       reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentAuthorId), 1);
-    }
-  });
-
-  const currentMentionedUserIdArray = currentMessages
-    .filter((currentMessage) => currentMessage.author.bot)
-    .map((currentMessage) => currentMessage.content.match(/<@(\d+)>/)[1]);
-
-  if (currentMentionedUserIdArray.includes(messageAuthorId)) {
-    currentMentionedUserIdArray.splice(currentMentionedUserIdArray.indexOf(message.author.id), 1);
-  }
-
-  const distinctCurrentMentionedUserIdArray = [...new Set(currentMentionedUserIdArray)];
-
-  distinctCurrentMentionedUserIdArray.forEach((currentMentionedUserId) => {
-    if (reactedUserIdArray.includes(currentMentionedUserId)) {
-      reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentMentionedUserId), 1);
     }
   });
 
