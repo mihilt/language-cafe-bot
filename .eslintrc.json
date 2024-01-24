@@ -15,6 +15,7 @@
     "no-underscore-dangle": "off",
     "operator-linebreak": "off",
     "no-plusplus": "off",
-    "function-paren-newline": "off"
+    "function-paren-newline": "off",
+    "no-confusing-arrow": "off"
   }
 }
