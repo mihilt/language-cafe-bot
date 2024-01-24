@@ -4,8 +4,6 @@ import config from '../../config/index.js';
 const { PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: enrollmentMessageId } = config;
 
 export default async (message) => {
-  if (message.content.includes('<@')) return;
-
   const messageAuthorId = message.author.id;
 
   const enrollmentMessage = await message.channel.messages.fetch(enrollmentMessageId);
@@ -42,6 +40,22 @@ export default async (message) => {
   distinctCurrentMessagesAuthorIdArray.forEach((currentAuthorId) => {
     if (reactedUserIdArray.includes(currentAuthorId)) {
       reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentAuthorId), 1);
+    }
+  });
+
+  const currentMentionedUserIdArray = currentMessages
+    .filter((currentMessage) => currentMessage.author.bot)
+    .map((currentMessage) => currentMessage.content.match(/<@(\d+)>/)[1]);
+
+  if (currentMentionedUserIdArray.includes(messageAuthorId)) {
+    currentMentionedUserIdArray.splice(currentMentionedUserIdArray.indexOf(message.author.id), 1);
+  }
+
+  const distinctCurrentMentionedUserIdArray = [...new Set(currentMentionedUserIdArray)];
+
+  distinctCurrentMentionedUserIdArray.forEach((currentMentionedUserId) => {
+    if (reactedUserIdArray.includes(currentMentionedUserId)) {
+      reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentMentionedUserId), 1);
     }
   });
 
