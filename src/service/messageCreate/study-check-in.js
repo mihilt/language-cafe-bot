@@ -47,6 +47,8 @@ export default async (message) => {
       )} to increase your streak!\n### This message will be deleted in 1 minute.`,
     };
 
+    message.react('❌').catch(() => {});
+
     const replyMessage = await message.reply({ embeds: [embad] });
     setTimeout(() => {
       replyMessage.delete();
