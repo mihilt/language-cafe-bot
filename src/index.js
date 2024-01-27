@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import client from './client/index.js';
 import config from './config/index.js';
 import { studyCheckInKeyv } from './db/keyvInstances.js';
+import mongoDBConnect from './lib/mongo-db.js';
 import schedules from './schedules/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -62,6 +63,7 @@ for (const file of eventFiles) {
   })();
 }
 
-schedules();
+await client.login(config.DISCORD_TOKEN);
 
-client.login(config.DISCORD_TOKEN);
+schedules();
+mongoDBConnect();

@@ -2,6 +2,7 @@ import schedule from 'node-schedule';
 import { userMention } from 'discord.js';
 import client from '../client/index.js';
 import config from '../config/index.js';
+import SkippedPassTheCoffeeCupUser from '../models/skipped-pass-the-coffee-cup-user.js';
 
 const {
   PASS_THE_COFFEE_CUP_CHANNEL_ID: passTheCoffeeCupChannelId,
@@ -23,8 +24,7 @@ export default function schedules() {
       if (!lastMessage) return;
 
       if (lastMessage.author.id !== clientId) {
-        console.error('last message is not from this bot');
-        return;
+        throw new Error('last message is not from this bot');
       }
 
       const { createdTimestamp, content: lastMessageContent } = lastMessage;
@@ -36,8 +36,19 @@ export default function schedules() {
       if (diff >= 1000 * 60 * 60 * 24 - 1000 * 60) {
         const contentUserId = lastMessageContent.match(/<@(\d+)>/)[1];
 
-        console.log(`${contentUserId} needs to be blocked for few days`);
-        // TODO: block the skipped user for few days (store it in persistent storage maybe redis)
+        if (!contentUserId) {
+          throw new Error('contentUserId is not found');
+        }
+
+        const findOneAndUpdateRes = await SkippedPassTheCoffeeCupUser.findOneAndUpdate(
+          { id: contentUserId },
+          { id: contentUserId },
+          { upsert: true, new: true },
+        );
+
+        if (!findOneAndUpdateRes) {
+          throw new Error('SkippedPassTheCoffeeCupUser.findOneAndUpdate() failed');
+        }
 
         const enrollmentMessage = await passTheCoffeeCupChannel.messages.fetch(enrollmentMessageId);
 
@@ -61,13 +72,32 @@ export default function schedules() {
             : currentMessage.author.id,
         );
 
-        const distinctCurrentMessagesAuthorIdArray = [...new Set(currentMessagesAuthorIdArray)];
+        const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find({
+          updatedAt: {
+            $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+          },
+        });
 
-        distinctCurrentMessagesAuthorIdArray.forEach((currentAuthorId) => {
-          if (reactedUserIdArray.includes(currentAuthorId)) {
-            reactedUserIdArray.splice(reactedUserIdArray.indexOf(currentAuthorId), 1);
+        const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
+          (user) => user.id,
+        );
+
+        const idsToExcludeArray = [
+          ...new Set([
+            ...currentMessagesAuthorIdArray,
+            ...currentSkippedPassTheCoffeeCupUserIdArray,
+          ]),
+        ];
+
+        idsToExcludeArray.forEach((idToExclude) => {
+          if (reactedUserIdArray.includes(idToExclude)) {
+            reactedUserIdArray.splice(reactedUserIdArray.indexOf(idToExclude), 1);
           }
         });
+
+        if (reactedUserIdArray.length === 0) {
+          throw new Error('filtered reactedUserIdArray is empty');
+        }
 
         const randomUserId =
           reactedUserIdArray[Math.floor(Math.random() * reactedUserIdArray.length)];
