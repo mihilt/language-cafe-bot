@@ -18,11 +18,11 @@ docker run -d -p 4001:4001 --name $IMAGE_NAME-temp $IMAGE_NAME
 sleep 5
 
 if docker ps -q --filter "name=$CONTAINER_NAME-temp" | grep -q .; then
-    echo "=> Node is running well."
+    echo "=> Node.js is running well."
     docker stop $CONTAINER_NAME-temp
     docker rm $CONTAINER_NAME-temp
 else
-    echo "=> Node is not running well."
+    echo "=> Node.js is not running well."
     echo "##############################################"
     echo "             CHECK ERROR LOGS                "
     echo "##############################################"
