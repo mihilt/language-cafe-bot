@@ -51,7 +51,7 @@ export default async (message) => {
 
     const replyMessage = await message.reply({ embeds: [embad] });
     setTimeout(() => {
-      replyMessage.delete();
+      replyMessage.delete().catch(() => {});
     }, 1000 * 60);
 
     return;
@@ -177,6 +177,6 @@ export default async (message) => {
 
   const replyMessage = await message.reply({ embeds: [embed, ...additionalEmbeds] });
   setTimeout(() => {
-    replyMessage.delete();
+    replyMessage.delete().catch(() => {});
   }, 1000 * 60);
 };

@@ -159,7 +159,7 @@ export default async (interaction) => {
     (message) => message?.author?.id === config.CLIENT_ID && message?.embeds[0]?.title === title,
   );
 
-  await stickyMessage?.delete();
+  await stickyMessage?.delete().catch(() => {});
 
   await interaction.client.channels.cache.get(channelId).send({
     embeds: [
