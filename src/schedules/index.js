@@ -104,7 +104,8 @@ export default function schedules() {
 
         const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
-        await lastMessage.delete();
+        // stop deleting lastMessage
+        // await lastMessage.delete().catch(() => {});
 
         await passTheCoffeeCupChannel.send(content);
       }
