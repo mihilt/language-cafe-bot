@@ -1,5 +1,4 @@
 import { Chance } from 'chance';
-import { bold, userMention } from 'discord.js';
 import config from '../../config/index.js';
 import emojiList from '../../data/random-emojis.js';
 import EmojiBlend from '../../models/emoji-blend.js';
@@ -62,7 +61,7 @@ export default async (message) => {
       const messageAuthorId = message.author.id;
 
       const point = Math.floor(
-        lastBotMessageContent.length / 2 + currentMessageContent.length / 20,
+        lastBotMessageContent.length / 2 + currentMessageContent.length / 30,
       );
 
       const findOneRes = await EmojiBlend.findOne({ id: messageAuthorId });
@@ -77,23 +76,21 @@ export default async (message) => {
         await EmojiBlend.updateOne({ id: messageAuthorId }, { $inc: { point } });
       }
 
-      /* const tempMessage = await message.reply({
+      await message.channel.send({
         embeds: [
           {
             color: 0x65a69e,
-            title: 'Emoji Blend',
-            description: `${userMention(message.author.id)}, You earned ${bold(
-              point,
-            )} point(s)!\nYour total point is now ${bold(
-              findOneRes?.point || 0 + point,
-            )} point(s).\n### This message will be deleted in 1 minute.`,
+            footer: {
+              icon_url: message.author.avatarURL(),
+              text: `${message.author.username}#${
+                message.author.discriminator
+              }, Earned ${point} point(s), Total point is now ${(
+                (findOneRes?.point || 0) + point
+              ).toLocaleString()} point(s).`,
+            },
           },
         ],
       });
-
-      setTimeout(() => {
-        tempMessage.delete().catch(() => {});
-      }, 1000 * 60); */
 
       sendNextEmojis();
     }
