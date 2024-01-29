@@ -16,25 +16,23 @@ export default function schedules() {
       const passTheCoffeeCupChannel = await client.channels.cache.get(passTheCoffeeCupChannelId);
 
       const messages = await passTheCoffeeCupChannel?.messages.fetch({
-        limit: 1,
+        limit: 10,
       });
 
-      const lastMessage = messages.first();
+      const lastBotMessage = messages.find((msg) => msg.author.id === clientId);
 
-      if (!lastMessage) return;
-
-      if (lastMessage.author.id !== clientId) {
-        throw new Error('last message is not from this bot');
+      if (!lastBotMessage) {
+        throw new Error('lastBotMessage is not found');
       }
 
-      const { createdTimestamp, content: lastMessageContent } = lastMessage;
+      const { createdTimestamp, content: lastBotMessageContent } = lastBotMessage;
       const now = Date.now();
 
       const diff = now - createdTimestamp;
 
       // 23 hours 59 minutes
       if (diff >= 1000 * 60 * 60 * 24 - 1000 * 60) {
-        const contentUserId = lastMessageContent.match(/<@(\d+)>/)[1];
+        const contentUserId = lastBotMessageContent.match(/<@(\d+)>/)[1];
 
         if (!contentUserId) {
           throw new Error('contentUserId is not found');
@@ -74,7 +72,7 @@ export default function schedules() {
 
         const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find({
           updatedAt: {
-            $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+            $gte: new Date(new Date().setDate(new Date().getDate() - 14)),
           },
         });
 
@@ -102,12 +100,24 @@ export default function schedules() {
         const randomUserId =
           reactedUserIdArray[Math.floor(Math.random() * reactedUserIdArray.length)];
 
+        const skippedContentList = [
+          'didn’t pass the coffee cup!',
+          'dropped the coffee cup!',
+          'spilled the coffee cup!',
+          'misplaced the coffee cup!',
+          'took an extended coffee break!',
+        ];
+
+        const editedLastBotMessageContent = `${userMention(contentUserId)} ${
+          skippedContentList[Math.floor(Math.random() * skippedContentList.length)]
+        }`;
+        await lastBotMessage.edit(editedLastBotMessageContent).catch(() => {});
+
+        const repliedMessage = await lastBotMessage.fetchReference();
+
         const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
-        // stop deleting lastMessage
-        // await lastMessage.delete().catch(() => {});
-
-        await passTheCoffeeCupChannel.send(content);
+        await repliedMessage.reply(content);
       }
     } catch (error) {
       console.error(error);
