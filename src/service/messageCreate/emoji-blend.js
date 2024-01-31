@@ -19,7 +19,10 @@ const generateRandomThreeUniqueEmoji = () => {
 export default async (message) => {
   try {
     const messages = await message.channel.messages.fetch({ limit: 10 });
-    const lastBotMessage = messages.find((msg) => msg.author.id === clientId);
+
+    const lastBotMessage = messages.find(
+      (msg) => msg.author.id === clientId && msg?.embeds[0]?.description?.length <= 6,
+    );
 
     const sendNextEmojis = () => {
       message.channel.send({
@@ -91,6 +94,8 @@ export default async (message) => {
           },
         ],
       });
+
+      await message.channel.send('_ _');
 
       sendNextEmojis();
     }
