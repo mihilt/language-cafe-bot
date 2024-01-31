@@ -1,126 +1,13 @@
 import schedule from 'node-schedule';
-import { userMention } from 'discord.js';
-import client from '../client/index.js';
-import config from '../config/index.js';
-import SkippedPassTheCoffeeCupUser from '../models/skipped-pass-the-coffee-cup-user.js';
-
-const {
-  PASS_THE_COFFEE_CUP_CHANNEL_ID: passTheCoffeeCupChannelId,
-  PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: enrollmentMessageId,
-  CLIENT_ID: clientId,
-} = config;
+import checkIfPassTheCoffeeCupLastMessageIsValid from '../service/schedules/check-if-pass-the-coffee-cup-last-message-is-valid.js';
+import initializeEmojiBlendPoint from '../service/schedules/initialize-emoji-blend-point.js';
 
 export default function schedules() {
-  schedule.scheduleJob('0 * * * *', async () => {
-    try {
-      const passTheCoffeeCupChannel = await client.channels.cache.get(passTheCoffeeCupChannelId);
+  schedule.scheduleJob('0 * * * *', () => {
+    checkIfPassTheCoffeeCupLastMessageIsValid();
+  });
 
-      const messages = await passTheCoffeeCupChannel?.messages.fetch({
-        limit: 10,
-      });
-
-      const lastBotMessage = messages.find((msg) => msg.author.id === clientId);
-
-      if (!lastBotMessage) {
-        throw new Error('lastBotMessage is not found');
-      }
-
-      const { createdTimestamp, content: lastBotMessageContent } = lastBotMessage;
-      const now = Date.now();
-
-      const diff = now - createdTimestamp;
-
-      // 23 hours 59 minutes
-      if (diff >= 1000 * 60 * 60 * 24 - 1000 * 60) {
-        const contentUserId = lastBotMessageContent.match(/<@(\d+)>/)[1];
-
-        if (!contentUserId) {
-          throw new Error('contentUserId is not found');
-        }
-
-        const findOneAndUpdateRes = await SkippedPassTheCoffeeCupUser.findOneAndUpdate(
-          { id: contentUserId },
-          { id: contentUserId },
-          { upsert: true, new: true },
-        );
-
-        if (!findOneAndUpdateRes) {
-          throw new Error('SkippedPassTheCoffeeCupUser.findOneAndUpdate() failed');
-        }
-
-        const enrollmentMessage = await passTheCoffeeCupChannel.messages.fetch(enrollmentMessageId);
-
-        const reactedUsersPromise = enrollmentMessage.reactions.cache.map((reaction) =>
-          reaction.users.fetch(),
-        );
-
-        const reactedUsersCollection = await Promise.all(reactedUsersPromise);
-
-        const reactedUserIdArray = reactedUsersCollection
-          .map((userCollection) => userCollection.map((user) => user.id))
-          .flat();
-
-        const currentMessages = await passTheCoffeeCupChannel.messages.fetch({
-          limit: reactedUserIdArray.length,
-        });
-
-        const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
-          currentMessage.author.id === clientId
-            ? currentMessage.content.match(/<@(\d+)>/)[1]
-            : currentMessage.author.id,
-        );
-
-        const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find({
-          updatedAt: {
-            $gte: new Date(new Date().setDate(new Date().getDate() - 14)),
-          },
-        });
-
-        const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
-          (user) => user.id,
-        );
-
-        const idsToExcludeArray = [
-          ...new Set([
-            ...currentMessagesAuthorIdArray,
-            ...currentSkippedPassTheCoffeeCupUserIdArray,
-          ]),
-        ];
-
-        idsToExcludeArray.forEach((idToExclude) => {
-          if (reactedUserIdArray.includes(idToExclude)) {
-            reactedUserIdArray.splice(reactedUserIdArray.indexOf(idToExclude), 1);
-          }
-        });
-
-        if (reactedUserIdArray.length === 0) {
-          throw new Error('filtered reactedUserIdArray is empty');
-        }
-
-        const randomUserId =
-          reactedUserIdArray[Math.floor(Math.random() * reactedUserIdArray.length)];
-
-        const skippedContentList = [
-          'didn’t pass the coffee cup!',
-          'dropped the coffee cup!',
-          'spilled the coffee cup!',
-          'misplaced the coffee cup!',
-          'took an extended coffee break!',
-        ];
-
-        const editedLastBotMessageContent = `${userMention(contentUserId)} ${
-          skippedContentList[Math.floor(Math.random() * skippedContentList.length)]
-        }`;
-        await lastBotMessage.edit(editedLastBotMessageContent).catch(() => {});
-
-        const repliedMessage = await lastBotMessage.fetchReference();
-
-        const content = `${userMention(randomUserId)} pass the coffee cup!`;
-
-        await repliedMessage.reply(content);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  schedule.scheduleJob('0 0 1 * *', async () => {
+    initializeEmojiBlendPoint();
   });
 }
