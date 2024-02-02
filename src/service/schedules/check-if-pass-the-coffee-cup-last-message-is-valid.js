@@ -30,15 +30,15 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
 
     // 23 hours 59 minutes
     if (diff >= 24 * 59 * 60 * 1000) {
-      const contentUserId = lastBotMessageContent.match(/<@(\d+)>/)[1];
+      const lastMentionedUserId = lastBotMessageContent.match(/<@(\d+)>/)[1];
 
-      if (!contentUserId) {
-        throw new Error('contentUserId is not found');
+      if (!lastMentionedUserId) {
+        throw new Error('lastMentionedUserId is not found');
       }
 
       const findOneAndUpdateRes = await SkippedPassTheCoffeeCupUser.findOneAndUpdate(
-        { id: contentUserId },
-        { id: contentUserId },
+        { id: lastMentionedUserId },
+        { id: lastMentionedUserId },
         { upsert: true, new: true },
       );
 
@@ -103,7 +103,7 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
         'took an extended coffee break!',
       ];
 
-      const editedLastBotMessageContent = `${userMention(contentUserId)} ${
+      const editedLastBotMessageContent = `${userMention(lastMentionedUserId)} ${
         skippedContentList[Math.floor(Math.random() * skippedContentList.length)]
       }`;
 
@@ -111,11 +111,9 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
 
       await lastBotMessage.react('😭').catch(() => {});
 
-      const repliedMessage = await lastBotMessage.fetchReference();
-
       const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
-      await repliedMessage.reply(content);
+      await lastBotMessage.reply(content);
     }
   } catch (error) {
     console.error(error);
