@@ -22,6 +22,8 @@ const commandFolders = fs.readdirSync(foldersPath);
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
 
+      console.log(filePath);
+
       // eslint-disable-next-line no-await-in-loop
       const command = (await import(filePath)).default;
 
