@@ -21,7 +21,7 @@ export default async (message) => {
     const messages = await message.channel.messages.fetch({ limit: 10 });
 
     const lastBotMessage = messages.find(
-      (msg) => msg.author.id === clientId && msg?.embeds[0]?.description?.length <= 6,
+      (msg) => msg.author.id === clientId && msg?.embeds[0]?.description?.length <= 9,
     );
 
     const sendNextEmojis = () => {
@@ -64,7 +64,7 @@ export default async (message) => {
       const messageAuthorId = message.author.id;
 
       const point = Math.floor(
-        lastBotMessageContent.length / 2 + currentMessageContent.length / 30,
+        lastBotMessageContent.length / 2 + currentMessageContent.length / 100,
       );
 
       const findOneRes = await EmojiBlend.findOne({ id: messageAuthorId });
@@ -85,9 +85,9 @@ export default async (message) => {
             color: 0x65a69e,
             footer: {
               icon_url: message.author.avatarURL(),
-              text: `${message.author.username}#${
+              text: `${message.author.globalName}(${message.author.username}#${
                 message.author.discriminator
-              }, Earned ${point} point(s), Total point is now ${(
+              }) earned ${point} point(s), Total is now ${(
                 (findOneRes?.point || 0) + point
               ).toLocaleString()} point(s).`,
             },
