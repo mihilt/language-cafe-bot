@@ -46,11 +46,7 @@ export default async (message) => {
         : currentMessage.author.id,
     );
 
-    const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find({
-      updatedAt: {
-        $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
-      },
-    });
+    const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find();
 
     const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
       (user) => user.id,
@@ -76,15 +72,20 @@ export default async (message) => {
     });
 
     if (reactedUserIdArray.length === 0) {
-      message.reply('There are no users to pass the coffee cup to.');
-      return;
+      throw new Error('reactedUserIdArray is empty');
     }
 
     const randomUserId = reactedUserIdArray[Math.floor(Math.random() * reactedUserIdArray.length)];
 
     const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
-    await message.reply(content);
+    await message.reply({
+      content,
+      allowedMentions: {
+        repliedUser: false,
+        users: [randomUserId],
+      },
+    });
   } catch (error) {
     console.error(error);
   }
