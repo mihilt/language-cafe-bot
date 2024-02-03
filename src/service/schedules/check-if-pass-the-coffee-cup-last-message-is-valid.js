@@ -68,18 +68,23 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
           : currentMessage.author.id,
       );
 
-      const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find({
-        updatedAt: {
-          $gte: new Date(new Date().setDate(new Date().getDate() - 28)),
-        },
-      });
+      const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find();
 
       const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
         (user) => user.id,
       );
 
+      const leftUsers = reactedUserIdArray.filter(
+        (userId) => !passTheCoffeeCupChannel.guild.members.cache.has(userId),
+      );
+
       const idsToExcludeArray = [
-        ...new Set([...currentMessagesAuthorIdArray, ...currentSkippedPassTheCoffeeCupUserIdArray]),
+        ...new Set([
+          ...currentMessagesAuthorIdArray,
+          ...currentSkippedPassTheCoffeeCupUserIdArray,
+          lastMentionedUserId,
+          ...leftUsers,
+        ]),
       ];
 
       idsToExcludeArray.forEach((idToExclude) => {
@@ -111,9 +116,21 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
 
       await lastBotMessage.react('😭').catch(() => {});
 
+      const repliedMessage = await lastBotMessage.fetchReference().catch(() => {});
+
       const content = `${userMention(randomUserId)} pass the coffee cup!`;
 
-      await lastBotMessage.reply(content);
+      if (repliedMessage) {
+        await repliedMessage.reply({
+          content,
+          allowedMentions: {
+            repliedUser: false,
+            users: [randomUserId],
+          },
+        });
+      } else {
+        await passTheCoffeeCupChannel.send(content);
+      }
     }
   } catch (error) {
     console.error(error);
