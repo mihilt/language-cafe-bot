@@ -53,10 +53,12 @@ export default async (message) => {
     const lastBotMessageContent = lastBotMessage.embeds[0].description;
     const currentMessageContent = message.content;
 
-    const lastBotMessageContentArray = lastBotMessageContent.split('');
-    const isMessageIncludesEmoji = lastBotMessageContentArray.every((emoji) =>
-      currentMessageContent.includes(emoji),
-    );
+    const lastBotMessageContentArray = [...lastBotMessageContent];
+    const currentMessageContentArray = [...currentMessageContent];
+    const isMessageIncludesEmoji = lastBotMessageContentArray
+      // filter 'U+fe0f'
+      .filter((emoji) => emoji !== '️')
+      .every((emoji) => currentMessageContentArray.includes(emoji));
 
     if (isMessageIncludesEmoji) {
       await message.react('✅').catch(() => {});
@@ -64,7 +66,7 @@ export default async (message) => {
       const messageAuthorId = message.author.id;
 
       const point = Math.floor(
-        lastBotMessageContent.length / 2 + currentMessageContent.length / 100,
+        lastBotMessageContent.length / 2 + currentMessageContentArray.length / 100,
       );
 
       const findOneRes = await EmojiBlend.findOne({ id: messageAuthorId });
