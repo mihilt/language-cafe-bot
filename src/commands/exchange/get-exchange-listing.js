@@ -16,7 +16,7 @@ import client from '../../client/index.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('get-exchange-listings')
-    .setDescription('Get exchange partner list'),
+    .setDescription('Get exchange partner listing'),
 
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
@@ -31,7 +31,7 @@ export default {
         embeds: [
           {
             color: 0x65a69e,
-            title: 'Get Language Exchange Partner List',
+            title: 'Get Language Exchange Partner Listing',
             description: `${userMention(
               interaction.user.id,
             )}, you have not registered your language exchange partner listing yet.`,
@@ -73,7 +73,7 @@ export default {
         embeds: [
           {
             color: 0x65a69e,
-            title: 'Get Language Exchange Partner List',
+            title: 'Get Language Exchange Partner Listing',
             description: `${userMention(
               interaction.user.id,
             )}, there are no exchange partner matches.`,
