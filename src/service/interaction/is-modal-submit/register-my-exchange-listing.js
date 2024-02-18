@@ -33,7 +33,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Register Language Exchange Partner List',
+          title: 'Register Language Exchange Partner Listing',
           description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage
             .map((e) => `\`${e}\``)
             .join(
@@ -62,7 +62,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Register Language Exchange Partner List',
+          title: 'Register Language Exchange Partner Listing',
           description: `Please enter a valid offered language(s).\n\nInvalid language(s): ${invalidOfferedLanguage.join(
             ', ',
           )}\n\nYou can check the list of language options we have in our database by using the \`/get-language-list\` command.`,
@@ -108,7 +108,7 @@ export default async (interaction) => {
     embeds: [
       {
         color: 0x65a69e,
-        title: 'Register Language Exchange Partner List',
+        title: 'Register Language Exchange Partner Listing',
         description: `${userMention(
           interaction.member.user.id,
         )} has registered their language exchange partner listing.`,

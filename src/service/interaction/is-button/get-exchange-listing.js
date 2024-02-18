@@ -14,7 +14,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Get Language Exchange Partner List',
+          title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
           )}, you have not registered your language exchange partner listing yet.`,
@@ -57,7 +57,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Get Language Exchange Partner List',
+          title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
           )}, there are no exchange partner matches.`,
@@ -98,7 +98,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Get Language Exchange Partner List',
+          title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
           )}, there are no exchange partner matches.`,

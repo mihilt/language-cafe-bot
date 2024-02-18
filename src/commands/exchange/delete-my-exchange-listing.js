@@ -7,7 +7,7 @@ import channelLog, {
 export default {
   data: new SlashCommandBuilder()
     .setName('delete-my-exchange-listing')
-    .setDescription('Delete exchange partner list'),
+    .setDescription('Delete exchange partner listing'),
 
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
@@ -22,7 +22,7 @@ export default {
       embeds: [
         {
           color: 0x65a69e,
-          title: 'Delete Language Exchange Partner List',
+          title: 'Delete Language Exchange Partner Listing',
           description: content,
         },
       ],
