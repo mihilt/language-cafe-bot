@@ -147,7 +147,7 @@ export default async (interaction) => {
 
   const channelId = interaction.channel.id;
 
-  const title = 'Find Exchange Partner Message Format';
+  const title = 'How to Find the Exchange Partner';
 
   const description = `Click the blue text here </register-my-exchange-listing:${config.REGISTER_MY_EXCHANGE_LISTING_COMMAND_ID}> and send it to input your language exchange listing in our database.\n\nStill have questions? Click the link here https://discord.com/channels/739911855795077282/788764507857879041/789855943017496596 for a step-by-step explanation and video tutorial.`;
 

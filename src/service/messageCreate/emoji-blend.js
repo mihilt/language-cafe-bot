@@ -1,6 +1,6 @@
 import { Chance } from 'chance';
 import config from '../../config/index.js';
-import emojiList from '../../data/random-emojis.js';
+import emojiList from '../../data/emojis.js';
 import EmojiBlend from '../../models/emoji-blend.js';
 
 const { CLIENT_ID: clientId } = config;
