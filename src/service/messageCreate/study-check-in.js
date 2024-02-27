@@ -1,6 +1,7 @@
 import { bold, time, userMention } from 'discord.js';
 import { studyCheckInKeyv } from '../../db/keyvInstances.js';
 import channelLog, { generateMessageCreateLogContent } from '../utils/channel-log.js';
+import config from '../../config/index.js';
 
 export default async (message) => {
   const users = await studyCheckInKeyv.get('user');
@@ -179,4 +180,26 @@ export default async (message) => {
   setTimeout(() => {
     replyMessage.delete().catch(() => {});
   }, 1000 * 60);
+
+  const title = 'How to Use the study-check-in Bot';
+
+  const description = `Write **!lc-streak** at the beginning of your study plans to start/continue your streak (same message)\n\nUse </current-streak-leaderboard:${config.CURRENT_STREAK_LEADERBOARD_COMMAND_ID}> to see the current streak leaderboard and </all-time-streak-leaderboard:${config.ALL_TIME_STREAK_LEADERBOARD_COMMAND_ID}> for the all-time streak leaderboard\n\nPlease keep in mind that this bot is set to GMT/UTC so all streaks will refresh/expire each day at <t:946684800:t> your time`;
+
+  const currentMessages = await message.channel.messages.fetch({ limit: 50 });
+
+  const stickyMessage = currentMessages.find(
+    (message) => message?.author?.id === config.CLIENT_ID && message?.embeds[0]?.title === title,
+  );
+
+  await stickyMessage?.delete().catch(() => {});
+
+  await message.channel.send({
+    embeds: [
+      {
+        color: 0x65a69e,
+        title,
+        description,
+      },
+    ],
+  });
 };

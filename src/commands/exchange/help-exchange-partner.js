@@ -6,12 +6,13 @@ import channelLog, {
 export default {
   data: new SlashCommandBuilder()
     .setName('help-exchange-partner')
-    .setDescription('Get help on how to use language exchange partner commands'),
+    .setDescription('Get help on how to use language exchange partner commands')
+    .setDefaultPermission(false),
 
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
 
-    const title = 'Find Exchange Partner Message Format';
+    const title = 'How to Find the Exchange Partners';
 
     const description = `Please follow the following steps to be put in our exchange partner database so you can find a partner easier\n\n1. Send ${bold(
       '/register-my-exchange-listing',
