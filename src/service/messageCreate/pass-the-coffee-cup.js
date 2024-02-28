@@ -36,14 +36,8 @@ export default async (message) => {
       .map((userCollection) => userCollection.map((user) => user.id))
       .flat();
 
-    const currentMessages = await message.channel.messages.fetch({
-      limit: reactedUserIdArray.length,
-    });
-
-    const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
-      currentMessage.author.id === clientId
-        ? currentMessage.content.match(/<@(\d+)>/)[1]
-        : currentMessage.author.id,
+    const leftUsers = reactedUserIdArray.filter(
+      (userId) => !message.guild.members.cache.has(userId),
     );
 
     const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find();
@@ -52,8 +46,17 @@ export default async (message) => {
       (user) => user.id,
     );
 
-    const leftUsers = reactedUserIdArray.filter(
-      (userId) => !message.guild.members.cache.has(userId),
+    const currentMessages = await message.channel.messages.fetch({
+      limit:
+        reactedUserIdArray.length -
+        leftUsers.length -
+        currentSkippedPassTheCoffeeCupUserIdArray.length,
+    });
+
+    const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
+      currentMessage.author.id === clientId
+        ? currentMessage.content.match(/<@(\d+)>/)[1]
+        : currentMessage.author.id,
     );
 
     const idsToExcludeArray = [
