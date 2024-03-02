@@ -12,7 +12,7 @@ export default {
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
 
-    const title = 'How to Find the Exchange Partners';
+    const title = 'How to Use the find-exchange-partner Channel';
 
     const description = `Please follow the following steps to be put in our exchange partner database so you can find a partner easier\n\n1. Send ${bold(
       '/register-my-exchange-listing',
