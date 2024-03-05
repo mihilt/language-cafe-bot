@@ -1,8 +1,75 @@
 import schedule from 'node-schedule';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
+import client from '../../../client/index.js';
+
+export const putPomodoroScheduleJob = async ({
+  groupName,
+  timeOption,
+  startTimeStamp,
+  channelId,
+}) => {
+  if (!global.pomodoro) {
+    global.pomodoro = {};
+  }
+
+  const pomodoroInstance = global.pomodoro;
+
+  const channel = await client.channels.fetch(channelId);
+
+  const calculatedtimeOption = timeOption.reduce((pre, cur, index) => {
+    pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
+    return pre;
+  }, []);
+
+  const finishedPomodoro = async () => {
+    delete pomodoroInstance[groupName];
+    await PomodoroGroup.deleteOne({ name: groupName });
+    await channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: `The pomodoro study group \`${groupName}\` has been finished.`,
+        },
+      ],
+    });
+  };
+
+  const filteredCalculatedtimeOption = calculatedtimeOption.filter(
+    (time) => startTimeStamp + 1000 * 60 * time > Date.now(),
+  );
+
+  if (filteredCalculatedtimeOption.length === 0) {
+    finishedPomodoro();
+    return;
+  }
+
+  pomodoroInstance[groupName] = filteredCalculatedtimeOption.map((time, index) =>
+    schedule.scheduleJob(new Date(startTimeStamp + 1000 * 60 * time), async () => {
+      const currentStatus = index % 2 === 0 ? 'break' : 'study';
+      const previousStatus = index % 2 === 0 ? 'study' : 'break';
+      const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
+      const users = pomodoroGroupRes.members;
+
+      if (index !== filteredCalculatedtimeOption.length - 1) {
+        await channel.send(
+          `<@${users.join('>, <@')}>, It's time to **${currentStatus}**.${` (${
+            filteredCalculatedtimeOption[index + 1] - time
+          } minutes).`}`,
+        );
+      } else {
+        await channel.send(`<@${users.join('>, <@')}>, **${previousStatus}** time is over.`);
+      }
+
+      if (index === calculatedtimeOption.length - 1) {
+        finishedPomodoro();
+      }
+    }),
+  );
+};
 
 export default async (interaction) => {
   await interaction.deferReply();
+  const channelId = interaction.channel.id;
   const groupName = interaction.options.getString('group-name');
   const timeOption = interaction.options.getString('time-option');
 
@@ -21,22 +88,22 @@ export default async (interaction) => {
     return;
   }
 
-  // TODO: check if study time is not much high
-
-  const calculatedtimeOption = timeOptionArr.reduce((pre, cur, index) => {
-    pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
-    return pre;
-  }, []);
-
-  if (!global.pomodoro) {
-    global.pomodoro = {};
+  if (timeOptionArr.some((e) => +e > 100)) {
+    await interaction.editReply({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: 'Each time option should be less than 100 minutes.',
+        },
+      ],
+      ephemeral: true,
+    });
+    return;
   }
 
-  const pomodoroInstance = global.pomodoro;
+  const pomodoroGroupRes = await PomodoroGroup.find({ name: groupName });
 
-  const pomodoroGroupInstance = pomodoroInstance[groupName];
-
-  if (pomodoroGroupInstance) {
+  if (pomodoroGroupRes.length > 0) {
     await interaction.editReply({
       embeds: [
         {
@@ -57,6 +124,7 @@ export default async (interaction) => {
     timeOption: timeOptionArr,
     startTimeStamp: nowTimeStamp,
     members: [interaction.user.id],
+    channelId,
   });
 
   if (!res) {
@@ -72,11 +140,6 @@ export default async (interaction) => {
     return;
   }
 
-  /**
-   * i will initialize the pomodoro instance if database exists when the bot is started
-   * i thought that if database time is already passed, then the pomodoro won't be created
-   */
-
   await interaction.editReply({
     embeds: [
       {
@@ -87,38 +150,13 @@ export default async (interaction) => {
   });
 
   await interaction.channel.send(
-    `<@${interaction.user.id}>, it's time to **study**. (${timeOptionArr[0]} minutes).`,
+    `<@${interaction.user.id}>, It's time to **study**. (${timeOptionArr[0]} minutes).`,
   );
 
-  const finishedPomodoro = async () => {
-    delete pomodoroInstance[groupName];
-    await PomodoroGroup.deleteOne({ name: groupName });
-    await interaction.channel.send({
-      embeds: [
-        {
-          color: 0x65a69e,
-          description: `The pomodoro study group \`${groupName}\` has been finished.`,
-        },
-      ],
-    });
-  };
-
-  pomodoroInstance[groupName] = calculatedtimeOption.map((time, index) =>
-    schedule.scheduleJob(new Date(nowTimeStamp + 1000 * 60 * time), async () => {
-      // schedule.scheduleJob(new Date(nowTimeStamp + 1000 * time), async () => {
-      const currentStatus = index % 2 === 0 ? 'break' : 'study';
-      const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
-      const users = pomodoroGroupRes.members;
-
-      await interaction.channel.send(
-        `<@${users.join('>, <@')}>, it's time to **${currentStatus}**.${
-          timeOptionArr[index + 1] ? ` (${timeOptionArr[index + 1]} minutes).` : ''
-        }`,
-      );
-
-      if (index === calculatedtimeOption.length - 1) {
-        finishedPomodoro();
-      }
-    }),
-  );
+  putPomodoroScheduleJob({
+    groupName,
+    timeOption: timeOptionArr,
+    startTimeStamp: nowTimeStamp,
+    channelId,
+  });
 };

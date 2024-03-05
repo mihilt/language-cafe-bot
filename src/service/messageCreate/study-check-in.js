@@ -188,7 +188,8 @@ export default async (message) => {
   const currentMessages = await message.channel.messages.fetch({ limit: 50 });
 
   const stickyMessage = currentMessages.find(
-    (message) => message?.author?.id === config.CLIENT_ID && message?.embeds[0]?.title === title,
+    (currentMessage) =>
+      currentMessage?.author?.id === config.CLIENT_ID && currentMessage?.embeds[0]?.title === title,
   );
 
   await stickyMessage?.delete().catch(() => {});

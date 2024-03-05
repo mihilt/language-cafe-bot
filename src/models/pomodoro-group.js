@@ -25,6 +25,10 @@ const pomodoroGroup = new Schema(
         required: true,
       },
     ],
+    channelId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

@@ -7,6 +7,8 @@ import config from './config/index.js';
 import { studyCheckInKeyv } from './db/keyvInstances.js';
 import mongoDBConnect from './lib/mongo-db.js';
 import schedules from './schedules/index.js';
+import PomodoroGroup from './models/pomodoro-group.js';
+import { putPomodoroScheduleJob } from './service/interaction/is-chat-input-command/create-new-pomodoro-study-group.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,6 +19,7 @@ const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 // init file db file
+// eslint-disable-next-line no-console
 studyCheckInKeyv.on('error', (err) => console.error('studyCheckInKeyv connection error:', err));
 
 if (!(await studyCheckInKeyv.has('user'))) {
@@ -37,6 +40,7 @@ for (const folder of commandFolders) {
       if ('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
       } else {
+        // eslint-disable-next-line no-console
         console.log(
           `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
         );
@@ -65,5 +69,14 @@ for (const file of eventFiles) {
 
 await client.login(config.DISCORD_TOKEN);
 
+await mongoDBConnect();
 schedules();
-mongoDBConnect();
+
+// put pomodoro schedule job
+const pomodoroGroupRes = await PomodoroGroup.find();
+if (pomodoroGroupRes.length > 0) {
+  pomodoroGroupRes.forEach((group) => {
+    const { name, timeOption, startTimeStamp, channelId } = group;
+    putPomodoroScheduleJob({ groupName: name, timeOption, startTimeStamp, channelId });
+  });
+}
