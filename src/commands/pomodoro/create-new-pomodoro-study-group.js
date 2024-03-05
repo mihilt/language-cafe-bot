@@ -13,7 +13,7 @@ export default {
         .setRequired(true),
     )
     .addStringOption((option) =>
-      option.setName('study-time').setDescription('The study time').setRequired(true),
+      option.setName('time-option').setDescription('The time option').setRequired(true),
     ),
   async execute(interaction) {
     createNewPomodoroStudyGroup(interaction);
