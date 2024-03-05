@@ -1,13 +1,14 @@
 import schedule from 'node-schedule';
+import PomodoroGroup from '../../../models/pomodoro-group.js';
 
 export default async (interaction) => {
   await interaction.deferReply();
   const groupName = interaction.options.getString('group-name');
-  const studyTime = interaction.options.getString('study-time');
+  const timeOption = interaction.options.getString('time-option');
 
-  const studyTimeArr = studyTime.split('/');
+  const timeOptionArr = timeOption.split('/');
 
-  if (!studyTimeArr.every((e) => !Number.isNaN(+e))) {
+  if (!timeOptionArr.every((e) => !Number.isNaN(+e))) {
     await interaction.editReply({
       embeds: [
         {
@@ -20,7 +21,9 @@ export default async (interaction) => {
     return;
   }
 
-  const calculatedStudyTime = studyTimeArr.reduce((pre, cur, index) => {
+  // TODO: check if study time is not much high
+
+  const calculatedtimeOption = timeOptionArr.reduce((pre, cur, index) => {
     pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
     return pre;
   }, []);
@@ -31,9 +34,9 @@ export default async (interaction) => {
 
   const pomodoroInstance = global.pomodoro;
 
-  const pomodoroGroup = pomodoroInstance[groupName];
+  const pomodoroGroupInstance = pomodoroInstance[groupName];
 
-  if (pomodoroGroup) {
+  if (pomodoroGroupInstance) {
     await interaction.editReply({
       embeds: [
         {
@@ -47,45 +50,75 @@ export default async (interaction) => {
     return;
   }
 
-  // TODO: save current time, group name, and study time to the database
+  const nowTimeStamp = Date.now();
+
+  const res = await PomodoroGroup.create({
+    name: groupName,
+    timeOption: timeOptionArr,
+    startTimeStamp: nowTimeStamp,
+    members: [interaction.user.id],
+  });
+
+  if (!res) {
+    await interaction.editReply({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: 'Failed to create a new group.',
+        },
+      ],
+      ephemeral: true,
+    });
+    return;
+  }
+
   /**
    * i will initialize the pomodoro instance if database exists when the bot is started
    * i thought that if database time is already passed, then the pomodoro won't be created
    */
 
-  const finishedPomodoro = () => {
-    delete pomodoroInstance[groupName];
-
-    // TODO: remove data from the database
-
-    console.log('finished pomodoro');
-  };
-
-  pomodoroInstance[groupName] = calculatedStudyTime.map((time, index) =>
-    // schedule.scheduleJob(new Date(Date.now() + 1000 * 60 * time), () => {
-    schedule.scheduleJob(new Date(Date.now() + 1000 * time), () => {
-      const currentStatus = index % 2 === 0 ? 'break' : 'study';
-      console.log(index + 1);
-      console.log(new Date(Date.now()));
-      interaction.channel.send(`**${currentStatus}** finished!`);
-
-      // TODO: get the list of users in the group from the database
-
-      // TODO: send a message to the group
-
-      if (index === calculatedStudyTime.length - 1) {
-        finishedPomodoro();
-      }
-    }),
-  );
-
   await interaction.editReply({
     embeds: [
       {
         color: 0x65a69e,
-        description: `A new pomodoro study group \`${groupName}\` has been created.`,
-        // also need to show study-time
+        description: `A new pomodoro study group \`${groupName}\` has been created.\n\nThe study time is \`${timeOption}\`.`,
       },
     ],
   });
+
+  await interaction.channel.send(
+    `<@${interaction.user.id}>, it's time to **study**. (${timeOptionArr[0]} minutes).`,
+  );
+
+  const finishedPomodoro = async () => {
+    delete pomodoroInstance[groupName];
+    await PomodoroGroup.deleteOne({ name: groupName });
+    await interaction.channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: `The pomodoro study group \`${groupName}\` has been finished.`,
+        },
+      ],
+    });
+  };
+
+  pomodoroInstance[groupName] = calculatedtimeOption.map((time, index) =>
+    schedule.scheduleJob(new Date(nowTimeStamp + 1000 * 60 * time), async () => {
+      // schedule.scheduleJob(new Date(nowTimeStamp + 1000 * time), async () => {
+      const currentStatus = index % 2 === 0 ? 'break' : 'study';
+      const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
+      const users = pomodoroGroupRes.members;
+
+      await interaction.channel.send(
+        `<@${users.join('>, <@')}>, it's time to **${currentStatus}**.${
+          timeOptionArr[index + 1] ? ` (${timeOptionArr[index + 1]} minutes).` : ''
+        }`,
+      );
+
+      if (index === calculatedtimeOption.length - 1) {
+        finishedPomodoro();
+      }
+    }),
+  );
 };
