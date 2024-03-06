@@ -4,6 +4,7 @@ import cooldown from '../service/interaction/is-chat-input-command/cooldown.js';
 import GeneratePollModalSubmit from '../service/interaction/is-modal-submit/generate-poll.js';
 import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-my-exchange-listing.js';
 import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
+import joinPomodoroGroup from '../service/interaction/is-button/join-pomodoro-group.js';
 
 export default {
   name: Events.InteractionCreate,
@@ -46,6 +47,10 @@ export default {
 
       if (interaction.customId.startsWith('get-exchange-partner')) {
         getExchangeListing(interaction);
+      }
+
+      if (interaction.customId.startsWith('join-pomodoro-group')) {
+        joinPomodoroGroup(interaction);
       }
     }
   },
