@@ -1,6 +1,7 @@
+import { userMention } from 'discord.js';
 import schedule from 'node-schedule';
-import PomodoroGroup from '../../../models/pomodoro-group.js';
 import client from '../../../client/index.js';
+import PomodoroGroup from '../../../models/pomodoro-group.js';
 
 export const putPomodoroScheduleJob = async ({
   groupName,
@@ -60,7 +61,7 @@ export const putPomodoroScheduleJob = async ({
         await channel.send(`<@${users.join('>, <@')}>, **${previousStatus}** time is over.`);
       }
 
-      if (index === calculatedtimeOption.length - 1) {
+      if (index === filteredCalculatedtimeOption.length - 1) {
         finishedPomodoro();
       }
     }),
@@ -68,14 +69,16 @@ export const putPomodoroScheduleJob = async ({
 };
 
 export default async (interaction) => {
-  await interaction.deferReply();
+  await interaction.deferReply({
+    ephemeral: true,
+  });
   const channelId = interaction.channel.id;
   const groupName = interaction.options.getString('group-name');
   const timeOption = interaction.options.getString('time-option');
 
   const timeOptionArr = timeOption.split('/');
 
-  if (!timeOptionArr.every((e) => !Number.isNaN(+e))) {
+  if (!timeOptionArr.every((e) => !Number.isNaN(+e) && +e > 0)) {
     await interaction.editReply({
       embeds: [
         {
@@ -101,9 +104,25 @@ export default async (interaction) => {
     return;
   }
 
-  const pomodoroGroupRes = await PomodoroGroup.find({ name: groupName });
+  const pomodoroGroupRes = await PomodoroGroup.find();
 
-  if (pomodoroGroupRes.length > 0) {
+  const members = pomodoroGroupRes.map((group) => group.members).flat();
+
+  if (members.includes(interaction.user.id)) {
+    await interaction.editReply({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: 'You are already in a pomodoro group.',
+        },
+      ],
+      ephemeral: true,
+    });
+
+    return;
+  }
+
+  if (pomodoroGroupRes.some((group) => group.name === groupName)) {
     await interaction.editReply({
       embeds: [
         {
@@ -140,11 +159,15 @@ export default async (interaction) => {
     return;
   }
 
-  await interaction.editReply({
+  await interaction.deleteReply();
+
+  await interaction.channel.send({
     embeds: [
       {
         color: 0x65a69e,
-        description: `A new pomodoro study group \`${groupName}\` has been created.\n\nThe study time is \`${timeOption}\`.`,
+        description: `${userMention(
+          interaction.user.id,
+        )} created a new pomodoro study group \`${groupName}\`.\n\nThe study time is \`${timeOption}\`.`,
       },
     ],
   });
