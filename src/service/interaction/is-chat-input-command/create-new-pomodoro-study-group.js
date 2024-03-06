@@ -16,11 +16,6 @@ export const putPomodoroScheduleJob = async ({
 
   const channel = await client.channels.fetch(channelId);
 
-  const calculatedtimeOption = timeOption.reduce((pre, cur, index) => {
-    pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
-    return pre;
-  }, []);
-
   const finishedPomodoro = async () => {
     delete pomodoroInstance[groupName];
     await PomodoroGroup.deleteOne({ name: groupName });
@@ -34,8 +29,13 @@ export const putPomodoroScheduleJob = async ({
     });
   };
 
+  const calculatedtimeOption = timeOption.reduce((pre, cur, index) => {
+    pre.push({ index, value: (index > 0 ? pre[index - 1].value : 0) + +cur });
+    return pre;
+  }, []);
+
   const filteredCalculatedtimeOption = calculatedtimeOption.filter(
-    (time) => startTimeStamp + 1000 * 60 * time > Date.now(),
+    (time) => startTimeStamp + 1000 * 60 * time.value > Date.now(),
   );
 
   if (filteredCalculatedtimeOption.length === 0) {
@@ -44,16 +44,16 @@ export const putPomodoroScheduleJob = async ({
   }
 
   pomodoroInstance[groupName] = filteredCalculatedtimeOption.map((time, index) =>
-    schedule.scheduleJob(new Date(startTimeStamp + 1000 * 60 * time), async () => {
-      const currentStatus = index % 2 === 0 ? 'break' : 'study';
-      const previousStatus = index % 2 === 0 ? 'study' : 'break';
+    schedule.scheduleJob(new Date(startTimeStamp + 1000 * 60 * time.value), async () => {
+      const currentStatus = time.index % 2 === 0 ? 'break' : 'study';
+      const previousStatus = time.index % 2 === 0 ? 'study' : 'break';
       const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
       const users = pomodoroGroupRes.members;
 
       if (index !== filteredCalculatedtimeOption.length - 1) {
         await channel.send(
           `<@${users.join('>, <@')}>, It's time to **${currentStatus}**.${` (${
-            filteredCalculatedtimeOption[index + 1] - time
+            filteredCalculatedtimeOption[index + 1].value - time.value
           } minutes).`}`,
         );
       } else {
