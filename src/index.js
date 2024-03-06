@@ -75,6 +75,12 @@ schedules();
 // put pomodoro schedule job
 const pomodoroGroupRes = await PomodoroGroup.find();
 if (pomodoroGroupRes.length > 0) {
+  // eslint-disable-next-line no-console
+  console.log(
+    `Bot found ${pomodoroGroupRes.length} pomodoro group(s), ${pomodoroGroupRes
+      .map((group) => group.name)
+      .join(', ')}`,
+  );
   pomodoroGroupRes.forEach((group) => {
     const { name, timeOption, startTimeStamp, channelId } = group;
     putPomodoroScheduleJob({ groupName: name, timeOption, startTimeStamp, channelId });
