@@ -9,7 +9,7 @@ mongoose.set('strictQuery', false);
 // Exit application on error
 mongoose.connection.on('error', (err) => {
   // eslint-disable-next-line no-console
-  console.log(`MongoDB connection error: ${err}`);
+  console.error(`MongoDB connection error: ${err}`);
   process.exit(-1);
 });
 
@@ -25,7 +25,7 @@ const connect = async () => {
     console.log('mongoDB connected...');
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log('mongoDB connection error:', error);
+    console.error('mongoDB connection error:', error);
   }
   return mongoose.connection;
 };
