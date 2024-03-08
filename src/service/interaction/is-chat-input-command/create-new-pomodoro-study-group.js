@@ -3,6 +3,22 @@ import schedule from 'node-schedule';
 import client from '../../../client/index.js';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
 
+export const finishedPomodoro = async ({ groupName, channel }) => {
+  global.pomodoro[groupName].forEach((job) => {
+    job.cancel();
+  });
+  delete global.pomodoro[groupName];
+  await PomodoroGroup.deleteOne({ name: groupName });
+  await channel.send({
+    embeds: [
+      {
+        color: 0x65a69e,
+        description: `The pomodoro study group \`${groupName}\` has been finished.`,
+      },
+    ],
+  });
+};
+
 export const putPomodoroScheduleJob = async ({
   groupName,
   timeOption,
@@ -17,55 +33,64 @@ export const putPomodoroScheduleJob = async ({
 
   const channel = await client.channels.fetch(channelId);
 
-  const finishedPomodoro = async () => {
-    delete pomodoroInstance[groupName];
-    await PomodoroGroup.deleteOne({ name: groupName });
-    await channel.send({
-      embeds: [
-        {
-          color: 0x65a69e,
-          description: `The pomodoro study group \`${groupName}\` has been finished.`,
-        },
-      ],
-    });
-  };
-
-  const calculatedtimeOption = timeOption.reduce((pre, cur, index) => {
-    pre.push({ index, value: (index > 0 ? pre[index - 1].value : 0) + +cur });
+  const calculatedTimeOption = timeOption.reduce((pre, cur, index) => {
+    pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
     return pre;
   }, []);
 
-  const filteredCalculatedtimeOption = calculatedtimeOption.filter(
-    (time) => startTimeStamp + 1000 * 60 * time.value > Date.now(),
-  );
+  pomodoroInstance[groupName] = calculatedTimeOption
+    .map((time, index) => {
+      if (startTimeStamp + 1000 * 60 * time < Date.now()) {
+        return null;
+      }
 
-  if (filteredCalculatedtimeOption.length === 0) {
-    finishedPomodoro();
-    return;
+      return schedule.scheduleJob(new Date(startTimeStamp + 1000 * 60 * time), async () => {
+        const currentStatus = index % 2 === 0 ? 'break' : 'study';
+        const previousStatus = index % 2 === 0 ? 'study' : 'break';
+        const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
+        const users = pomodoroGroupRes.members;
+
+        if (index !== calculatedTimeOption.length - 1) {
+          await channel.send(
+            `<@${users.join('>, <@')}>, It's time to **${currentStatus}**.${` (${
+              calculatedTimeOption[index + 1] - time
+            } minutes).`}`,
+          );
+          await channel.send({
+            embeds: [
+              {
+                color: 0x65a69e,
+                description: `### ${groupName}\n\n${calculatedTimeOption
+                  .map(
+                    (e, i) =>
+                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${
+                        calculatedTimeOption[index + 1] - time
+                      } minutes\`${i === index + 1 ? ' ←' : ''}`,
+                  )
+                  .join('\n')} `,
+              },
+            ],
+          });
+        } else {
+          await channel.send(`<@${users.join('>, <@')}>, **${previousStatus}** time is over.`);
+        }
+
+        if (index === calculatedTimeOption.length - 1) {
+          finishedPomodoro({
+            groupName,
+            channel,
+          });
+        }
+      });
+    })
+    .filter((e) => e);
+
+  if (pomodoroInstance[groupName].length === 0) {
+    finishedPomodoro({
+      groupName,
+      channel,
+    });
   }
-
-  pomodoroInstance[groupName] = filteredCalculatedtimeOption.map((time, index) =>
-    schedule.scheduleJob(new Date(startTimeStamp + 1000 * 60 * time.value), async () => {
-      const currentStatus = time.index % 2 === 0 ? 'break' : 'study';
-      const previousStatus = time.index % 2 === 0 ? 'study' : 'break';
-      const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
-      const users = pomodoroGroupRes.members;
-
-      if (index !== filteredCalculatedtimeOption.length - 1) {
-        await channel.send(
-          `<@${users.join('>, <@')}>, It's time to **${currentStatus}**.${` (${
-            filteredCalculatedtimeOption[index + 1].value - time.value
-          } minutes).`}`,
-        );
-      } else {
-        await channel.send(`<@${users.join('>, <@')}>, **${previousStatus}** time is over.`);
-      }
-
-      if (index === filteredCalculatedtimeOption.length - 1) {
-        finishedPomodoro();
-      }
-    }),
-  );
 };
 
 export default async (interaction) => {
@@ -175,6 +200,19 @@ export default async (interaction) => {
   await interaction.channel.send(
     `<@${interaction.user.id}>, It's time to **study**. (${timeOptionArr[0]} minutes).`,
   );
+
+  await interaction.channel.send({
+    embeds: [
+      {
+        color: 0x65a69e,
+        description: `### ${groupName}\n\n${timeOptionArr
+          .map(
+            (e, i) => `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} minutes\`${i === 0 ? ' ←' : ''}`,
+          )
+          .join('\n')} `,
+      },
+    ],
+  });
 
   putPomodoroScheduleJob({
     groupName,

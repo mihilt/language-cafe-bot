@@ -1,5 +1,6 @@
 import { userMention } from 'discord.js';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
+import { finishedPomodoro } from './create-new-pomodoro-study-group.js';
 
 export default async (interaction) => {
   try {
@@ -47,10 +48,6 @@ export default async (interaction) => {
       return;
     }
 
-    if (pomodoroGroupFindOneAndUpdateRes.members.length === 0) {
-      // TODO: if members is empty, delete the group from the database and also schedule instance
-    }
-
     await interaction.deleteReply();
 
     await interaction.channel.send({
@@ -63,6 +60,13 @@ export default async (interaction) => {
         },
       ],
     });
+
+    if (pomodoroGroupFindOneAndUpdateRes.members.length === 0) {
+      finishedPomodoro({
+        groupName: pomodoroGroup.name,
+        channel: interaction.channel,
+      });
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);
