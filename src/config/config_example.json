@@ -1,7 +1,9 @@
 {
   "DISCORD_TOKEN": "",
   "CLIENT_ID": "",
+  "ADMIN_USER_ID": "",
 
+  "SERVER_ID": "",
   "LOG_SERVER_ID": "",
 
   "LOG_CHANNEL_ID": "",

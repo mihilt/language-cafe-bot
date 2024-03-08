@@ -17,6 +17,10 @@ export default (content) => {
     });
 };
 
+export const channelLogWithoutEmbeds = (content) => {
+  client.guilds.cache.get(logServerId).channels.cache.get(logChannelId).send(content);
+};
+
 export const generateInteractionCreateLogContent = (interaction, additionalMessage) =>
   `### Interaction Message\ntime: ${time(+Date.now().toString().slice(0, 10), 'F')}\nserver: ${
     interaction.guild.name

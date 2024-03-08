@@ -1,4 +1,4 @@
-import { Collection } from 'discord.js';
+import { Collection, userMention } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,6 +9,7 @@ import mongoDBConnect from './lib/mongo-db.js';
 import schedules from './schedules/index.js';
 import PomodoroGroup from './models/pomodoro-group.js';
 import { putPomodoroScheduleJob } from './service/interaction/is-chat-input-command/create-new-pomodoro-study-group.js';
+import { channelLogWithoutEmbeds } from './service/utils/channel-log.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -41,7 +42,7 @@ for (const folder of commandFolders) {
         client.commands.set(command.data.name, command);
       } else {
         // eslint-disable-next-line no-console
-        console.log(
+        console.info(
           `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
         );
       }
@@ -76,7 +77,7 @@ schedules();
 const pomodoroGroupRes = await PomodoroGroup.find();
 if (pomodoroGroupRes.length > 0) {
   // eslint-disable-next-line no-console
-  console.log(
+  console.info(
     `Bot found ${pomodoroGroupRes.length} pomodoro group(s), ${pomodoroGroupRes
       .map((group) => group.name)
       .join(', ')}`,
@@ -85,4 +86,8 @@ if (pomodoroGroupRes.length > 0) {
     const { name, timeOption, startTimeStamp, channelId } = group;
     putPomodoroScheduleJob({ groupName: name, timeOption, startTimeStamp, channelId });
   });
+}
+
+if (process.env.NODE_ENV === 'production') {
+  channelLogWithoutEmbeds(`${userMention(config.ADMIN_USER_ID)}, bot is started!`);
 }

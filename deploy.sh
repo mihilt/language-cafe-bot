@@ -36,11 +36,17 @@ fi
 echo "=> Stop container..."
 docker stop $CONTAINER_NAME
 
-sleep 2
+sleep 1
+
+# remove container
+echo "=> Remove container..."
+docker rm $CONTAINER_NAME
+
+sleep 1
 
 # run container
 echo "=> Run container..."
-docker run -v /opt/docker-data/language-cafe-bot/db:/app/src/db/data --rm -d -p 4000:4000 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -v /opt/docker-data/language-cafe-bot/db:/app/src/db/data -d -p 4000:4000 --restart always --name $CONTAINER_NAME $IMAGE_NAME
 
 # remove dangling images
 echo "=> Remove dangling images..."

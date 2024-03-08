@@ -1,6 +1,7 @@
 import { userMention } from 'discord.js';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
 import { finishedPomodoro } from './create-new-pomodoro-study-group.js';
+import client from '../../../client/index.js';
 
 export default async (interaction) => {
   try {
@@ -15,7 +16,7 @@ export default async (interaction) => {
     );
 
     if (!pomodoroGroup) {
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [
           {
             color: 0x65a69e,
@@ -35,7 +36,7 @@ export default async (interaction) => {
     );
 
     if (!pomodoroGroupFindOneAndUpdateRes) {
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [
           {
             color: 0x65a69e,
@@ -62,9 +63,11 @@ export default async (interaction) => {
     });
 
     if (pomodoroGroupFindOneAndUpdateRes.members.length === 0) {
+      const channel = await client.channels.fetch(pomodoroGroup.channelId);
+
       finishedPomodoro({
         groupName: pomodoroGroup.name,
-        channel: interaction.channel,
+        channel,
       });
     }
   } catch (error) {
