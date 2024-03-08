@@ -7,7 +7,7 @@ const sequelize = new Sequelize({
   storage: './src/db/data/database.sqlite',
   logging: (msg) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(msg);
+      console.info(msg);
     }
   },
 });

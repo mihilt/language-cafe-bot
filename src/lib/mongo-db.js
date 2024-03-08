@@ -22,7 +22,7 @@ const connect = async () => {
   try {
     await mongoose.connect(mongoUri);
     // eslint-disable-next-line no-console
-    console.log('mongoDB connected...');
+    console.info('mongoDB connected...');
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('mongoDB connection error:', error);

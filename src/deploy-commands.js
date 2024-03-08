@@ -4,6 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'url';
 import config from './config/index.js';
 
+const { CLIENT_ID: cliendId, DISCORD_TOKEN: discordToken } = config;
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const commands = [];
@@ -22,7 +24,7 @@ const commandFolders = fs.readdirSync(foldersPath);
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
 
-      console.log(filePath);
+      console.info(filePath);
 
       // eslint-disable-next-line no-await-in-loop
       const command = (await import(filePath)).default;
@@ -30,7 +32,7 @@ const commandFolders = fs.readdirSync(foldersPath);
       if ('data' in command && 'execute' in command) {
         commands.push(command.data.toJSON());
       } else {
-        console.log(
+        console.info(
           `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
         );
       }
@@ -38,17 +40,17 @@ const commandFolders = fs.readdirSync(foldersPath);
   }
 
   // Construct and prepare an instance of the REST module
-  const rest = new REST().setToken(config.DISCORD_TOKEN);
+  const rest = new REST().setToken(discordToken);
 
   // and deploy your commands!
   try {
-    console.log(`Started refreshing ${commands.length} application (/) commands.`);
+    console.info(`Started refreshing ${commands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(Routes.applicationCommands(config.CLIENT_ID), {
+    const data = await rest.put(Routes.applicationCommands(cliendId), {
       body: commands,
     });
-    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    console.info(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);

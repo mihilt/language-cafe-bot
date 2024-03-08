@@ -16,6 +16,7 @@
     "operator-linebreak": "off",
     "no-plusplus": "off",
     "function-paren-newline": "off",
-    "no-confusing-arrow": "off"
+    "no-confusing-arrow": "off",
+    "indent": "off"
   }
 }

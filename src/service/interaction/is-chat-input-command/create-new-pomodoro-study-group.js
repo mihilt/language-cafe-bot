@@ -4,10 +4,10 @@ import client from '../../../client/index.js';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
 
 export const finishedPomodoro = async ({ groupName, channel }) => {
-  global.pomodoro[groupName].forEach((job) => {
+  global?.pomodoro[groupName]?.forEach((job) => {
     job.cancel();
   });
-  delete global.pomodoro[groupName];
+  delete global?.pomodoro[groupName];
   await PomodoroGroup.deleteOne({ name: groupName });
   await channel.send({
     embeds: [
@@ -50,9 +50,21 @@ export const putPomodoroScheduleJob = async ({
         const pomodoroGroupRes = await PomodoroGroup.findOne({ name: groupName });
         const users = pomodoroGroupRes.members;
 
+        if (users.length === 0) {
+          await channel.send({
+            embeds: [
+              {
+                color: 0x65a69e,
+                description: `There is no one in the pomodoro study group \`${groupName}\`.`,
+              },
+            ],
+          });
+          return;
+        }
+
         if (index !== calculatedTimeOption.length - 1) {
           await channel.send(
-            `<@${users.join('>, <@')}>, It's time to **${currentStatus}**.${` (${
+            `<@${users.join('>, <@')}>, It's time for **${currentStatus}**.${` (${
               calculatedTimeOption[index + 1] - time
             } minutes).`}`,
           );
@@ -63,9 +75,9 @@ export const putPomodoroScheduleJob = async ({
                 description: `### ${groupName}\n\n${calculatedTimeOption
                   .map(
                     (e, i) =>
-                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${
-                        calculatedTimeOption[index + 1] - time
-                      } minutes\`${i === index + 1 ? ' ←' : ''}`,
+                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} minutes\`${
+                        i === index + 1 ? ' ←' : ''
+                      }`,
                   )
                   .join('\n')} `,
               },
@@ -116,12 +128,12 @@ export default async (interaction) => {
     return;
   }
 
-  if (timeOptionArr.some((e) => +e > 100)) {
+  if (timeOptionArr.some((e) => +e > 100 || +e < 1)) {
     await interaction.editReply({
       embeds: [
         {
           color: 0x65a69e,
-          description: 'Each time option should be less than 100 minutes.',
+          description: 'Each time option should be more than 1 minute and less than 100 minutes.',
         },
       ],
       ephemeral: true,
@@ -198,7 +210,7 @@ export default async (interaction) => {
   });
 
   await interaction.channel.send(
-    `<@${interaction.user.id}>, It's time to **study**. (${timeOptionArr[0]} minutes).`,
+    `<@${interaction.user.id}>, It's time for **study**. (${timeOptionArr[0]} minutes).`,
   );
 
   await interaction.channel.send({
