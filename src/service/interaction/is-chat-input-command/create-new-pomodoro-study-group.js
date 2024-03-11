@@ -75,11 +75,17 @@ export const putPomodoroScheduleJob = async ({
                 description: `### ${groupName}\n\n${calculatedTimeOption
                   .map(
                     (e, i) =>
-                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} minutes\`${
+                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
                         i === index + 1 ? ' ←' : ''
+                      }${
+                        i > index + 1
+                          ? ` (<t:${
+                              Math.floor(startTimeStamp / 1000) + (e - timeOption[i]) * 60
+                            }:R>)`
+                          : ''
                       }`,
                   )
-                  .join('\n')} `,
+                  .join('\n')}`,
               },
             ],
           });
@@ -213,15 +219,27 @@ export default async (interaction) => {
     `<@${interaction.user.id}>, It's time for **study**. (${timeOptionArr[0]} minutes).`,
   );
 
+  const calculatedTimeOption = timeOptionArr.reduce((pre, cur, index) => {
+    pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
+    return pre;
+  }, []);
+
   await interaction.channel.send({
     embeds: [
       {
         color: 0x65a69e,
         description: `### ${groupName}\n\n${timeOptionArr
           .map(
-            (e, i) => `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} minutes\`${i === 0 ? ' ←' : ''}`,
+            (e, i) =>
+              `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} min\`${i === 0 ? ' ←' : ''}${
+                i > 0
+                  ? ` (<t:${
+                      Math.floor(nowTimeStamp / 1000) + (calculatedTimeOption[i] - e) * 60
+                    }:R>)`
+                  : ''
+              }`,
           )
-          .join('\n')} `,
+          .join('\n')}`,
       },
     ],
   });

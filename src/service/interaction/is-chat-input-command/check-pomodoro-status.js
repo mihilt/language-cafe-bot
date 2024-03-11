@@ -54,13 +54,11 @@ export default async (interaction) => {
     const description = `### ${groupName}\n\n${calculatedTimeOption
       .map(
         (e, i) =>
-          `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} minutes\`${
-            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex)
-              ? `  ← (${
-                  new Date(+e * 60 * 1000 - (Date.now() - startTimeStamp))
-                    .toTimeString()
-                    .split(' ')[0]
-                })`
+          `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
+            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex) ? '  ←' : ''
+          }${
+            i > currentTimeIndex
+              ? ` (<t:${Math.floor(startTimeStamp / 1000) + (e - timeOption[i]) * 60}:R>)`
               : ''
           }`,
       )
