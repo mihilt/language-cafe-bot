@@ -55,20 +55,26 @@ export default async (interaction) => {
       .map(
         (e, i) =>
           `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
-            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex) ? '  ←' : ''
+            i >= currentTimeIndex ? ` (<t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>)` : ''
           }${
-            i > currentTimeIndex
-              ? ` (<t:${Math.floor(startTimeStamp / 1000) + (e - timeOption[i]) * 60}:R>)`
-              : ''
+            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex) ? '  ←' : ''
           }`,
       )
       .join('\n')}`;
+
+    const fields = [
+      {
+        name: 'Members',
+        value: pomodoroGroup.members.map((member) => `<@${member}>`).join(', '),
+      },
+    ];
 
     await interaction.editReply({
       embeds: [
         {
           color: 0x65a69e,
           description,
+          fields,
         },
       ],
       ephemeral: true,

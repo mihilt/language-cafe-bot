@@ -13,7 +13,7 @@ export const finishedPomodoro = async ({ groupName, channel }) => {
     embeds: [
       {
         color: 0x65a69e,
-        description: `The pomodoro study group \`${groupName}\` has been finished.`,
+        description: `The pomodoro study group \`${groupName}\` has now finished and will be deleted.`,
       },
     ],
   });
@@ -68,24 +68,29 @@ export const putPomodoroScheduleJob = async ({
               calculatedTimeOption[index + 1] - time
             } minutes).`}`,
           );
+
+          const description = `### ${groupName}\n\n${calculatedTimeOption
+            .map(
+              (e, i) =>
+                `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
+                  i >= index + 1 ? ` (<t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>)` : ''
+                }${i === index + 1 ? ' ←' : ''}`,
+            )
+            .join('\n')}`;
+
+          const fields = [
+            {
+              name: 'Members',
+              value: `<@${users.join('>, <@')}>`,
+            },
+          ];
+
           await channel.send({
             embeds: [
               {
                 color: 0x65a69e,
-                description: `### ${groupName}\n\n${calculatedTimeOption
-                  .map(
-                    (e, i) =>
-                      `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
-                        i === index + 1 ? ' ←' : ''
-                      }${
-                        i > index + 1
-                          ? ` (<t:${
-                              Math.floor(startTimeStamp / 1000) + (e - timeOption[i]) * 60
-                            }:R>)`
-                          : ''
-                      }`,
-                  )
-                  .join('\n')}`,
+                description,
+                fields,
               },
             ],
           });
@@ -117,16 +122,16 @@ export default async (interaction) => {
   });
   const channelId = interaction.channel.id;
   const groupName = interaction.options.getString('group-name');
-  const timeOption = interaction.options.getString('time-option');
+  const timerPattern = interaction.options.getString('timer-pattern');
 
-  const timeOptionArr = timeOption.split('/');
+  const timeOption = timerPattern.split('/');
 
-  if (!timeOptionArr.every((e) => !Number.isNaN(+e) && +e > 0)) {
+  if (!timeOption.every((e) => !Number.isNaN(+e) && +e > 0)) {
     await interaction.editReply({
       embeds: [
         {
           color: 0x65a69e,
-          description: 'Study time is not valid.',
+          description: 'Timer pattern is not valid.',
         },
       ],
       ephemeral: true,
@@ -134,7 +139,7 @@ export default async (interaction) => {
     return;
   }
 
-  if (timeOptionArr.some((e) => +e > 100 || +e < 1)) {
+  if (timeOption.some((e) => +e > 100 || +e < 1)) {
     await interaction.editReply({
       embeds: [
         {
@@ -183,7 +188,7 @@ export default async (interaction) => {
 
   const res = await PomodoroGroup.create({
     name: groupName,
-    timeOption: timeOptionArr,
+    timeOption,
     startTimeStamp: nowTimeStamp,
     members: [interaction.user.id],
     channelId,
@@ -208,45 +213,61 @@ export default async (interaction) => {
     embeds: [
       {
         color: 0x65a69e,
-        description: `${userMention(
-          interaction.user.id,
-        )} created a new pomodoro study group \`${groupName}\`.\n\nThe study time is \`${timeOption}\`.`,
+        description: `${userMention(interaction.user.id)} created a new pomodoro study group.`,
+        fields: [
+          {
+            name: 'Group Name',
+            value: `\`${groupName}\``,
+            inline: true,
+          },
+          {
+            name: 'Timer Pattern',
+            value: `\`${timerPattern}\``,
+            inline: true,
+          },
+        ],
       },
     ],
   });
 
   await interaction.channel.send(
-    `<@${interaction.user.id}>, It's time for **study**. (${timeOptionArr[0]} minutes).`,
+    `<@${interaction.user.id}>, It's time for **study**. (${timeOption[0]} minutes).`,
   );
 
-  const calculatedTimeOption = timeOptionArr.reduce((pre, cur, index) => {
+  const calculatedTimeOption = timeOption.reduce((pre, cur, index) => {
     pre.push((index > 0 ? pre[index - 1] : 0) + +cur);
     return pre;
   }, []);
+
+  const description = `### ${groupName}\n\n${calculatedTimeOption
+    .map(
+      (e, i) =>
+        `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} min\`${
+          i >= 0 ? ` (<t:${Math.floor(nowTimeStamp / 1000) + e * 60}:R>)` : ''
+        }${i === 0 ? ' ←' : ''}`,
+    )
+    .join('\n')}`;
+
+  const fields = [
+    {
+      name: 'Members',
+      value: `<@${interaction.user.id}>`,
+    },
+  ];
 
   await interaction.channel.send({
     embeds: [
       {
         color: 0x65a69e,
-        description: `### ${groupName}\n\n${timeOptionArr
-          .map(
-            (e, i) =>
-              `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} min\`${i === 0 ? ' ←' : ''}${
-                i > 0
-                  ? ` (<t:${
-                      Math.floor(nowTimeStamp / 1000) + (calculatedTimeOption[i] - e) * 60
-                    }:R>)`
-                  : ''
-              }`,
-          )
-          .join('\n')}`,
+        description,
+        fields,
       },
     ],
   });
 
   putPomodoroScheduleJob({
     groupName,
-    timeOption: timeOptionArr,
+    timeOption,
     startTimeStamp: nowTimeStamp,
     channelId,
   });
