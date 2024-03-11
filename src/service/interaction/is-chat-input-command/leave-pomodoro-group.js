@@ -1,6 +1,6 @@
 import { userMention } from 'discord.js';
 import PomodoroGroup from '../../../models/pomodoro-group.js';
-import { finishedPomodoro } from './create-new-pomodoro-study-group.js';
+import { finishedPomodoro } from './create-pomodoro-group.js';
 import client from '../../../client/index.js';
 
 export default async (interaction) => {
@@ -55,7 +55,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          description: `${userMention(interaction.user.id)} left the pomodoro group. \`${
+          description: `${userMention(interaction.user.id)} left the pomodoro group \`${
             pomodoroGroup.name
           }\`.`,
         },

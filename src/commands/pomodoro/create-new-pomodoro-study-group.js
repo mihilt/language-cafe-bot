@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from 'discord.js';
-import createNewPomodoroStudyGroup from '../../service/interaction/is-chat-input-command/create-new-pomodoro-study-group.js';
+import createNewPomodoroStudyGroup from '../../service/interaction/is-chat-input-command/create-pomodoro-group.js';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('create-new-pomodoro-study-group')
+    .setName('create-pomodoro-group')
     .setDescription('Create a new pomodoro study group')
     .addStringOption((option) =>
       option
@@ -16,7 +16,7 @@ export default {
       option
         .setName('timer-pattern')
         .setMaxLength(20)
-        .setDescription('The time option (ex: 25/5/25/5/25/10)')
+        .setDescription('The study/break timer pattern (ex: 25/5/15/10/30/30)')
         .setRequired(true),
     ),
 
