@@ -8,7 +8,7 @@ import { studyCheckInKeyv } from './db/keyvInstances.js';
 import mongoDBConnect from './lib/mongo-db.js';
 import schedules from './schedules/index.js';
 import PomodoroGroup from './models/pomodoro-group.js';
-import { putPomodoroScheduleJob } from './service/interaction/is-chat-input-command/create-new-pomodoro-study-group.js';
+import { putPomodoroScheduleJob } from './service/interaction/is-chat-input-command/create-pomodoro-group.js';
 import { channelLogWithoutEmbeds } from './service/utils/channel-log.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

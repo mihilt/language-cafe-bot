@@ -64,7 +64,7 @@ export const putPomodoroScheduleJob = async ({
 
         if (index !== calculatedTimeOption.length - 1) {
           await channel.send(
-            `<@${users.join('>, <@')}>, It's time for **${currentStatus}**.${` (${
+            `<@${users.join('>, <@')}>, it's time for **${currentStatus}** ${`(${
               calculatedTimeOption[index + 1] - time
             } minutes).`}`,
           );
@@ -73,8 +73,10 @@ export const putPomodoroScheduleJob = async ({
             .map(
               (e, i) =>
                 `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
-                  i >= index + 1 ? ` (<t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>)` : ''
-                }${i === index + 1 ? ' ←' : ''}`,
+                  i === index + 1
+                    ? ` (ends <t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>) ←`
+                    : ''
+                }`,
             )
             .join('\n')}`;
 
@@ -231,7 +233,7 @@ export default async (interaction) => {
   });
 
   await interaction.channel.send(
-    `<@${interaction.user.id}>, It's time for **study**. (${timeOption[0]} minutes).`,
+    `<@${interaction.user.id}>, it's time for **study** (${timeOption[0]} minutes).`,
   );
 
   const calculatedTimeOption = timeOption.reduce((pre, cur, index) => {
@@ -242,9 +244,9 @@ export default async (interaction) => {
   const description = `### ${groupName}\n\n${calculatedTimeOption
     .map(
       (e, i) =>
-        `${i % 2 === 0 ? 'Study' : 'Break'}: \`${e} min\`${
-          i >= 0 ? ` (<t:${Math.floor(nowTimeStamp / 1000) + e * 60}:R>)` : ''
-        }${i === 0 ? ' ←' : ''}`,
+        `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
+          i === 0 ? ` (ends <t:${Math.floor(nowTimeStamp / 1000) + e * 60}:R>) ←` : ''
+        }`,
     )
     .join('\n')}`;
 

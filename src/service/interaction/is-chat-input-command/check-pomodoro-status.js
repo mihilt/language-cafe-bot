@@ -55,9 +55,9 @@ export default async (interaction) => {
       .map(
         (e, i) =>
           `${i % 2 === 0 ? 'Study' : 'Break'}: \`${timeOption[i]} min\`${
-            i >= currentTimeIndex ? ` (<t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>)` : ''
-          }${
-            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex) ? '  ←' : ''
+            i === (currentTimeIndex === -1 ? timeOption.length - 1 : currentTimeIndex)
+              ? `(ends <t:${Math.floor(startTimeStamp / 1000) + e * 60}:R>)  ←`
+              : ''
           }`,
       )
       .join('\n')}`;
