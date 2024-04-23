@@ -29,7 +29,7 @@ const initializeEmojiBlendPoint = async () => {
       ],
     });
 
-    await EmojiBlend.updateMany({}, { point: 0 });
+    await EmojiBlend.deleteMany({});
   } catch (error) {
     console.error(error);
   }
