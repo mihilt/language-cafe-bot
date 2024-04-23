@@ -86,34 +86,17 @@ export default async (interaction) => {
   }
 
   const refinedTargetLanguage = targetLanguageArray.join(', ');
+  const refinedLevel = levelArray.join(', ');
 
-  const studyBuddy = await StudyBuddy.findOne({
-    where: {
-      id: interaction.member.user.id,
-    },
-  });
-
-  if (studyBuddy) {
-    await StudyBuddy.update(
-      {
-        targetLanguage: refinedTargetLanguage,
-        level,
-        introduction,
-      },
-      {
-        where: {
-          id: interaction.member.user.id,
-        },
-      },
-    );
-  } else {
-    await StudyBuddy.create({
-      id: interaction.member.user.id,
+  await StudyBuddy.findOneAndUpdate(
+    { id: interaction.member.user.id },
+    {
       targetLanguage: refinedTargetLanguage,
-      level,
+      level: refinedLevel,
       introduction,
-    });
-  }
+    },
+    { upsert: true, new: true },
+  );
 
   await interaction.reply({
     embeds: [
