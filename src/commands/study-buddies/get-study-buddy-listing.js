@@ -21,14 +21,14 @@ export default {
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
 
-    const clientTargetLanguage = await StudyBuddy.findOne(
+    const clientData = await StudyBuddy.findOne(
       {
         id: interaction.user.id,
       },
-      { targetLanguage: 1, _id: 0 },
+      { targetLanguage: 1, level: 1, _id: 0 },
     );
 
-    if (!clientTargetLanguage) {
+    if (!clientData) {
       await interaction.reply({
         embeds: [
           {
@@ -44,14 +44,33 @@ export default {
       return;
     }
 
-    const clientTargetLanguageArray = clientTargetLanguage.targetLanguage.split(', ');
+    const clientTargetLanguageArray = clientData.targetLanguage.split(', ');
+    const clientLevelArray = clientData.level.split(', ');
 
-    const studyBuddyListLength = await StudyBuddy.countDocuments({
+    const studyBuddies = await StudyBuddy.find({
       id: { $ne: interaction.user.id },
       $or: clientTargetLanguageArray.map((targetLanguage) => ({
         targetLanguage: { $regex: targetLanguage, $options: 'i' },
       })),
+    }).sort({ updatedAt: -1 });
+
+    const filteredStudyBuddies = studyBuddies.filter((studyBuddy) => {
+      const studyBuddyTargetLanguageArray = studyBuddy.targetLanguage.split(', ');
+      const studyBuddyLevelArray = studyBuddy.level.split(', ');
+
+      return studyBuddyTargetLanguageArray.find((studyBuddyTargetLanguage, studyBuddyIndex) => {
+        const clientIndex = clientTargetLanguageArray.findIndex(
+          (clientTargetLanguage) => clientTargetLanguage === studyBuddyTargetLanguage,
+        );
+
+        return (
+          clientIndex !== -1 &&
+          clientLevelArray[clientIndex] === studyBuddyLevelArray[studyBuddyIndex]
+        );
+      });
     });
+
+    const studyBuddyListLength = filteredStudyBuddies.length;
 
     if (studyBuddyListLength === 0) {
       await interaction.reply({
@@ -68,12 +87,7 @@ export default {
       return;
     }
 
-    const studyBuddy = await StudyBuddy.findOne({
-      id: { $ne: interaction.user.id },
-      $or: clientTargetLanguageArray.map((targetLanguage) => ({
-        targetLanguage: { $regex: targetLanguage, $options: 'i' },
-      })),
-    }).sort({ updatedAt: -1 });
+    const studyBuddy = filteredStudyBuddies[0];
 
     const studyBuddyObject = await client.users.fetch(studyBuddy.id);
 
