@@ -1,10 +1,12 @@
 import { Events } from 'discord.js';
 import getExchangeListing from '../service/interaction/is-button/get-exchange-listing.js';
+import getStudyBuddyListing from '../service/interaction/is-button/get-study-buddy-listing.js';
 import cooldown from '../service/interaction/is-chat-input-command/cooldown.js';
 import GeneratePollModalSubmit from '../service/interaction/is-modal-submit/generate-poll.js';
 import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-my-exchange-listing.js';
 import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
 import joinPomodoroGroup from '../service/interaction/is-button/join-pomodoro-group.js';
+import registerMyStudyBuddyListing from '../service/interaction/is-modal-submit/register-my-study-buddy-listing.js';
 
 export default {
   name: Events.InteractionCreate,
@@ -37,6 +39,16 @@ export default {
       }
     }
 
+    if (interaction.customId === 'register-my-study-buddy-listing') {
+      channelLog(
+        generateInteractionCreateLogContent(
+          interaction,
+          `customId: ${interaction.customId}\ninteraction.isButton() is true`,
+        ),
+      );
+      registerMyStudyBuddyListing(interaction);
+    }
+
     if (interaction.isButton()) {
       channelLog(
         generateInteractionCreateLogContent(
@@ -47,6 +59,10 @@ export default {
 
       if (interaction.customId.startsWith('get-exchange-partner')) {
         getExchangeListing(interaction);
+      }
+
+      if (interaction.customId.startsWith('get-study-buddy')) {
+        getStudyBuddyListing(interaction);
       }
 
       if (interaction.customId.startsWith('join-pomodoro-group')) {
