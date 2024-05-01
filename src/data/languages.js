@@ -107,4 +107,5 @@ export default [
   'Coptic',
   'Phoenician',
   'Urak Lawoi’',
+  'Marathi',
 ];
