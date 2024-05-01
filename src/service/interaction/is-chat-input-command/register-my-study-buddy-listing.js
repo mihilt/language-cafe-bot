@@ -21,7 +21,7 @@ export default async (interaction) => {
   const level = new TextInputBuilder()
     .setCustomId('level')
     .setLabel('Put language levels')
-    .setPlaceholder('ex: B1,C2 (A1/A2/B1/B2/C1/C2)')
+    .setPlaceholder('ex: B1, A2 (use CEFR, put all levels even if same)')
     .setValue(studyBuddy?.level || '')
     .setStyle(TextInputStyle.Short)
     .setMaxLength(100);
