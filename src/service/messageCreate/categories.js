@@ -1,3 +1,4 @@
+import latinize from 'latinize';
 import config from '../../config/index.js';
 import alphabetEmojis from '../../data/alphabet-emojis.js';
 import Category from '../../models/category.js';
@@ -10,7 +11,7 @@ export default async (message) => {
     return;
   }
 
-  const clientAlphabet = clientContent
+  const clientAlphabet = latinize(clientContent)
     .split('')
     .filter((e) => /[a-zA-Z]/.test(e))[0]
     ?.toUpperCase();
