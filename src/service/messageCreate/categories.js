@@ -1,27 +1,27 @@
 import config from '../../config/index.js';
 import alphabetEmojis from '../../data/alphabet-emojis.js';
 import Category from '../../models/category.js';
+import flagEmojis from '../../data/flag-emojis.js';
 
 export default async (message) => {
+  const { content: clientContent } = message;
+
+  if (!flagEmojis.some((flagEmoji) => clientContent.includes(flagEmoji))) {
+    return;
+  }
+
+  const clientAlphabet = clientContent
+    .split('')
+    .filter((e) => /[a-zA-Z]/.test(e))[0]
+    ?.toUpperCase();
+
+  if (!clientAlphabet) {
+    return;
+  }
+
+  let currentCategory = await Category.findOne().sort({ createdAt: 1 });
+
   try {
-    const { content: clientContent } = message;
-
-    const temp = clientContent.match(/\(([^)]+)\)/);
-
-    // check if the message contains something like (category)
-    if (!temp) {
-      return;
-    }
-
-    const clientAlphabet = temp[1][0].toUpperCase();
-
-    // check if the first character of the category is not an alphabet
-    if (clientAlphabet.charCodeAt(0) < 65 || clientAlphabet.charCodeAt(0) > 90) {
-      return;
-    }
-
-    let currentCategory = await Category.findOne().sort({ createdAt: 1 });
-
     if (!currentCategory) {
       message.channel.send({
         embeds: [
@@ -81,8 +81,9 @@ export default async (message) => {
           alphabet: filteredCategoryAlphabet,
         },
       );
-      message.react(alphabetEmojis[clientAlphabet]).catch(() => {});
     }
+
+    message.react(alphabetEmojis[clientAlphabet]).catch(() => {});
 
     const title = 'Current Category';
 
