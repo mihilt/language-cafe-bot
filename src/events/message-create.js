@@ -4,12 +4,14 @@ import suggestionBoxMessageCreate from '../service/messageCreate/suggestion-box.
 import passTheCoffeeCup from '../service/messageCreate/pass-the-coffee-cup.js';
 import passTheEmoji from '../service/messageCreate/emoji-blend.js';
 import config from '../config/index.js';
+import categories from '../service/messageCreate/categories.js';
 
 const {
   SUGGESTION_BOX_CHANNEL_ID: suggestionBoxChannelId,
   PASS_THE_COFFEE_CUP_CHANNEL_ID: passTheCoffeeCupChannelId,
   EMOJI_BLEND_CHANNEL_ID: emojiBlendChannelId,
   STUDY_CHECK_IN_CHANNEL_ID: studyCheckInChannelId,
+  CATEGORIES_CHANNEL_ID: categoriesChannelId,
 } = config;
 
 export default {
@@ -18,7 +20,7 @@ export default {
     if (message.author.bot) return;
 
     // #study-check-in
-    if (message.channel.id === studyCheckInChannelId && message.content.startsWith('!lc-streak')) {
+    if (message.channel.id === studyCheckInChannelId) {
       studyCheckIn(message);
     }
 
@@ -35,6 +37,11 @@ export default {
     // #emoji-blend
     if (message.channel.id === emojiBlendChannelId) {
       passTheEmoji(message);
+    }
+
+    // #categories
+    if (message.channel.id === categoriesChannelId) {
+      categories(message);
     }
   },
 };

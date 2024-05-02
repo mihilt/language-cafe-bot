@@ -7,6 +7,7 @@ import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-mo
 import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
 import joinPomodoroGroup from '../service/interaction/is-button/join-pomodoro-group.js';
 import registerMyStudyBuddyListing from '../service/interaction/is-modal-submit/register-my-study-buddy-listing.js';
+import createNewCategory from '../service/interaction/is-modal-submit/create-new-category.js';
 
 export default {
   name: Events.InteractionCreate,
@@ -17,36 +18,32 @@ export default {
     }
 
     if (interaction.isModalSubmit()) {
+      channelLog(
+        generateInteractionCreateLogContent(
+          interaction,
+          `customId: ${interaction.customId}\ninteraction.isModalSubmit() is true`,
+        ),
+      );
+
       if (interaction.customId === 'generate-poll') {
-        channelLog(
-          generateInteractionCreateLogContent(
-            interaction,
-            `customId: ${interaction.customId}\ninteraction.isModalSubmit() is true`,
-          ),
-        );
         GeneratePollModalSubmit(interaction);
         return;
       }
 
       if (interaction.customId === 'register-my-exchange-listing') {
-        channelLog(
-          generateInteractionCreateLogContent(
-            interaction,
-            `customId: ${interaction.customId}\ninteraction.isModalSubmit() is true`,
-          ),
-        );
         RegisterExchangePartnerListModalSubmit(interaction);
+        return;
       }
-    }
 
-    if (interaction.customId === 'register-my-study-buddy-listing') {
-      channelLog(
-        generateInteractionCreateLogContent(
-          interaction,
-          `customId: ${interaction.customId}\ninteraction.isButton() is true`,
-        ),
-      );
-      registerMyStudyBuddyListing(interaction);
+      if (interaction.customId === 'register-my-study-buddy-listing') {
+        registerMyStudyBuddyListing(interaction);
+        return;
+      }
+
+      if (interaction.customId === 'create-new-category') {
+        createNewCategory(interaction);
+        return;
+      }
     }
 
     if (interaction.isButton()) {
@@ -59,14 +56,18 @@ export default {
 
       if (interaction.customId.startsWith('get-exchange-partner')) {
         getExchangeListing(interaction);
+        return;
       }
 
       if (interaction.customId.startsWith('get-study-buddy')) {
         getStudyBuddyListing(interaction);
+        return;
       }
 
       if (interaction.customId.startsWith('join-pomodoro-group')) {
         joinPomodoroGroup(interaction);
+        // eslint-disable-next-line no-useless-return
+        return;
       }
     }
   },

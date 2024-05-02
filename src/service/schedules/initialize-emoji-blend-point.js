@@ -12,7 +12,7 @@ const initializeEmojiBlendPoint = async () => {
 
     const user = await client.users.fetch(emojiBlend[0].id);
 
-    const content = `### This Month’s Emoji Blend Result\nThe winner is ${`<@${dbUser.id}>`} with ${
+    const content = `### This Month's Emoji-Blend Result\nThe winner is ${`<@${dbUser.id}>`} with ${
       dbUser.point
     } points!`;
 
