@@ -1,8 +1,11 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import Category from '../../models/category.js';
 
 export default {
-  data: new SlashCommandBuilder().setName('get-categories').setDescription('Get categories'),
+  data: new SlashCommandBuilder()
+    .setName('get-categories')
+    .setDescription('Get categories')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const categories = await Category.find().sort({ createdAt: 1 });
