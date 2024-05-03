@@ -66,7 +66,7 @@ export default async (message) => {
           {
             color: 0x65a69e,
             title: 'Category Completed',
-            description: `Category\n\`\`\`\n${currentCategory.message}\n\`\`\``,
+            description: `\`\`\`\n${currentCategory.message}\n\`\`\``,
           },
         ],
       });
@@ -93,7 +93,7 @@ export default async (message) => {
           {
             color: 0x65a69e,
             title: 'New Category',
-            description: `Category\n\`\`\`\n${currentCategory.message}\n\`\`\``,
+            description: `\`\`\`\n${currentCategory.message}\n\`\`\``,
           },
         ],
       });
