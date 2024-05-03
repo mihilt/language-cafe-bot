@@ -2,10 +2,22 @@ import Category from '../../../models/category.js';
 
 export default async (interaction) => {
   const message = interaction.fields.getTextInputValue('message');
+  const exceptedLetters = interaction.fields.getTextInputValue('excepted-letters');
+
+  const refinedLetters = exceptedLetters
+    .toUpperCase()
+    .split('')
+    .filter((e) => /[a-zA-Z]/.test(e))
+    .join('');
+
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    .split('')
+    .filter((e) => !refinedLetters.includes(e))
+    .join('');
 
   const res = await Category.create({
     message,
-    alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    alphabet: letters,
   });
 
   if (res) {
@@ -13,7 +25,9 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          description: 'Category created successfully',
+          description: `Category created successfully\n\nMessage\`\`\`\n${message}\n\`\`\`\nRemaining Letters\`\`\`\n${letters
+            .split('')
+            .join(',')}\n\`\`\``,
         },
       ],
       ephemeral: true,

@@ -66,7 +66,7 @@ export default async (message) => {
           {
             color: 0x65a69e,
             title: 'Category Completed',
-            description: `\`\`\`${currentCategory.message}\`\`\``,
+            description: `Category\n\`\`\`\n${currentCategory.message}\n\`\`\``,
           },
         ],
       });
@@ -93,7 +93,7 @@ export default async (message) => {
           {
             color: 0x65a69e,
             title: 'New Category',
-            description: `\`\`\`${currentCategory.message}\`\`\``,
+            description: `Category\n\`\`\`\n${currentCategory.message}\n\`\`\``,
           },
         ],
       });
@@ -113,12 +113,14 @@ export default async (message) => {
         {
           color: 0x65a69e,
           title,
-          description: `\`\`\`${
+          description: `Category\n\`\`\`\n${
             currentCategory.message
-          }\`\`\`\n### Remaining Letters\n${filteredCategoryAlphabet
+          }\n\`\`\`\nRemaining Letters\n${filteredCategoryAlphabet
             .split('')
             .map((e) => alphabetEmojis[e])
-            .join(', ')}`,
+            .join(
+              ', ',
+            )}\n\nHow to Play\nhttps://discord.com/channels/739911855795077282/1235394383700955217/1235681286559895624`,
         },
       ],
     });

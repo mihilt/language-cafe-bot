@@ -10,7 +10,18 @@ export default async (interaction) => {
     .setLabel('Put message content')
     .setStyle(TextInputStyle.Paragraph);
 
-  modal.addComponents(new ActionRowBuilder().addComponents(message));
+  const exceptedLetters = new TextInputBuilder()
+    .setRequired(false)
+    .setCustomId('excepted-letters')
+    .setLabel('Put excepted letters')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('QXVZ')
+    .setValue('QXVZ');
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(message),
+    new ActionRowBuilder().addComponents(exceptedLetters),
+  );
 
   await interaction.showModal(modal);
 };
