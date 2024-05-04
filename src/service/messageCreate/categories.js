@@ -50,13 +50,15 @@ export default async (message) => {
 
     const currentMessages = await message.channel.messages.fetch({ limit: 50 });
 
-    const stickyMessage = currentMessages.find(
+    const stickyMessages = currentMessages.filter(
       (currentMessage) =>
         currentMessage?.author?.id === config.CLIENT_ID &&
         currentMessage?.embeds[0]?.title === title,
     );
 
-    await stickyMessage?.delete().catch(() => {});
+    await Promise.all(
+      stickyMessages.map((stickyMessage) => stickyMessage.delete().catch(() => {})),
+    );
 
     let filteredCategoryAlphabet = currentCategoryAlphabet.replace(clientAlphabet, '');
 
