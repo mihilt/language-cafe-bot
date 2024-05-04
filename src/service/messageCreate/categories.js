@@ -1,8 +1,10 @@
+import { userMention } from 'discord.js';
 import latinize from 'latinize';
 import config from '../../config/index.js';
 import alphabetEmojis from '../../data/alphabet-emojis.js';
-import Category from '../../models/category.js';
 import flagEmojis from '../../data/flag-emojis.js';
+import CategoryScore from '../../models/category-score.js';
+import Category from '../../models/category.js';
 
 export default async (message) => {
   try {
@@ -46,6 +48,46 @@ export default async (message) => {
 
     message.react(alphabetEmojis[clientAlphabet]).catch(() => {});
 
+    const score = (() => {
+      if (currentCategoryAlphabet.length === 1) {
+        return 5;
+      }
+      if (currentCategoryAlphabet.length <= 3) {
+        return 3;
+      }
+      return 1;
+    })();
+
+    const messageAuthorId = message.author.id;
+
+    const findOneRes = await CategoryScore.findOne({ id: messageAuthorId });
+
+    if (!findOneRes) {
+      const categoryScore = new CategoryScore({
+        id: messageAuthorId,
+        score,
+      });
+      await categoryScore.save();
+    } else {
+      await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } });
+    }
+
+    await message.channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          footer: {
+            icon_url: message.author.avatarURL(),
+            text: `${message.author.globalName}(${message.author.username}#${
+              message.author.discriminator
+            }) earned ${score} score(s), Total is now ${(
+              (findOneRes?.score || 0) + score
+            ).toLocaleString()} score(s).`,
+          },
+        },
+      ],
+    });
+
     const title = 'Current Category';
 
     const currentMessages = await message.channel.messages.fetch({ limit: 50 });
@@ -63,15 +105,28 @@ export default async (message) => {
     let filteredCategoryAlphabet = currentCategoryAlphabet.replace(clientAlphabet, '');
 
     if (filteredCategoryAlphabet.length === 0) {
+      const categoryScores = await CategoryScore.find().sort({ score: -1 }).limit(1);
+
+      const dbUser = categoryScores[0];
+
+      const user = await message.client.users.fetch(categoryScores[0].id);
+
       await message.channel.send({
         embeds: [
           {
             color: 0x65a69e,
             title: 'Category Completed',
-            description: `\`\`\`\n${currentCategory.message}\n\`\`\``,
+            description: `Category\n\`\`\`\n${
+              currentCategory.message
+            }\n\`\`\`\nThe best contributor\n${userMention(dbUser.id)}`,
+            thumbnail: {
+              url: user.avatarURL(),
+            },
           },
         ],
       });
+
+      await CategoryScore.deleteMany({});
 
       await Category.deleteOne({ _id: currentCategory._id });
       currentCategory = await Category.findOne().sort({ createdAt: 1 });
