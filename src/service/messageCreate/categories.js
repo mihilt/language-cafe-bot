@@ -6,6 +6,50 @@ import flagEmojis from '../../data/flag-emojis.js';
 import CategoryScore from '../../models/category-score.js';
 import Category from '../../models/category.js';
 
+const sendNewStickyMessage = async ({ message, currentCategory, filteredCategoryAlphabet }) => {
+  const title = 'Current Category';
+
+  const currentMessages = await message.channel.messages.fetch({ limit: 50 });
+
+  const stickyMessages = currentMessages.filter(
+    (currentMessage) =>
+      currentMessage?.author?.id === config.CLIENT_ID && currentMessage?.embeds[0]?.title === title,
+  );
+
+  await Promise.all(stickyMessages.map((stickyMessage) => stickyMessage.delete().catch(() => {})));
+
+  if (filteredCategoryAlphabet.length === 1) {
+    await message.channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          title,
+          footer: {
+            text: 'There is only one letter left, so you can use any word that contains the letter, not just one that starts with it.',
+          },
+        },
+      ],
+    });
+  }
+
+  await message.channel.send({
+    embeds: [
+      {
+        color: 0x65a69e,
+        title,
+        description: `Category\n\`\`\`\n${
+          currentCategory.message
+        }\n\`\`\`\nRemaining Letters\n${filteredCategoryAlphabet
+          .split('')
+          .map((e) => alphabetEmojis[e])
+          .join(
+            ', ',
+          )}\n\nHow to Play\nhttps://discord.com/channels/739911855795077282/1235394383700955217/1235681286559895624`,
+      },
+    ],
+  });
+};
+
 export default async (message) => {
   try {
     const { content: clientContent } = message;
@@ -43,7 +87,14 @@ export default async (message) => {
       return letters[0];
     })();
 
+    let filteredCategoryAlphabet = currentCategoryAlphabet.replace(clientAlphabet, '');
+
     if (!clientAlphabet || !currentCategoryAlphabet.includes(clientAlphabet)) {
+      await sendNewStickyMessage({
+        message,
+        currentCategory,
+        filteredCategoryAlphabet,
+      });
       message.react('❌').catch(() => {});
       return;
     }
@@ -56,6 +107,9 @@ export default async (message) => {
       }
       if (currentCategoryAlphabet.length <= 3) {
         return 1.9;
+      }
+      if (currentCategoryAlphabet.length <= 5) {
+        return 1.01;
       }
       return 1;
     })();
@@ -73,22 +127,6 @@ export default async (message) => {
     } else {
       await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } });
     }
-
-    const title = 'Current Category';
-
-    const currentMessages = await message.channel.messages.fetch({ limit: 50 });
-
-    const stickyMessages = currentMessages.filter(
-      (currentMessage) =>
-        currentMessage?.author?.id === config.CLIENT_ID &&
-        currentMessage?.embeds[0]?.title === title,
-    );
-
-    await Promise.all(
-      stickyMessages.map((stickyMessage) => stickyMessage.delete().catch(() => {})),
-    );
-
-    let filteredCategoryAlphabet = currentCategoryAlphabet.replace(clientAlphabet, '');
 
     if (filteredCategoryAlphabet.length === 0) {
       const categoryScores = await CategoryScore.find().sort({ score: -1, createdAt: 1 }).limit(1);
@@ -151,35 +189,10 @@ export default async (message) => {
       );
     }
 
-    if (filteredCategoryAlphabet.length === 1) {
-      await message.channel.send({
-        embeds: [
-          {
-            color: 0x65a69e,
-            title,
-            footer: {
-              text: 'There is only one letter left, and you can use any word that contains the letter, not just one that starts with it.',
-            },
-          },
-        ],
-      });
-    }
-
-    await message.channel.send({
-      embeds: [
-        {
-          color: 0x65a69e,
-          title,
-          description: `Category\n\`\`\`\n${
-            currentCategory.message
-          }\n\`\`\`\nRemaining Letters\n${filteredCategoryAlphabet
-            .split('')
-            .map((e) => alphabetEmojis[e])
-            .join(
-              ', ',
-            )}\n\nHow to Play\nhttps://discord.com/channels/739911855795077282/1235394383700955217/1235681286559895624`,
-        },
-      ],
+    await sendNewStickyMessage({
+      message,
+      currentCategory,
+      filteredCategoryAlphabet,
     });
   } catch (error) {
     // eslint-disable-next-line no-console
