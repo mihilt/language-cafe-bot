@@ -14,15 +14,6 @@ export default async (message) => {
       return;
     }
 
-    const clientAlphabet = latinize(clientContent)
-      .split('')
-      .filter((e) => /[a-zA-Z]/.test(e))[0]
-      ?.toUpperCase();
-
-    if (!clientAlphabet) {
-      return;
-    }
-
     let currentCategory = await Category.findOne().sort({ createdAt: 1 });
 
     if (!currentCategory) {
@@ -41,7 +32,18 @@ export default async (message) => {
 
     const currentCategoryAlphabet = currentCategory.alphabet;
 
-    if (!currentCategoryAlphabet.includes(clientAlphabet)) {
+    const isLastAlphabet = currentCategoryAlphabet.length === 1;
+
+    const clientAlphabet = (() => {
+      const latinizedContent = latinize(clientContent).toUpperCase();
+      const letters = latinizedContent.split('').filter((char) => /[a-zA-Z]/.test(char));
+      if (isLastAlphabet) {
+        return letters.includes(currentCategoryAlphabet) ? currentCategoryAlphabet : null;
+      }
+      return letters[0];
+    })();
+
+    if (!clientAlphabet || !currentCategoryAlphabet.includes(clientAlphabet)) {
       message.react('❌').catch(() => {});
       return;
     }
@@ -49,11 +51,11 @@ export default async (message) => {
     message.react(alphabetEmojis[clientAlphabet]).catch(() => {});
 
     const score = (() => {
-      if (currentCategoryAlphabet.length === 1) {
-        return 5;
+      if (isLastAlphabet) {
+        return 2.9;
       }
       if (currentCategoryAlphabet.length <= 3) {
-        return 3;
+        return 1.9;
       }
       return 1;
     })();
@@ -72,22 +74,6 @@ export default async (message) => {
       await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } });
     }
 
-    await message.channel.send({
-      embeds: [
-        {
-          color: 0x65a69e,
-          footer: {
-            icon_url: message.author.avatarURL(),
-            text: `${message.author.globalName}(${message.author.username}#${
-              message.author.discriminator
-            }) earned ${score} score(s), Total is now ${(
-              (findOneRes?.score || 0) + score
-            ).toLocaleString()} score(s).`,
-          },
-        },
-      ],
-    });
-
     const title = 'Current Category';
 
     const currentMessages = await message.channel.messages.fetch({ limit: 50 });
@@ -105,11 +91,11 @@ export default async (message) => {
     let filteredCategoryAlphabet = currentCategoryAlphabet.replace(clientAlphabet, '');
 
     if (filteredCategoryAlphabet.length === 0) {
-      const categoryScores = await CategoryScore.find().sort({ score: -1 }).limit(1);
+      const categoryScores = await CategoryScore.find().sort({ score: -1, createdAt: 1 }).limit(1);
 
       const dbUser = categoryScores[0];
 
-      const user = await message.client.users.fetch(categoryScores[0].id);
+      const user = await message.client.users.fetch(dbUser.id);
 
       await message.channel.send({
         embeds: [
@@ -118,7 +104,7 @@ export default async (message) => {
             title: 'Category Completed',
             description: `Category\n\`\`\`\n${
               currentCategory.message
-            }\n\`\`\`\nThe best contributor\n${userMention(dbUser.id)}`,
+            }\n\`\`\`\nThe Best Contributor\n${userMention(dbUser.id)}`,
             thumbnail: {
               url: user.avatarURL(),
             },
@@ -163,6 +149,20 @@ export default async (message) => {
           alphabet: filteredCategoryAlphabet,
         },
       );
+    }
+
+    if (filteredCategoryAlphabet.length === 1) {
+      await message.channel.send({
+        embeds: [
+          {
+            color: 0x65a69e,
+            title,
+            footer: {
+              text: 'There is only one letter left, and you can use any word that contains the letter, not just one that starts with it.',
+            },
+          },
+        ],
+      });
     }
 
     await message.channel.send({
