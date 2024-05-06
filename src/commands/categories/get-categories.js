@@ -11,21 +11,26 @@ export default {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    channelLog(generateInteractionCreateLogContent(interaction));
+    try {
+      channelLog(generateInteractionCreateLogContent(interaction));
 
-    const categories = await Category.find().sort({ createdAt: 1 });
+      const categories = await Category.find().sort({ createdAt: 1 });
 
-    const description = categories.map((category) => category.message).join('\n\n');
+      const description = categories.map((category) => category.message).join('\n\n');
 
-    await interaction.reply({
-      embeds: [
-        {
-          color: 0x65a69e,
-          title: 'Categories',
-          description: `\`\`\`\n${description}\n\`\`\``,
-        },
-      ],
-      ephemeral: true,
-    });
+      await interaction.reply({
+        embeds: [
+          {
+            color: 0x65a69e,
+            title: 'Categories',
+            description: `\`\`\`\n${description}\n\`\`\``,
+          },
+        ],
+        ephemeral: true,
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
   },
 };
