@@ -5,6 +5,7 @@ import alphabetEmojis from '../../data/alphabet-emojis.js';
 import flagEmojis from '../../data/flag-emojis.js';
 import CategoryScore from '../../models/category-score.js';
 import Category from '../../models/category.js';
+import A_TO_Z from '../../data/a2z.js';
 
 const sendNewStickyMessage = async ({ message, currentCategory, filteredCategoryAlphabet }) => {
   const title = 'Current Category';
@@ -153,6 +154,12 @@ export default async (message) => {
       await CategoryScore.deleteMany({});
 
       await Category.deleteOne({ _id: currentCategory._id });
+
+      await Category.create({
+        message: currentCategory.message,
+        alphabet: A_TO_Z,
+      });
+
       currentCategory = await Category.findOne().sort({ createdAt: 1 });
 
       if (!currentCategory) {
