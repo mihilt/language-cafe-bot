@@ -155,10 +155,10 @@ export default async (message) => {
 
       await Category.deleteOne({ _id: currentCategory._id });
 
-      await Category.create({
+      /* await Category.create({
         message: currentCategory.message,
         alphabet: A_TO_Z,
-      });
+      }); */
 
       currentCategory = await Category.findOne().sort({ createdAt: 1 });
 

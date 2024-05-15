@@ -4,7 +4,7 @@ import channelLog, { generateMessageCreateLogContent } from '../utils/channel-lo
 import config from '../../config/index.js';
 
 export default async (message) => {
-  if (!message.content.startsWith('!lc-streak')) return;
+  if (!message.content.startsWith('!lc-streak') || message.content === '!lc-streak') return;
 
   const users = await studyCheckInKeyv.get('user');
   const user = users[message.author.id];
