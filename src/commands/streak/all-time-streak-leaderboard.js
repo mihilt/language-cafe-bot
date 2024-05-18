@@ -14,9 +14,11 @@ export default {
     const userObject = await studyCheckInKeyv.get('user');
     const propertyNames = Object.keys(userObject);
 
-    const havePointsPropertyNames = propertyNames.filter((key) => userObject[key].highestPoint > 0);
+    const filteredUsers = propertyNames
+      .filter((key) => userObject[key].highestPoint > 0)
+      .filter((key) => interaction.guild.members.cache.has(key));
 
-    const userList = havePointsPropertyNames.map((key) => ({
+    const userList = filteredUsers.map((key) => ({
       id: key,
       lastAttendanceTimestamp: userObject[key].lastAttendanceTimestamp,
       expiredTimestamp: userObject[key].expiredTimestamp,
