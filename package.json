@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start:dev": "nodemon .",
+    "dev": "nodemon .",
     "start": "NODE_ENV=production node .",
     "deploy-commands:dev": "node src/deploy-commands.js",
     "deploy-commands": "NODE_ENV=production node src/deploy-commands.js",
