@@ -1,13 +1,15 @@
 import { Events } from 'discord.js';
 import getExchangeListing from '../service/interaction/is-button/get-exchange-listing.js';
 import getStudyBuddyListing from '../service/interaction/is-button/get-study-buddy-listing.js';
+import joinPomodoroGroup from '../service/interaction/is-button/join-pomodoro-group.js';
 import cooldown from '../service/interaction/is-chat-input-command/cooldown.js';
+import createNewCategory from '../service/interaction/is-modal-submit/create-new-category.js';
 import GeneratePollModalSubmit from '../service/interaction/is-modal-submit/generate-poll.js';
 import RegisterExchangePartnerListModalSubmit from '../service/interaction/is-modal-submit/register-my-exchange-listing.js';
-import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
-import joinPomodoroGroup from '../service/interaction/is-button/join-pomodoro-group.js';
 import registerMyStudyBuddyListing from '../service/interaction/is-modal-submit/register-my-study-buddy-listing.js';
-import createNewCategory from '../service/interaction/is-modal-submit/create-new-category.js';
+import channelLog, { generateInteractionCreateLogContent } from '../service/utils/channel-log.js';
+import createANewMatchMatchTopic from '../service/interaction/is-modal-submit/create-a-new-match-match-topic.js';
+import participateMatchMatch from '../service/interaction/is-modal-submit/participate-match-match.js';
 
 export default {
   name: Events.InteractionCreate,
@@ -42,6 +44,16 @@ export default {
 
       if (interaction.customId === 'create-new-category') {
         createNewCategory(interaction);
+        return;
+      }
+
+      if (interaction.customId === 'create-a-new-match-match-topic') {
+        createANewMatchMatchTopic(interaction);
+        return;
+      }
+
+      if (interaction.customId === 'participate-match-match') {
+        participateMatchMatch(interaction);
         return;
       }
     }
