@@ -1,3 +1,4 @@
+import { userMention } from 'discord.js';
 import client from '../../client/index.js';
 import config from '../../config/index.js';
 import MatchMatchMessage from '../../models/match-match-message.js';
@@ -55,44 +56,72 @@ const sendANewMatchMatchMessage = async () => {
       }, [])
       .sort((a, b) => a - b);
 
-    const descriptionArr = [];
+    const filteredDescriptionArr = [];
 
     filteredSubmissionArr.forEach((submission) => {
       const filteredMatchMatchMessages = matchMatchMessages.filter(
         (matchMatchMessage) => matchMatchMessage.submission === submission,
       );
 
-      descriptionArr.push({
+      filteredDescriptionArr.push({
         submission,
         items: filteredMatchMatchMessages,
       });
     });
 
-    const description = `${descriptionArr
+    const otherParticipants = matchMatchMessages.filter(
+      (matchMatchMessage) => !filteredSubmissionArr.includes(matchMatchMessage.submission),
+    );
+
+    const description = `# Topic: ${matchMatchTopic.topic}\n${filteredDescriptionArr
       .map(
         (e) =>
           `### Submission: ${e.submission}\n\n${e.items
-            .map(
-              (item) =>
-                `id: ${item.id}, submission: ${item.submission}, submissionInTargetLanguage: ${item.submissionInTargetLanguage}`,
-            )
+            .map((item) => `${userMention(item.id)} - ||${item.submissionInTargetLanguage}||`)
             .join('\n')}`,
       )
-      .join('\n')}`;
+      .join(
+        '\n',
+      )}\n\n**Those matched users get 1 point each.**\n\n### Other Participants: ${otherParticipants
+      .map((item) => userMention(item.id))
+      .join(', ')}`;
 
     await channel.send({
       embeds: [
         {
           color: 0x65a69e,
-          title: `Topic: ${matchMatchTopic.topic}`,
           description,
         },
       ],
     });
 
-    // TODO: delete all match-match messages and current match-match topic
-    // await MatchMatchMessage.deleteMany();
-    // await MatchMatchTopic.deleteOne({ _id: matchMatchTopic._id });
+    await MatchMatchMessage.deleteMany();
+    await MatchMatchTopic.deleteOne({ _id: matchMatchTopic._id });
+
+    const stickyMessageTitle = 'Match-match';
+    const currentMessges = await channel.messages.fetch(20);
+    const stickyMessages = currentMessges.filter(
+      (currentMessage) =>
+        currentMessage?.author?.id === config.CLIENT_ID &&
+        currentMessage?.embeds[0]?.title === stickyMessageTitle,
+    );
+
+    await Promise.all(
+      stickyMessages.map((stickyMessage) => stickyMessage.delete().catch(() => {})),
+    );
+
+    const currentMatchMatchTopic = await MatchMatchTopic.findOne().sort({ createdAt: 1 });
+    const numberOfSubmissions = await MatchMatchMessage.countDocuments();
+
+    await channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          title: stickyMessageTitle,
+          description: `\`${numberOfSubmissions}\` users are participating.\n\nTopic\n\`\`\`\n${currentMatchMatchTopic.topic}\n\`\`\``,
+        },
+      ],
+    });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);
