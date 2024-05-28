@@ -80,9 +80,9 @@ const sendANewMatchMatchMessage = async () => {
             .map((item) => `${userMention(item.id)} - ||${item.submissionInTargetLanguage}||`)
             .join('\n')}`,
       )
-      .join(
-        '\n',
-      )}\n\n**Those matched users get 1 point each.**\n\n### Other Participants: ${otherParticipants
+      .join('\n')}\n\n**Those matched users get 1 point each.**${
+      filteredDescriptionArr.length === 0 && 'There are no matched users.'
+    }\n\n### Other Participants: ${otherParticipants
       .map((item) => userMention(item.id))
       .join(', ')}`;
 
