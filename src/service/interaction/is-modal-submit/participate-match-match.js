@@ -2,6 +2,8 @@ import config from '../../../config/index.js';
 import MatchMatchMessage from '../../../models/match-match-message.js';
 import MatchMatchTopic from '../../../models/match-match-topic.js';
 
+const { CLIENT_ID: clientId, MATCH_MATCH_COMMAND_ID: matchMatchCommandId } = config;
+
 export default async (interaction) => {
   try {
     const currentMatchMatchTopic = await MatchMatchTopic.findOne().sort({ createdAt: 1 });
@@ -45,8 +47,8 @@ export default async (interaction) => {
           {
             color: 0x65a69e,
             description: `Submission ${
-              res.createdAt.toString() === res.updatedAt.toString() ? 'participated' : '**updated**'
-            } successfully\n\nSubmission In Target Language:\`\`\`\n${submissionInTargetLanguage}\n\`\`\`\nSubmission:\`\`\`\n${submission}\n\`\`\``,
+              res.createdAt.toString() === res.updatedAt.toString() ? 'received' : '**updated**'
+            } successfully\n\nSubmission In Target Language:\`\`\`\n${submissionInTargetLanguage}\n\`\`\`\nEnglish Translation of Submission:\`\`\`\n${submission}\n\`\`\``,
           },
         ],
         ephemeral: true,
@@ -69,7 +71,7 @@ export default async (interaction) => {
     const currentMessges = await interaction.channel.messages.fetch(20);
     const stickyMessages = currentMessges.filter(
       (currentMessage) =>
-        currentMessage?.author?.id === config.CLIENT_ID &&
+        currentMessage?.author?.id === clientId &&
         currentMessage?.embeds[0]?.title === stickyMessageTitle,
     );
 
@@ -84,7 +86,16 @@ export default async (interaction) => {
         {
           color: 0x65a69e,
           title: stickyMessageTitle,
-          description: `\`${numberOfSubmissions}\` users are participating.\n\nTopic\n\`\`\`\n${currentMatchMatchTopic.topic}\n\`\`\``,
+          description: `Topic\n\`\`\`\n${
+            currentMatchMatchTopic.topic
+          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period closes **<t:${Math.floor(
+            (() => {
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
+              if (now.getTime() <= Date.now()) now.setDate(now.getDate() + 1);
+              return now;
+            })().getTime() / 1000,
+          )}:R>\n\nClick </match-match:${matchMatchCommandId}> here and send it to participate\n\nHow to Play: https://discord.com/channels/739911855795077282/1244836542036443217/1244923513199005758`,
         },
       ],
     });
