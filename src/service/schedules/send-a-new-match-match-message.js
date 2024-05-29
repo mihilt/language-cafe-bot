@@ -4,7 +4,11 @@ import config from '../../config/index.js';
 import MatchMatchMessage from '../../models/match-match-message.js';
 import MatchMatchTopic from '../../models/match-match-topic.js';
 
-const { MATCH_MATCH_CHANNEL_ID: matchMatchChannelId } = config;
+const {
+  MATCH_MATCH_CHANNEL_ID: matchMatchChannelId,
+
+  MATCH_MATCH_COMMAND_ID: matchMatchCommandId,
+} = config;
 
 const sendANewMatchMatchMessage = async () => {
   try {
@@ -16,7 +20,7 @@ const sendANewMatchMatchMessage = async () => {
         embeds: [
           {
             color: 0x65a69e,
-            description: 'There are no users participating in the match-match topic.',
+            description: 'There are no users participating in the current match-match topic.',
           },
         ],
       });
@@ -43,8 +47,10 @@ const sendANewMatchMatchMessage = async () => {
     const submissionWithCountObj = {};
 
     matchMatchMessages.forEach((matchMatchMessage) => {
-      submissionWithCountObj[matchMatchMessage.submission] =
-        submissionWithCountObj[matchMatchMessage.submission] + 1 || 1;
+      const upperCaseSubmission = matchMatchMessage.submission.toUpperCase();
+
+      submissionWithCountObj[upperCaseSubmission] =
+        submissionWithCountObj[upperCaseSubmission] + 1 || 1;
     });
 
     const filteredSubmissionArr = Object.keys(submissionWithCountObj)
@@ -60,7 +66,7 @@ const sendANewMatchMatchMessage = async () => {
 
     filteredSubmissionArr.forEach((submission) => {
       const filteredMatchMatchMessages = matchMatchMessages.filter(
-        (matchMatchMessage) => matchMatchMessage.submission === submission,
+        (matchMatchMessage) => matchMatchMessage.submission.toUpperCase() === submission,
       );
 
       filteredDescriptionArr.push({
@@ -70,21 +76,36 @@ const sendANewMatchMatchMessage = async () => {
     });
 
     const otherParticipants = matchMatchMessages.filter(
-      (matchMatchMessage) => !filteredSubmissionArr.includes(matchMatchMessage.submission),
+      (matchMatchMessage) =>
+        !filteredSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()),
     );
 
-    const description = `# Topic: ${matchMatchTopic.topic}\n${filteredDescriptionArr
-      .map(
-        (e) =>
-          `### Submission: ${e.submission}\n\n${e.items
-            .map((item) => `${userMention(item.id)} - ||${item.submissionInTargetLanguage}||`)
-            .join('\n')}`,
-      )
-      .join('\n')}\n\n**Those matched users get 1 point each.**${
-      filteredDescriptionArr.length === 0 && 'There are no matched users.'
-    }\n\n### Other Participants: ${otherParticipants
-      .map((item) => userMention(item.id))
-      .join(', ')}`;
+    const description = `# Topic: ${matchMatchTopic.topic}\n${
+      filteredDescriptionArr.length > 0
+        ? `### Matched Users\n${filteredDescriptionArr
+            .map(
+              (e) =>
+                `**${e.submission}**\n${e.items
+                  .map(
+                    (item) =>
+                      `${userMention(item.id)} - ${item.submission} (${
+                        item.submissionInTargetLanguage
+                      })`,
+                  )
+                  .join('\n')}`,
+            )
+            .join('\n\n')}\n\n**All matched users get 1 point each.**`
+        : '### There are no matched users.'
+    }\n${
+      otherParticipants.length > 0
+        ? `### Other Participants\n${otherParticipants
+            .map(
+              (item) =>
+                `${userMention(item.id)} - ${item.submission} (${item.submissionInTargetLanguage})`,
+            )
+            .join('\n')}`
+        : '### There are no other participants.'
+    }`;
 
     await channel.send({
       embeds: [
@@ -118,7 +139,16 @@ const sendANewMatchMatchMessage = async () => {
         {
           color: 0x65a69e,
           title: stickyMessageTitle,
-          description: `\`${numberOfSubmissions}\` users are participating.\n\nTopic\n\`\`\`\n${currentMatchMatchTopic.topic}\n\`\`\``,
+          description: `Topic\n\`\`\`\n${
+            currentMatchMatchTopic.topic
+          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period closes **<t:${Math.floor(
+            (() => {
+              const now = new Date();
+              now.setHours(0, 0, 0, 0);
+              if (now.getTime() <= Date.now()) now.setDate(now.getDate() + 1);
+              return now;
+            })().getTime() / 1000,
+          )}:R>\n\nClick </match-match:${matchMatchCommandId}> here and send it to participate\n\nHow to Play: https://discord.com/channels/739911855795077282/1244836542036443217/1244923513199005758`,
         },
       ],
     });
