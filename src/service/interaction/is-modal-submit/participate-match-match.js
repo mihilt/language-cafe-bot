@@ -88,7 +88,7 @@ export default async (interaction) => {
           title: stickyMessageTitle,
           description: `Topic\n\`\`\`\n${
             currentMatchMatchTopic.topic
-          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period closes **<t:${Math.floor(
+          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period ends **<t:${Math.floor(
             (() => {
               const now = new Date();
               now.setHours(0, 0, 0, 0);

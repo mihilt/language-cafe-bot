@@ -81,14 +81,14 @@ const sendANewMatchMatchMessage = async () => {
         !filteredSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()),
     );
 
-    const matchedUsersIdArr = filteredDescriptionArr.reduce((pre, cur) => {
+    const matchingUsersIdArr = filteredDescriptionArr.reduce((pre, cur) => {
       cur.items.forEach((item) => {
         pre.push(item.id);
       });
       return pre;
     }, []);
 
-    const bulkWriteArr = matchedUsersIdArr.map((id) => ({
+    const bulkWriteArr = matchingUsersIdArr.map((id) => ({
       updateOne: {
         filter: { id },
         update: { $inc: { matchMatch: 20 } },
@@ -100,7 +100,7 @@ const sendANewMatchMatchMessage = async () => {
 
     const description = `# Topic: ${matchMatchTopic.topic}\n${
       filteredDescriptionArr.length > 0
-        ? `### Matched Users\n${filteredDescriptionArr
+        ? `### Matching Users\n${filteredDescriptionArr
             .map(
               (e) =>
                 `**${e.submission}**\n${e.items
@@ -112,8 +112,8 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**All matched users get 20 points each.**`
-        : '### There are no matched users.'
+            .join('\n\n')}\n\n**All matching users get 20 points each.**`
+        : '### There are no matching users.'
     }\n${
       otherParticipants.length > 0
         ? `### Other Participants\n${otherParticipants
@@ -159,7 +159,7 @@ const sendANewMatchMatchMessage = async () => {
           title: stickyMessageTitle,
           description: `Topic\n\`\`\`\n${
             currentMatchMatchTopic.topic
-          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period closes **<t:${Math.floor(
+          }\n\`\`\`\nNumber of participants: \`${numberOfSubmissions}\`\n\n**Submission period ends **<t:${Math.floor(
             (() => {
               const now = new Date();
               now.setHours(0, 0, 0, 0);
