@@ -3,6 +3,7 @@ import client from '../../client/index.js';
 import config from '../../config/index.js';
 import MatchMatchMessage from '../../models/match-match-message.js';
 import MatchMatchTopic from '../../models/match-match-topic.js';
+import Point from '../../models/point.js';
 
 const {
   MATCH_MATCH_CHANNEL_ID: matchMatchChannelId,
@@ -80,6 +81,23 @@ const sendANewMatchMatchMessage = async () => {
         !filteredSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()),
     );
 
+    const matchedUsersIdArr = filteredDescriptionArr.reduce((pre, cur) => {
+      cur.items.forEach((item) => {
+        pre.push(item.id);
+      });
+      return pre;
+    }, []);
+
+    const bulkWriteArr = matchedUsersIdArr.map((id) => ({
+      updateOne: {
+        filter: { id },
+        update: { $inc: { matchMatch: 20 } },
+        upsert: true,
+      },
+    }));
+
+    Point.bulkWrite(bulkWriteArr);
+
     const description = `# Topic: ${matchMatchTopic.topic}\n${
       filteredDescriptionArr.length > 0
         ? `### Matched Users\n${filteredDescriptionArr
@@ -94,7 +112,7 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**All matched users get 1 point each.**`
+            .join('\n\n')}\n\n**All matched users get 20 points each.**`
         : '### There are no matched users.'
     }\n${
       otherParticipants.length > 0
