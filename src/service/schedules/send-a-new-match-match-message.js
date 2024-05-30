@@ -54,34 +54,58 @@ const sendANewMatchMatchMessage = async () => {
         submissionWithCountObj[upperCaseSubmission] + 1 || 1;
     });
 
-    const filteredSubmissionArr = Object.keys(submissionWithCountObj)
-      .reduce((pre, cur) => {
+    let [matchedSubmissionArr, overMatchedSubmissionArr] = Object.keys(
+      submissionWithCountObj,
+    ).reduce(
+      (pre, cur) => {
         if (submissionWithCountObj[cur] === 2) {
-          pre.push(cur);
+          pre[0].push(cur);
+        } else if (submissionWithCountObj[cur] > 2) {
+          pre[1].push(cur);
         }
         return pre;
-      }, [])
-      .sort((a, b) => a - b);
+      },
+      [[], []],
+    );
 
-    const filteredDescriptionArr = [];
+    matchedSubmissionArr = matchedSubmissionArr.sort((a, b) => a - b);
+    overMatchedSubmissionArr = overMatchedSubmissionArr.sort((a, b) => a - b);
 
-    filteredSubmissionArr.forEach((submission) => {
-      const filteredMatchMatchMessages = matchMatchMessages.filter(
+    const matchedDescriptionArr = [];
+
+    matchedSubmissionArr.forEach((submission) => {
+      const matchedMatchMatchMessages = matchMatchMessages.filter(
         (matchMatchMessage) => matchMatchMessage.submission.toUpperCase() === submission,
       );
 
-      filteredDescriptionArr.push({
+      matchedDescriptionArr.push({
         submission,
-        items: filteredMatchMatchMessages,
+        items: matchedMatchMatchMessages,
       });
     });
 
-    const otherParticipants = matchMatchMessages.filter(
+    const overMatchedDescriptionArr = [];
+
+    overMatchedSubmissionArr.forEach((submission) => {
+      const overMatchedMatchMatchMessages = matchMatchMessages.filter(
+        (matchMatchMessage) => matchMatchMessage.submission.toUpperCase() === submission,
+      );
+
+      overMatchedDescriptionArr.push({
+        submission,
+        items: overMatchedMatchMatchMessages,
+      });
+    });
+
+    const notMachedParticipants = matchMatchMessages.filter(
       (matchMatchMessage) =>
-        !filteredSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()),
+        !matchedSubmissionArr.includes([
+          ...matchMatchMessage.submission.toUpperCase(),
+          ...overMatchedSubmissionArr.submission.toUpperCase(),
+        ]),
     );
 
-    const matchingUsersIdArr = filteredDescriptionArr.reduce((pre, cur) => {
+    const matchingUsersIdArr = matchedDescriptionArr.reduce((pre, cur) => {
       cur.items.forEach((item) => {
         pre.push(item.id);
       });
@@ -99,8 +123,8 @@ const sendANewMatchMatchMessage = async () => {
     Point.bulkWrite(bulkWriteArr);
 
     const description = `# Topic: ${matchMatchTopic.topic}\n${
-      filteredDescriptionArr.length > 0
-        ? `### Matching Users\n${filteredDescriptionArr
+      matchedDescriptionArr.length > 0
+        ? `### Matching Users\n${matchedDescriptionArr
             .map(
               (e) =>
                 `**${e.submission}**\n${e.items
@@ -115,14 +139,30 @@ const sendANewMatchMatchMessage = async () => {
             .join('\n\n')}\n\n**All matching users get 20 points each.**`
         : '### There are no matching users.'
     }\n${
-      otherParticipants.length > 0
-        ? `### Other Participants\n${otherParticipants
+      notMachedParticipants.length > 0
+        ? `### No matches\n${notMachedParticipants
             .map(
               (item) =>
                 `${userMention(item.id)} - ${item.submission} (${item.submissionInTargetLanguage})`,
             )
             .join('\n')}`
-        : '### There are no other participants.'
+        : '### There are no unmatched users.'
+    }\n${
+      overMatchedDescriptionArr.length > 0
+        ? `### Matches with More Than 2\n${overMatchedDescriptionArr
+            .map(
+              (e) =>
+                `**${e.submission}**\n${e.items
+                  .map(
+                    (item) =>
+                      `${userMention(item.id)} - ${item.submission} (${
+                        item.submissionInTargetLanguage
+                      })`,
+                  )
+                  .join('\n')}`,
+            )
+            .join('\n\n')}\n\n`
+        : '### There are no over matching users.'
     }`;
 
     await channel.send({
