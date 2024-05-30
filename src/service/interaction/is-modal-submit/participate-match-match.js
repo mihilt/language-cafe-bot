@@ -47,8 +47,8 @@ export default async (interaction) => {
           {
             color: 0x65a69e,
             description: `Submission ${
-              res.createdAt.toString() === res.updatedAt.toString() ? 'received' : '**updated**'
-            } successfully\n\nSubmission In Target Language:\`\`\`\n${submissionInTargetLanguage}\n\`\`\`\nEnglish Translation of Submission:\`\`\`\n${submission}\n\`\`\``,
+              res.createdAt.toString() === res.updatedAt.toString() ? 'received' : 'updated'
+            } successfully\n\nSubmission in English:\`\`\`\n${submission}\n\`\`\`\nTranslation of Submission in Target Language:\`\`\`\n${submissionInTargetLanguage}\n\`\`\``,
           },
         ],
         ephemeral: true,
@@ -66,6 +66,22 @@ export default async (interaction) => {
 
       return;
     }
+
+    await interaction.channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          footer: {
+            icon_url: interaction.user.displayAvatarURL(),
+            text: `${interaction.user.globalName}(${interaction.user.username}#${
+              interaction.user.discriminator
+            }) ${
+              res.createdAt.toString() === res.updatedAt.toString() ? 'received' : 'updated'
+            } the submission`,
+          },
+        },
+      ],
+    });
 
     const stickyMessageTitle = 'Match-match';
     const currentMessges = await interaction.channel.messages.fetch(20);
