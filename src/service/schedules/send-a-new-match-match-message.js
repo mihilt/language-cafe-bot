@@ -99,10 +99,8 @@ const sendANewMatchMatchMessage = async () => {
 
     const notMachedParticipants = matchMatchMessages.filter(
       (matchMatchMessage) =>
-        !matchedSubmissionArr.includes([
-          ...matchMatchMessage.submission.toUpperCase(),
-          ...overMatchedSubmissionArr.submission.toUpperCase(),
-        ]),
+        !matchedSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()) &&
+        !overMatchedSubmissionArr.includes(matchMatchMessage.submission.toUpperCase()),
     );
 
     const matchingUsersIdArr = matchedDescriptionArr.reduce((pre, cur) => {
@@ -122,40 +120,40 @@ const sendANewMatchMatchMessage = async () => {
 
     Point.bulkWrite(bulkWriteArr);
 
-    const description = `# Topic: ${matchMatchTopic.topic}\n${
+    const description = `# Topic: ${matchMatchTopic.topic}\n### Matching Users 😀\n${
       matchedDescriptionArr.length > 0
-        ? `### Matching Users\n${matchedDescriptionArr
+        ? `${matchedDescriptionArr
             .map(
               (e) =>
                 `**${e.submission}**\n${e.items
                   .map(
                     (item) =>
-                      `${userMention(item.id)} - ${item.submission} (${
+                      `${userMention(item.id)} ${item.submission} (${
                         item.submissionInTargetLanguage
                       })`,
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**All matching users get 20 points each.**`
+            .join('\n\n')}\n\n**All matching users get 20 points each.** 🎉`
         : '### There are no matching users.'
-    }\n${
+    }\n### No Matching Users 🥲\n${
       notMachedParticipants.length > 0
-        ? `### No matches\n${notMachedParticipants
+        ? `${notMachedParticipants
             .map(
               (item) =>
-                `${userMention(item.id)} - ${item.submission} (${item.submissionInTargetLanguage})`,
+                `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
             )
             .join('\n')}`
         : '### There are no unmatched users.'
-    }\n${
+    }\n### Matching with More Than 2 Users 🥲\n${
       overMatchedDescriptionArr.length > 0
-        ? `### Matches with More Than 2\n${overMatchedDescriptionArr
+        ? `${overMatchedDescriptionArr
             .map(
               (e) =>
                 `**${e.submission}**\n${e.items
                   .map(
                     (item) =>
-                      `${userMention(item.id)} - ${item.submission} (${
+                      `${userMention(item.id)} ${item.submission} (${
                         item.submissionInTargetLanguage
                       })`,
                   )
