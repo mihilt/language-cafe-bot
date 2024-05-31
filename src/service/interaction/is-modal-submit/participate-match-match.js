@@ -76,8 +76,8 @@ export default async (interaction) => {
             text: `${interaction.user.globalName}(${interaction.user.username}#${
               interaction.user.discriminator
             }) ${
-              res.createdAt.toString() === res.updatedAt.toString() ? 'received' : 'updated'
-            } the submission`,
+              res.createdAt.toString() === res.updatedAt.toString() ? 'sent in' : 'updated'
+            } their submission`,
           },
         },
       ],

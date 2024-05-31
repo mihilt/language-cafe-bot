@@ -117,17 +117,7 @@ export default async (message) => {
 
     const messageAuthorId = message.author.id;
 
-    const findOneRes = await CategoryScore.findOne({ id: messageAuthorId });
-
-    if (!findOneRes) {
-      const categoryScore = new CategoryScore({
-        id: messageAuthorId,
-        score,
-      });
-      await categoryScore.save();
-    } else {
-      await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } });
-    }
+    await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } }, { upsert: true });
 
     if (filteredCategoryAlphabet.length === 0) {
       const categoryScores = await CategoryScore.find().sort({ score: -1, createdAt: 1 }).limit(1);
@@ -155,10 +145,10 @@ export default async (message) => {
 
       await Category.deleteOne({ _id: currentCategory._id });
 
-      /* await Category.create({
+      await Category.create({
         message: currentCategory.message,
         alphabet: A_TO_Z,
-      }); */
+      });
 
       currentCategory = await Category.findOne().sort({ createdAt: 1 });
 
