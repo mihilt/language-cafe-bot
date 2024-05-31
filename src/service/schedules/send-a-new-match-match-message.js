@@ -68,8 +68,8 @@ const sendANewMatchMatchMessage = async () => {
       [[], []],
     );
 
-    matchedSubmissionArr = matchedSubmissionArr.sort((a, b) => a - b);
-    overMatchedSubmissionArr = overMatchedSubmissionArr.sort((a, b) => a - b);
+    matchedSubmissionArr = matchedSubmissionArr.sort();
+    overMatchedSubmissionArr = overMatchedSubmissionArr.sort();
 
     const matchedDescriptionArr = [];
 
@@ -135,7 +135,7 @@ const sendANewMatchMatchMessage = async () => {
                   .join('\n')}`,
             )
             .join('\n\n')}\n\n**All matching users get 20 points each.** 🎉`
-        : '### There are no matching users.'
+        : '### None'
     }\n### No Matching Users 🥲\n${
       notMachedParticipants.length > 0
         ? `${notMachedParticipants
@@ -144,8 +144,8 @@ const sendANewMatchMatchMessage = async () => {
                 `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
             )
             .join('\n')}`
-        : '### There are no unmatched users.'
-    }\n### Matching with More Than 2 Users 🥲\n${
+        : '### None'
+    }\n### Matches with More Than 2 Users 🥲\n${
       overMatchedDescriptionArr.length > 0
         ? `${overMatchedDescriptionArr
             .map(
@@ -160,7 +160,7 @@ const sendANewMatchMatchMessage = async () => {
                   .join('\n')}`,
             )
             .join('\n\n')}\n\n`
-        : '### There are no over matching users.'
+        : '### None'
     }`;
 
     await channel.send({
