@@ -2,6 +2,7 @@ import { Chance } from 'chance';
 import config from '../../config/index.js';
 import emojiList from '../../data/emojis.js';
 import EmojiBlend from '../../models/emoji-blend.js';
+import Point from '../../models/point.js';
 
 const { CLIENT_ID: clientId } = config;
 
@@ -71,15 +72,12 @@ export default async (message) => {
 
       const findOneRes = await EmojiBlend.findOne({ id: messageAuthorId });
 
-      if (!findOneRes) {
-        const emojiBlend = new EmojiBlend({
-          id: messageAuthorId,
-          point,
-        });
-        await emojiBlend.save();
-      } else {
-        await EmojiBlend.updateOne({ id: messageAuthorId }, { $inc: { point } });
-      }
+      await EmojiBlend.updateOne({ id: messageAuthorId }, { $inc: { point } }, { upsert: true });
+      await Point.updateOne(
+        { id: messageAuthorId },
+        { $inc: { emojiBlend: point } },
+        { upsert: true },
+      );
 
       await message.channel.send({
         embeds: [

@@ -1,6 +1,7 @@
 import { userMention } from 'discord.js';
 import config from '../../config/index.js';
 import SkippedPassTheCoffeeCupUser from '../../models/skipped-pass-the-coffee-cup-user.js';
+import point from '../../models/point.js';
 
 const {
   PASS_THE_COFFEE_CUP_ENROLLMENT_MESSAGE_ID: passTheCoffeeCupChannelId,
@@ -11,7 +12,7 @@ export default async (message) => {
   try {
     const messageAuthorId = message.author.id;
 
-    const messages = await message.channel.messages.fetch({ limit: 10 });
+    const messages = await message.channel.messages.fetch({ limit: 30 });
 
     const lastBotMessage = messages.find((msg) => msg.author.id === clientId);
 
@@ -89,6 +90,12 @@ export default async (message) => {
         users: [randomUserId],
       },
     });
+
+    await point.updateOne(
+      { id: randomUserId },
+      { $inc: { passTheCoffeeCup: 10 } },
+      { upsert: true },
+    );
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);

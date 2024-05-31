@@ -9,13 +9,16 @@ const point = new Schema(
       required: true,
       unique: true,
     },
-    category: {
+    categories: {
       type: Number,
     },
     counting: {
       type: Number,
     },
     emojiBlend: {
+      type: Number,
+    },
+    letterChange: {
       type: Number,
     },
     matchMatch: {
