@@ -6,6 +6,7 @@ import flagEmojis from '../../data/flag-emojis.js';
 import CategoryScore from '../../models/category-score.js';
 import Category from '../../models/category.js';
 import A_TO_Z from '../../data/a2z.js';
+import Point from '../../models/point.js';
 
 const sendNewStickyMessage = async ({ message, currentCategory, filteredCategoryAlphabet }) => {
   const title = 'Current Category';
@@ -118,6 +119,7 @@ export default async (message) => {
     const messageAuthorId = message.author.id;
 
     await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } }, { upsert: true });
+    await Point.updateOne({ id: messageAuthorId }, { $inc: { categories: 1 } }, { upsert: true });
 
     if (filteredCategoryAlphabet.length === 0) {
       const categoryScores = await CategoryScore.find().sort({ score: -1, createdAt: 1 }).limit(1);
@@ -145,10 +147,10 @@ export default async (message) => {
 
       await Category.deleteOne({ _id: currentCategory._id });
 
-      await Category.create({
+      /* await Category.create({
         message: currentCategory.message,
         alphabet: A_TO_Z,
-      });
+      }); */
 
       currentCategory = await Category.findOne().sort({ createdAt: 1 });
 
