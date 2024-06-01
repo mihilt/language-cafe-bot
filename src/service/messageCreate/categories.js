@@ -119,7 +119,11 @@ export default async (message) => {
     const messageAuthorId = message.author.id;
 
     await CategoryScore.updateOne({ id: messageAuthorId }, { $inc: { score } }, { upsert: true });
-    await Point.updateOne({ id: messageAuthorId }, { $inc: { categories: 1 } }, { upsert: true });
+    await Point.updateOne(
+      { id: messageAuthorId },
+      { $inc: { categories: currentCategoryAlphabet.length < 8 ? 5 : 8 } },
+      { upsert: true },
+    );
 
     if (filteredCategoryAlphabet.length === 0) {
       const categoryScores = await CategoryScore.find().sort({ score: -1, createdAt: 1 }).limit(1);
