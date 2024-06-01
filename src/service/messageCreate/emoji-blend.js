@@ -75,7 +75,7 @@ export default async (message) => {
       await EmojiBlend.updateOne({ id: messageAuthorId }, { $inc: { point } }, { upsert: true });
       await Point.updateOne(
         { id: messageAuthorId },
-        { $inc: { emojiBlend: point } },
+        { $inc: { emojiBlend: lastBotMessageContent.length * 5 } },
         { upsert: true },
       );
 

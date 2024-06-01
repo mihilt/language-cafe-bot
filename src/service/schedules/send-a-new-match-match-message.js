@@ -110,13 +110,43 @@ const sendANewMatchMatchMessage = async () => {
       return pre;
     }, []);
 
-    const bulkWriteArr = matchingUsersIdArr.map((id) => ({
-      updateOne: {
-        filter: { id },
-        update: { $inc: { matchMatch: 20 } },
-        upsert: true,
-      },
-    }));
+    const overMatchedUsersIdArr = overMatchedDescriptionArr.reduce((pre, cur) => {
+      cur.items.forEach((item) => {
+        pre.push({
+          id: item.id,
+          matchedUsersNum: cur.items.length,
+        });
+      });
+      return pre;
+    }, []);
+
+    const bulkWriteArr = [
+      ...matchingUsersIdArr.map((id) => ({
+        updateOne: {
+          filter: { id },
+          update: { $inc: { matchMatch: 20 } },
+          upsert: true,
+        },
+      })),
+      ...overMatchedUsersIdArr.map((item) => ({
+        updateOne: {
+          filter: { id: item.id },
+          update: {
+            $inc: {
+              matchMatch: item.matchedUsersNum === 3 ? 5 : 2,
+            },
+          },
+          upsert: true,
+        },
+      })),
+      ...notMachedParticipants.map((item) => ({
+        updateOne: {
+          filter: { id: item.id },
+          update: { $inc: { matchMatch: 1 } },
+          upsert: true,
+        },
+      })),
+    ];
 
     Point.bulkWrite(bulkWriteArr);
 
@@ -134,16 +164,7 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**All matching users get 20 points each.** 🎉`
-        : '### None'
-    }\n### No Matching Users 🥲\n${
-      notMachedParticipants.length > 0
-        ? `${notMachedParticipants
-            .map(
-              (item) =>
-                `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
-            )
-            .join('\n')}`
+            .join('\n\n')}\n\n**Matching users get 20 points.** 🎉`
         : '### None'
     }\n### Matches with More Than 2 Users 🥲\n${
       overMatchedDescriptionArr.length > 0
@@ -159,7 +180,16 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n`
+            .join('\n\n')}\n\n**Matches with more than 2 users get 2~5 points.** 🎉`
+        : '### None'
+    }\n### Users With No Match 🥲\n${
+      notMachedParticipants.length > 0
+        ? `${notMachedParticipants
+            .map(
+              (item) =>
+                `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
+            )
+            .join('\n')}\n\n**Users with no match get 1 point.** 🎉`
         : '### None'
     }`;
 
