@@ -27,6 +27,24 @@ export default async (interaction) => {
     );
     const submission = interaction.fields.getTextInputValue('submission');
 
+    const isCompound = submission
+      .toUpperCase()
+      .includes(currentMatchMatchTopic.topic.toUpperCase());
+
+    if (!isCompound) {
+      await interaction.reply({
+        embeds: [
+          {
+            color: 0x65a69e,
+            description:
+              '**Submission has to be a compound word in English.**\n\nSubmission must include the topic word of the day and be a compound word (ex. topic word is water. submissions include: waterfall, saltwater, water bottle, etc)',
+          },
+        ],
+        ephemeral: true,
+      });
+      return;
+    }
+
     const res = await MatchMatchMessage.findOneAndUpdate(
       {
         id: interaction.user.id,
