@@ -124,7 +124,7 @@ const sendANewMatchMatchMessage = async () => {
       ...matchingUsersIdArr.map((id) => ({
         updateOne: {
           filter: { id },
-          update: { $inc: { matchMatch: 20 } },
+          update: { $inc: { matchMatch: 15 } },
           upsert: true,
         },
       })),
@@ -133,7 +133,7 @@ const sendANewMatchMatchMessage = async () => {
           filter: { id: item.id },
           update: {
             $inc: {
-              matchMatch: item.matchedUsersNum === 3 ? 5 : 2,
+              matchMatch: item.matchedUsersNum === 3 ? 10 : item.matchedUsersNum === 4 ? 5 : 2,
             },
           },
           upsert: true,
@@ -164,9 +164,9 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**Matching users get 20 points.** 🎉`
+            .join('\n\n')}\n\n**Matching users get 15 points.** 🎉`
         : '### None'
-    }\n### Matches with More Than 2 Users 🥲\n${
+    }\n### Matches with More Than 2 Users 🙂\n${
       overMatchedDescriptionArr.length > 0
         ? `${overMatchedDescriptionArr
             .map(
@@ -180,7 +180,7 @@ const sendANewMatchMatchMessage = async () => {
                   )
                   .join('\n')}`,
             )
-            .join('\n\n')}\n\n**Matches with more than 2 users get 2~5 points.** 🎉`
+            .join('\n\n')}\n\n**Matches with more than 2 users get 2~10 points.** 🎉`
         : '### None'
     }\n### Users With No Match 🥲\n${
       notMachedParticipants.length > 0
