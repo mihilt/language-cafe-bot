@@ -38,3 +38,13 @@ const point = new Schema(
 );
 
 export default mongoose.model('point', point);
+
+export const getTotalPoints = ({
+  categories = 0,
+  counting = 0,
+  emojiBlend = 0,
+  letterChange = 0,
+  matchMatch = 0,
+  passTheCoffeeCup = 0,
+  shiritori = 0,
+}) => categories + counting + emojiBlend + letterChange + matchMatch + passTheCoffeeCup + shiritori;

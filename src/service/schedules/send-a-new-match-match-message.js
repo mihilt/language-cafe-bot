@@ -5,11 +5,8 @@ import MatchMatchMessage from '../../models/match-match-message.js';
 import MatchMatchTopic from '../../models/match-match-topic.js';
 import Point from '../../models/point.js';
 
-const {
-  MATCH_MATCH_CHANNEL_ID: matchMatchChannelId,
-
-  MATCH_MATCH_COMMAND_ID: matchMatchCommandId,
-} = config;
+const { MATCH_MATCH_CHANNEL_ID: matchMatchChannelId, MATCH_MATCH_COMMAND_ID: matchMatchCommandId } =
+  config;
 
 const sendANewMatchMatchMessage = async () => {
   try {
