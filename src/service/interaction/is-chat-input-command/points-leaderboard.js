@@ -1,15 +1,5 @@
-import Point from '../../../models/point.js';
+import Point, { getTotalPoints } from '../../../models/point.js';
 import channelLog, { generateInteractionCreateLogContent } from '../../utils/channel-log.js';
-
-const getTotalPoints = ({
-  categories = 0,
-  counting = 0,
-  emojiBlend = 0,
-  letterChange = 0,
-  matchMatch = 0,
-  passTheCoffeeCup = 0,
-  shiritori = 0,
-}) => categories + counting + emojiBlend + letterChange + matchMatch + passTheCoffeeCup + shiritori;
 
 export default async (interaction) => {
   try {
@@ -19,7 +9,7 @@ export default async (interaction) => {
       ephemeral: true,
     });
 
-    const pointRes = await Point.find({});
+    const pointRes = await Point.find();
 
     if (pointRes.length === 0) {
       await interaction.editReply({
