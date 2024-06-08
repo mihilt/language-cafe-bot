@@ -139,7 +139,7 @@ export default async (message) => {
             title: 'Category Completed',
             description: `Category\n\`\`\`\n${
               currentCategory.message
-            }\n\`\`\`\nThe Best Contributor\n${userMention(dbUser.id)}`,
+            }\n\`\`\`\nThe Biggest Contributor\n${userMention(dbUser.id)}`,
             thumbnail: {
               url: user.avatarURL(),
             },
