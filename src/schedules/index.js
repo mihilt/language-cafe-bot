@@ -20,13 +20,9 @@ export default function schedules() {
     sendANewMatchMatchMessage();
   });
 
-  // every week on Sunday at 00:01
-  schedule.scheduleJob('1 0 * * 0', () => {
-    initializePoint();
-  });
-
   // every month on the first day at 00:00
   schedule.scheduleJob('0 0 1 * *', async () => {
-    initializeEmojiBlendPoint();
+    await initializeEmojiBlendPoint();
+    await initializePoint();
   });
 }
