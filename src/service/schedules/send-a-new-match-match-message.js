@@ -32,7 +32,7 @@ const createBulkWriteOperations = (matchedArr, points) =>
 
 const createDescriptionSection = (matchedArr, points, title, emoji) => {
   if (matchedArr.length === 0) return '';
-  return `\n### ${title} ${emoji}\n${matchedArr
+  return `\n### ${title} ${emoji} (${points} points)\n${matchedArr
     .map(
       (e) =>
         `**${e.submission}**\n${e.items
@@ -42,7 +42,7 @@ const createDescriptionSection = (matchedArr, points, title, emoji) => {
           )
           .join('\n')}`,
     )
-    .join('\n\n')}\n\n**${title} get ${points} points.** 🎉`;
+    .join('\n\n')}\n`;
 };
 
 const sendANewMatchMatchMessage = async () => {
@@ -170,12 +170,12 @@ const sendANewMatchMatchMessage = async () => {
       '😀',
     )}${
       notMachedParticipants.length > 0
-        ? `\n### Users With No Match 🙂\n${notMachedParticipants
+        ? `\n### Users With No Match 🙂 (1 point)\n${notMachedParticipants
             .map(
               (item) =>
                 `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
             )
-            .join('\n')}\n\n**Users with no match get 1 point.** 🎉`
+            .join('\n')}`
         : ''
     }`;
 
@@ -188,8 +188,10 @@ const sendANewMatchMatchMessage = async () => {
       ],
     });
 
-    await MatchMatchMessage.deleteMany();
-    await MatchMatchTopic.deleteOne({ _id: matchMatchTopic._id });
+    if (process.env.NODE_ENV === 'production') {
+      await MatchMatchMessage.deleteMany();
+      await MatchMatchTopic.deleteOne({ _id: matchMatchTopic._id });
+    }
 
     const stickyMessageTitle = 'Match-match';
     const currentMessages = await channel.messages.fetch(20);

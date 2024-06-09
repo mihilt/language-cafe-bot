@@ -4,12 +4,12 @@ import Point, { getTotalPoints } from '../../models/point.js';
 
 const {
   POINTS_LEADERBOARD_COMMAND_ID: pointsLeaderboardCommandId,
-  DEV_TEAM_CHANNEL_ID: devTeamChannelId,
+  CAFE_ANNOUNCEMENTS_CHANNEL_ID: cafeAnnouncementsChannelId,
 } = config;
 
 const initializePoint = async () => {
   try {
-    const channel = await client.channels.fetch(devTeamChannelId);
+    const channel = await client.channels.fetch(cafeAnnouncementsChannelId);
     const pointRes = await Point.find();
 
     if (pointRes.length === 0) {
