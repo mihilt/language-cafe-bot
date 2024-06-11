@@ -11,7 +11,7 @@ const { MATCH_MATCH_CHANNEL_ID: matchMatchChannelId, MATCH_MATCH_COMMAND_ID: mat
 const processMatchedSubmissions = (submissionsArr, matchMatchMessages) =>
   submissionsArr.map((submission) => {
     const matchedMessages = matchMatchMessages.filter(
-      (msg) => msg.submission.toUpperCase() === submission,
+      (msg) => msg.submission.toUpperCase().replace(/ /g, '') === submission,
     );
     return { submission, items: matchedMessages };
   });
@@ -35,7 +35,7 @@ const createDescriptionSection = (matchedArr, points, title, emoji) => {
   return `\n### ${title} ${emoji} (${points} points)\n${matchedArr
     .map(
       (e) =>
-        `**${e.submission}**\n${e.items
+        `${e.items
           .map(
             (item) =>
               `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
@@ -82,9 +82,11 @@ const sendANewMatchMatchMessage = async () => {
     const submissionWithCountObj = {};
 
     matchMatchMessages.forEach((matchMatchMessage) => {
-      const upperCaseSubmission = matchMatchMessage.submission.toUpperCase();
-      submissionWithCountObj[upperCaseSubmission] =
-        submissionWithCountObj[upperCaseSubmission] + 1 || 1;
+      const upperCaseWithoutSpaceSubmission = matchMatchMessage.submission
+        .toUpperCase()
+        .replace(/ /g, '');
+      submissionWithCountObj[upperCaseWithoutSpaceSubmission] =
+        submissionWithCountObj[upperCaseWithoutSpaceSubmission] + 1 || 1;
     });
 
     const [
@@ -125,10 +127,10 @@ const sendANewMatchMatchMessage = async () => {
 
     const notMachedParticipants = matchMatchMessages.filter(
       (msg) =>
-        !matchedTwoSubmissionArr.includes(msg.submission.toUpperCase()) &&
-        !matchedThreeSubmissionArr.includes(msg.submission.toUpperCase()) &&
-        !matchedFourSubmissionArr.includes(msg.submission.toUpperCase()) &&
-        !overMatchedSubmissionArr.includes(msg.submission.toUpperCase()),
+        !matchedTwoSubmissionArr.includes(msg.submission.toUpperCase().replace(/ /g, '')) &&
+        !matchedThreeSubmissionArr.includes(msg.submission.toUpperCase().replace(/ /g, '')) &&
+        !matchedFourSubmissionArr.includes(msg.submission.toUpperCase().replace(/ /g, '')) &&
+        !overMatchedSubmissionArr.includes(msg.submission.toUpperCase().replace(/ /g, '')),
     );
 
     const bulkWriteArr = [
