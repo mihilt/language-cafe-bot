@@ -35,7 +35,7 @@ const createDescriptionSection = (matchedArr, points, title, emoji) => {
   return `\n### ${title} ${emoji} (${points} points)\n${matchedArr
     .map(
       (e) =>
-        `${e.items
+        `**${e.submission}**\n${e.items
           .map(
             (item) =>
               `${userMention(item.id)} ${item.submission} (${item.submissionInTargetLanguage})`,
