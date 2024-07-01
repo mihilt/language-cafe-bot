@@ -1,6 +1,10 @@
 IMAGE_NAME="language-cafe-bot"
 CONTAINER_NAME="language-cafe-bot"
 
+# delete src folder
+echo "=> Delete src folder..."
+rm -rf ./src
+
 # decompress language-cafe-bot.tar
 echo "=> Decompress language-cafe-bot.tar..."
 tar -xf ./language-cafe-bot.tar

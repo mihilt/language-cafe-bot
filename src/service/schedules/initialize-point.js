@@ -35,7 +35,13 @@ const initializePoint = async () => {
     const refinedBestUserData = refinedAndSortedPointRes[0];
     const originalBestUserData = pointRes.find((point) => point.id === refinedBestUserData.id);
 
-    const description = `## Points Leaderboard (Top 10)\n${
+    const bestUser = await client.users.fetch(originalBestUserData.id);
+
+    const thisMonthDescription = `### This Month's Word Games Point Result\nThe winner is ${`<@${originalBestUserData.id}>`} with ${
+      getTotalPoints(originalBestUserData)?.toLocaleString() || 0
+    } points!`;
+
+    const LeaderboardDescription = `## Points Leaderboard (Top 10)\n${
       refinedAndSortedPointRes
         .slice(0, 10)
         .map(
@@ -43,31 +49,25 @@ const initializePoint = async () => {
             `**${index + 1}.** <@${point.id}> (Points: **${point.totalPoints?.toLocaleString()}**)`,
         )
         .join('\n') || 'There are no points yet.'
-    }\n\n${
-      originalBestUserData
-        ? `## The user with the highest points is <@${originalBestUserData.id}>\n\ncategories: \`${
-            originalBestUserData.categories?.toLocaleString() || 0
-          }\`\ncounting: \`${
-            originalBestUserData.counting?.toLocaleString() || 0
-          }\`\nemoji-blend: \`${
-            originalBestUserData.emojiBlend?.toLocaleString() || 0
-          }\`\nletter-change: \`${
-            originalBestUserData.letterChange?.toLocaleString() || 0
-          }\`\nmatch-match: \`${
-            originalBestUserData.matchMatch?.toLocaleString() || 0
-          }\`\npass-the-coffee-cup: \`${
-            originalBestUserData.passTheCoffeeCup?.toLocaleString() || 0
-          }\`\nshiritori: \`${
-            originalBestUserData.shiritori?.toLocaleString() || 0
-          }\`\n\n**Total Points: ${getTotalPoints(originalBestUserData)?.toLocaleString()}**`
-        : ''
-    }\n\n### How to see my current points: </points-leaderboard:${pointsLeaderboardCommandId}>`;
+    }\n\nHow to see my current points: </word-games-point-leaderboard:${pointsLeaderboardCommandId}>`;
 
     await channel.send({
       embeds: [
         {
           color: 0x65a69e,
-          description,
+          description: thisMonthDescription,
+          thumbnail: {
+            url: bestUser.avatarURL(),
+          },
+        },
+      ],
+    });
+
+    await channel.send({
+      embeds: [
+        {
+          color: 0x65a69e,
+          description: LeaderboardDescription,
         },
       ],
     });

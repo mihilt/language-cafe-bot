@@ -1,7 +1,6 @@
 import { Chance } from 'chance';
 import config from '../../config/index.js';
 import emojiList from '../../data/emojis.js';
-import EmojiBlend from '../../models/emoji-blend.js';
 import Point from '../../models/point.js';
 
 const { CLIENT_ID: clientId } = config;
@@ -70,9 +69,6 @@ export default async (message) => {
         lastBotMessageContent.length / 2 + currentMessageContentArray.length / 100,
       );
 
-      const findOneRes = await EmojiBlend.findOne({ id: messageAuthorId });
-
-      await EmojiBlend.updateOne({ id: messageAuthorId }, { $inc: { point } }, { upsert: true });
       await Point.updateOne(
         { id: messageAuthorId },
         { $inc: { emojiBlend: lastBotMessageContent.length * 5 } },
@@ -85,11 +81,7 @@ export default async (message) => {
             color: 0x65a69e,
             footer: {
               icon_url: message.author.avatarURL(),
-              text: `${message.author.globalName}(${message.author.username}#${
-                message.author.discriminator
-              }) earned ${point} point(s), Total is now ${(
-                (findOneRes?.point || 0) + point
-              ).toLocaleString()} point(s).`,
+              text: `${message.author.globalName}(${message.author.username}#${message.author.discriminator}) earned ${point} point(s).`,
             },
           },
         ],
