@@ -3,8 +3,8 @@ import pointsLeaderboard from '../../service/interaction/is-chat-input-command/p
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('points-leaderboard')
-    .setDescription('Show point leaderboard'),
+    .setName('word-games-point-leaderboard')
+    .setDescription('Show the word games point leaderboard.'),
 
   async execute(interaction) {
     pointsLeaderboard(interaction);
