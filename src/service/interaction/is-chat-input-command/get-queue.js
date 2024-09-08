@@ -14,7 +14,7 @@ export const getCurrentQueueDescription = async () => {
     if (queueRes.length > 1) {
       queueMessage += `\n\nUp next:\n${queueRes
         .slice(1)
-        .map((q) => `- <@${q.id}>`)
+        .map((q, i) => `${i}. <@${q.id}>`)
         .join('\n')}`;
     }
   } catch (error) {

@@ -28,7 +28,6 @@ export default async (interaction) => {
           description: 'Queue has been shifted.',
         },
       ],
-      ephemeral: true,
     });
 
     const currentQueueDescription = await getCurrentQueueDescription();

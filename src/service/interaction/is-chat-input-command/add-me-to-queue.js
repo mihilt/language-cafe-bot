@@ -1,3 +1,4 @@
+import config from '../../../config/index.js';
 import Queue from '../../../models/queue.js';
 import { getCurrentQueueDescription } from './get-queue.js';
 
@@ -29,7 +30,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          description: `You have been added to the queue.\nCurrent queue position: \`${queueLength}\`\n\nYou're now in the queue. Please wait for your turn. If you wish to remove yourself from the queue, use /remove-me-from-queue`,
+          description: `You have been added to the queue.\nCurrent queue position: \`${queueLength}\`\n\nYou're now in the queue. Please wait for your turn. If you wish to remove yourself from the queue, use </remove-me-from-queue:${config.REMOVE_ME_FROM_QUEUE_COMMAND_ID}>`,
         },
       ],
       ephemeral: true,
@@ -41,7 +42,7 @@ export default async (interaction) => {
           color: 0x65a69e,
           footer: {
             icon_url: interaction.user.avatarURL(),
-            text: `${interaction.user.username} has been added to the queue.`,
+            text: `${interaction.user.globalName}(${interaction.user.username}#${interaction.user.discriminator}) has been added to the queue.`,
           },
         },
       ],

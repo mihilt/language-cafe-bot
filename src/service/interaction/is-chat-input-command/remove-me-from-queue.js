@@ -1,3 +1,4 @@
+import config from '../../../config/index.js';
 import Queue from '../../../models/queue.js';
 import { getCurrentQueueDescription } from './get-queue.js';
 
@@ -27,8 +28,7 @@ export default async (interaction) => {
       embeds: [
         {
           color: 0x65a69e,
-          description:
-            'You have been removed from the queue.\nFeel free to rejoin at any time using /add-me-to-queue',
+          description: `You have been removed from the queue.\nFeel free to rejoin at any time using </add-me-to-queue:${config.ADD_ME_TO_QUEUE_COMMAND_ID}>.`,
         },
       ],
       ephemeral: true,
@@ -40,7 +40,7 @@ export default async (interaction) => {
           color: 0x65a69e,
           footer: {
             icon_url: interaction.user.avatarURL(),
-            text: `${interaction.user.username} has been removed from the queue.`,
+            text: `${interaction.user.globalName}(${interaction.user.username}#${interaction.user.discriminator}) has been removed from the queue.`,
           },
         },
       ],

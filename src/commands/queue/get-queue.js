@@ -5,7 +5,7 @@ import channelLog, {
 } from '../../service/utils/channel-log.js';
 
 export default {
-  data: new SlashCommandBuilder().setName('get-queue').setDescription('Add yourself to the queue.'),
+  data: new SlashCommandBuilder().setName('get-queue').setDescription('Get current queue.'),
 
   async execute(interaction) {
     channelLog(generateInteractionCreateLogContent(interaction));
