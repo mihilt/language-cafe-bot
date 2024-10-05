@@ -1,13 +1,20 @@
 IMAGE_NAME="language-cafe-bot"
 CONTAINER_NAME="language-cafe-bot"
 
-# delete src folder
-echo "=> Delete src folder..."
-rm -rf ./src
+# Check if language-cafe-bot.tar exists
+if [ -f "./language-cafe-bot.tar" ]; then
+  # delete src folder
+  echo "=> Delete src folder..."
+  rm -rf ./src
 
-# decompress language-cafe-bot.tar
-echo "=> Decompress language-cafe-bot.tar..."
-tar -xf ./language-cafe-bot.tar
+  # decompress language-cafe-bot.tar
+  echo "=> Decompress language-cafe-bot.tar..."
+  tar -xf ./language-cafe-bot.tar
+
+  sleep 2
+else
+  echo "=> language-cafe-bot.tar not found. Skipping decompression."
+fi
 
 sleep 2
 
