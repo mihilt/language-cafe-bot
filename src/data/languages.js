@@ -6,7 +6,7 @@ export default [
   'Armenian',
   'Azerbaijani',
   'Basque',
-  'Belarusian ',
+  'Belarusian',
   'Bengali',
   'Bulgarian',
   'Burmese',
@@ -106,6 +106,6 @@ export default [
   'Old Church Slavonic',
   'Coptic',
   'Phoenician',
-  'Urak Lawoi’',
+  'Urak Lawoi',
   'Marathi',
 ];
