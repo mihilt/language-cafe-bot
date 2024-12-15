@@ -134,6 +134,14 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
       } else {
         await passTheCoffeeCupChannel.send(content);
       }
+
+      const lastMentionUserReaction = enrollmentMessage.reactions.cache.filter((reaction) =>
+        reaction.users.cache.has(lastMentionedUserId),
+      );
+
+      for (const reaction of lastMentionUserReaction.values()) {
+        await reaction.users.remove(lastMentionedUserId);
+      }
     }
   } catch (error) {
     // eslint-disable-next-line no-console

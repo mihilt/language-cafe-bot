@@ -18,6 +18,8 @@
     "function-paren-newline": "off",
     "no-confusing-arrow": "off",
     "indent": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off"
   }
 }
