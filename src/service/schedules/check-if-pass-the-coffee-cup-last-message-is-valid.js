@@ -1,7 +1,6 @@
 import { userMention } from 'discord.js';
 import client from '../../client/index.js';
 import config from '../../config/index.js';
-import SkippedPassTheCoffeeCupUser from '../../models/skipped-pass-the-coffee-cup-user.js';
 
 const {
   PASS_THE_COFFEE_CUP_CHANNEL_ID: passTheCoffeeCupChannelId,
@@ -36,16 +35,6 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
         throw new Error('lastMentionedUserId is not found');
       }
 
-      const findOneAndUpdateRes = await SkippedPassTheCoffeeCupUser.findOneAndUpdate(
-        { id: lastMentionedUserId },
-        { id: lastMentionedUserId },
-        { upsert: true, new: true },
-      );
-
-      if (!findOneAndUpdateRes) {
-        throw new Error('SkippedPassTheCoffeeCupUser.findOneAndUpdate() failed');
-      }
-
       const enrollmentMessage = await passTheCoffeeCupChannel.messages.fetch(enrollmentMessageId);
 
       const reactedUsersPromise = enrollmentMessage.reactions.cache.map((reaction) =>
@@ -62,17 +51,8 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
         (userId) => !passTheCoffeeCupChannel.guild.members.cache.has(userId),
       );
 
-      const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find();
-
-      const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
-        (user) => user.id,
-      );
-
       const currentMessages = await passTheCoffeeCupChannel.messages.fetch({
-        limit:
-          reactedUserIdArray.length -
-          leftUsers.length -
-          currentSkippedPassTheCoffeeCupUserIdArray.length,
+        limit: reactedUserIdArray.length - leftUsers.length,
       });
 
       const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
@@ -82,12 +62,7 @@ const checkIfPassTheCoffeeCupLastMessageIsValid = async () => {
       );
 
       const idsToExcludeArray = [
-        ...new Set([
-          ...currentMessagesAuthorIdArray,
-          ...currentSkippedPassTheCoffeeCupUserIdArray,
-          lastMentionedUserId,
-          ...leftUsers,
-        ]),
+        ...new Set([...currentMessagesAuthorIdArray, lastMentionedUserId, ...leftUsers]),
       ];
 
       idsToExcludeArray.forEach((idToExclude) => {

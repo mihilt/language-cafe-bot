@@ -1,6 +1,5 @@
 import { userMention } from 'discord.js';
 import config from '../../config/index.js';
-import SkippedPassTheCoffeeCupUser from '../../models/skipped-pass-the-coffee-cup-user.js';
 import point from '../../models/point.js';
 
 const {
@@ -41,17 +40,8 @@ export default async (message) => {
       (userId) => !message.guild.members.cache.has(userId),
     );
 
-    const currentSkippedPassTheCoffeeCupUser = await SkippedPassTheCoffeeCupUser.find();
-
-    const currentSkippedPassTheCoffeeCupUserIdArray = currentSkippedPassTheCoffeeCupUser.map(
-      (user) => user.id,
-    );
-
     const currentMessages = await message.channel.messages.fetch({
-      limit:
-        reactedUserIdArray.length -
-        leftUsers.length -
-        currentSkippedPassTheCoffeeCupUserIdArray.length,
+      limit: reactedUserIdArray.length - leftUsers.length,
     });
 
     const currentMessagesAuthorIdArray = currentMessages.map((currentMessage) =>
@@ -61,12 +51,7 @@ export default async (message) => {
     );
 
     const idsToExcludeArray = [
-      ...new Set([
-        ...currentMessagesAuthorIdArray,
-        ...currentSkippedPassTheCoffeeCupUserIdArray,
-        messageAuthorId,
-        ...leftUsers,
-      ]),
+      ...new Set([...currentMessagesAuthorIdArray, messageAuthorId, ...leftUsers]),
     ];
 
     idsToExcludeArray.forEach((idToExclude) => {
