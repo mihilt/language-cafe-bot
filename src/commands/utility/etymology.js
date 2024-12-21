@@ -38,18 +38,22 @@ export default {
       const { document } = window;
 
       const h2Elements = document.querySelector('.mw-parser-output').querySelectorAll('H2');
+      const h2Parents = [];
+
+      h2Elements.forEach((h2) => {
+        h2Parents.push(h2.parentElement);
+      });
 
       const extractedGroups = [];
 
-      h2Elements.forEach((h2, index) => {
-        const nextH2 = h2Elements[index + 1]; // Get the next h2 element
+      h2Parents.forEach((h2Parent, index) => {
+        const nextH2Parent = h2Parents[index + 1];
 
-        let currentElement = h2.nextSibling;
-        const groupFragment = dom.window.document.createDocumentFragment();
+        let currentElement = h2Parent.nextElementSibling;
+        const groupFragment = document.createDocumentFragment();
 
-        // Loop until we reach the next h2 or null
-        while (currentElement !== nextH2 && currentElement !== null) {
-          if (currentElement.nodeType === dom.window.Node.ELEMENT_NODE) {
+        while (currentElement !== nextH2Parent && currentElement !== null) {
+          if (currentElement.nodeType === window.Node.ELEMENT_NODE) {
             groupFragment.appendChild(currentElement.cloneNode(true));
           }
           currentElement = currentElement.nextSibling;
@@ -63,10 +67,7 @@ export default {
       const languageGroup = [];
 
       extractedGroups.forEach((group, index) => {
-        if (
-          group.querySelector('[id^="Etymology"]') ||
-          h2Elements[index].querySelector('.mw-headline')?.textContent
-        ) {
+        if (group.querySelector('[id^="Etymology"]')) {
           const etymologyElements = group.querySelectorAll('[id^="Etymology"]');
           const parentsNextElement = [];
 
@@ -74,13 +75,12 @@ export default {
             parentsNextElement.push(element.parentElement.nextElementSibling);
           });
 
-          // filter parentsNextElement is only p tag
           const filteredParentsNextElementTextContent = parentsNextElement
-            .filter((element) => element.tagName === 'P')
+            .filter((element) => element.tagName === 'P' && !element.querySelector('style'))
             .map((element) => element.textContent);
 
           languageGroup.push({
-            language: h2Elements[index].querySelector('.mw-headline').textContent,
+            language: h2Elements[index].textContent,
             etymology: filteredParentsNextElementTextContent,
           });
         }

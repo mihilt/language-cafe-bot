@@ -39,17 +39,22 @@ export default {
 
       const h2Elements = document.querySelector('.mw-parser-output').querySelectorAll('H2');
 
+      const h2Parents = [];
+
+      h2Elements.forEach((h2) => {
+        h2Parents.push(h2.parentElement);
+      });
+
       const extractedGroups = [];
 
-      h2Elements.forEach((h2, index) => {
-        const nextH2 = h2Elements[index + 1]; // Get the next h2 element
+      h2Parents.forEach((h2Parent, index) => {
+        const nextH2Parent = h2Parents[index + 1];
 
-        let currentElement = h2.nextSibling;
-        const groupFragment = dom.window.document.createDocumentFragment();
+        let currentElement = h2Parent.nextElementSibling;
+        const groupFragment = document.createDocumentFragment();
 
-        // Loop until we reach the next h2 or null
-        while (currentElement !== nextH2 && currentElement !== null) {
-          if (currentElement.nodeType === dom.window.Node.ELEMENT_NODE) {
+        while (currentElement !== nextH2Parent && currentElement !== null) {
+          if (currentElement.nodeType === window.Node.ELEMENT_NODE) {
             groupFragment.appendChild(currentElement.cloneNode(true));
           }
           currentElement = currentElement.nextSibling;
@@ -63,10 +68,7 @@ export default {
       const languageGroup = [];
 
       extractedGroups.forEach((group, index) => {
-        if (
-          group.querySelector('.IPA') ||
-          h2Elements[index].querySelector('.mw-headline')?.textContent
-        ) {
+        if (group.querySelector('.IPA')) {
           const ipaElements = group.querySelectorAll('.IPA');
 
           const ipaArray = [];
@@ -98,7 +100,7 @@ export default {
             });
 
           languageGroup.push({
-            language: h2Elements[index].querySelector('.mw-headline').textContent,
+            language: h2Elements[index].textContent,
             ipa: ipaContent,
           });
         }
