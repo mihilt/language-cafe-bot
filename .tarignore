@@ -1,3 +1,5 @@
 node_modules
 .git
 .vscode
+.DS_Store
+nodemon.json

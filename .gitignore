@@ -2,6 +2,7 @@ node_modules
 src/config/*.json
 !src/config/config_example.json
 src/db/data/*
+.DS_Store
 
 # gitkeep
 !.gitkeep

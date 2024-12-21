@@ -1,7 +1,7 @@
 OUTPUT_FILE="../language-cafe-bot.tar"
 
 echo "=> Creating tar file excluding patterns from .tarignore..."
-tar -cf $OUTPUT_FILE --exclude-from=.tarignore .
+tar -cf $OUTPUT_FILE --no-mac-metadata --exclude-from=.tarignore .
 
 if [ -f $OUTPUT_FILE ]; then
     echo "=> Tar file created successfully: $OUTPUT_FILE"
