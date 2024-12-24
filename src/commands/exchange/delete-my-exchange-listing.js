@@ -21,7 +21,7 @@ export default {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Delete Language Exchange Partner Listing',
           description: content,
         },

@@ -12,7 +12,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'There are no pomodoro groups to join.',
         },
       ],
@@ -28,7 +28,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'You are already in a pomodoro group.',
         },
       ],
@@ -69,7 +69,7 @@ export default async (interaction) => {
     ];
 
     return {
-      color: 0x65a69e,
+      color: 0xc3c3e5,
       description,
       fields,
     };
@@ -78,7 +78,7 @@ export default async (interaction) => {
   await interaction.editReply({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         description: '### Select a group to join.',
       },
       ...groupsInformationEmbeds,

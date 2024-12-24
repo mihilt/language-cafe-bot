@@ -24,7 +24,7 @@ const sendNewStickyMessage = async ({ message, currentCategory, filteredCategory
     await message.channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title,
           footer: {
             text: 'There is only one letter left, so you can use any word that contains the letter, not just one that starts with it.',
@@ -37,7 +37,7 @@ const sendNewStickyMessage = async ({ message, currentCategory, filteredCategory
   await message.channel.send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title,
         description: `Category\n\`\`\`\n${
           currentCategory.message
@@ -66,7 +66,7 @@ export default async (message) => {
       message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description:
               'There is no category.\nPlease ping the moderator to create a new category. ',
           },
@@ -135,7 +135,7 @@ export default async (message) => {
       await message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             title: 'Category Completed',
             description: `Category\n\`\`\`\n${
               currentCategory.message
@@ -162,7 +162,7 @@ export default async (message) => {
         await message.channel.send({
           embeds: [
             {
-              color: 0x65a69e,
+              color: 0xc3c3e5,
               description:
                 'There is no category.\nPlease ping the moderator to create a new category. ',
             },
@@ -175,7 +175,7 @@ export default async (message) => {
       await message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             title: 'New Category',
             description: `\`\`\`\n${currentCategory.message}\n\`\`\``,
           },

@@ -54,7 +54,7 @@ const sendANewMatchMatchMessage = async () => {
       await channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'There are no users participating in the current match-match topic.',
           },
         ],
@@ -68,7 +68,7 @@ const sendANewMatchMatchMessage = async () => {
       await channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description:
               "There's no match-match topic left.\nPlease ping the moderator to create a new topic.",
           },
@@ -184,7 +184,7 @@ const sendANewMatchMatchMessage = async () => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description,
         },
       ],
@@ -209,7 +209,7 @@ const sendANewMatchMatchMessage = async () => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: stickyMessageTitle,
           description: `Topic\n\`\`\`\n${
             currentMatchMatchTopic.topic

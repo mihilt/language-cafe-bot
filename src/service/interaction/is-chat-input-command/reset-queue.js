@@ -7,7 +7,7 @@ export default async (interaction) => {
     interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Queue has been reset.',
         },
       ],

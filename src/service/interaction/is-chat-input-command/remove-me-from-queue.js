@@ -13,7 +13,7 @@ export default async (interaction) => {
       interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'You are not in the queue.',
           },
         ],
@@ -27,7 +27,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: `You have been removed from the queue.\nFeel free to rejoin at any time using </add-me-to-queue:${config.ADD_ME_TO_QUEUE_COMMAND_ID}>.`,
         },
       ],
@@ -37,7 +37,7 @@ export default async (interaction) => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           footer: {
             icon_url: interaction.user.avatarURL(),
             text: `${interaction.user.globalName}(${interaction.user.username}#${interaction.user.discriminator}) has been removed from the queue.`,
@@ -51,7 +51,7 @@ export default async (interaction) => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: currentQueueDescription,
         },
       ],

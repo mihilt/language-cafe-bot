@@ -14,7 +14,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: `Category created successfully\n\nMessage\`\`\`\n${message}\n\`\`\``,
           },
         ],
@@ -24,7 +24,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'Failed to create category',
           },
         ],
@@ -37,7 +37,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Failed to create category (Internal Server Error)',
         },
       ],

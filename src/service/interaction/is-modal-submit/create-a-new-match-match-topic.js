@@ -12,7 +12,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: `Match-match topic created successfully\n\nTopic\`\`\`\n${topic}\n\`\`\``,
           },
         ],
@@ -22,7 +22,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'Failed to create match-match topic',
           },
         ],
@@ -35,7 +35,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Failed to create match-match topic (Internal Server Error)',
         },
       ],

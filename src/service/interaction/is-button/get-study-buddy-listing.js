@@ -14,7 +14,7 @@ export default async (interaction) => {
     await interaction.update({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Study Buddy Listings',
           description: `${userMention(
             interaction.user.id,
@@ -59,7 +59,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Study Buddy Listings',
           description: `${userMention(interaction.user.id)}, there are no study buddy matches.`,
         },
@@ -93,7 +93,7 @@ export default async (interaction) => {
     await interaction.update({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Study Buddy Listings',
           description: `${userMention(interaction.user.id)}, there are no study buddy matches.`,
         },
@@ -113,7 +113,7 @@ export default async (interaction) => {
   await interaction.update({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: `${page}/${studyBuddyListLength} Study Buddy`,
         description: `${userMention(studyBuddyObject.id)}`,
         fields: [

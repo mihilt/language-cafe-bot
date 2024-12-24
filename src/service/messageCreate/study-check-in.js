@@ -20,7 +20,7 @@ const sendNewStickyMessage = async (message) => {
   await message.channel.send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title,
         description,
       },
@@ -38,7 +38,7 @@ export default async (message) => {
     sendNewStickyMessage(message);
 
     const embad = {
-      color: 0x65a69e,
+      color: 0xc3c3e5,
       title: 'Study Check In',
       description: `${userMention(
         message.author.id,
@@ -89,7 +89,7 @@ export default async (message) => {
 
   if (isSameDay) {
     const embad = {
-      color: 0x65a69e,
+      color: 0xc3c3e5,
       title: 'Study Check In',
       description: `${userMention(
         message.author.id,
@@ -170,7 +170,7 @@ export default async (message) => {
     message.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: `${userMention(message.author.id)} has just reached a streak of ${bold(
             point,
           )}. Good job!\n\n*${
@@ -197,7 +197,7 @@ export default async (message) => {
     )}.\n### This message will be deleted in 1 minute.`;
 
     const additionalEmbed = {
-      color: 0x65a69e,
+      color: 0xc3c3e5,
       title: 'Your streak has been reset',
       description: additionalContent,
     };
@@ -226,7 +226,7 @@ export default async (message) => {
   content += '\n### This message will be deleted in 1 minute.';
 
   const embed = {
-    color: 0x65a69e,
+    color: 0xc3c3e5,
     title: 'Study Check In',
     description: content,
   };

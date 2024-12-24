@@ -73,7 +73,7 @@ export default async (interaction) => {
   const content = `${messageContent}\n${listContents}`;
 
   const embed = {
-    color: 0x65a69e,
+    color: 0xc3c3e5,
     description: content,
   };
 

@@ -31,7 +31,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Register Study Buddy Listing',
           description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage
             .map((e) => `\`${e}\``)
@@ -55,7 +55,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Register Study Buddy Listing',
           description: 'Please enter the proper number of levels for the target languages.',
         },
@@ -72,7 +72,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Register Study Buddy Listing',
           description: `Please enter a valid level(s).\n\nInvalid level(s): ${invalidLevel.join(
             ', ',
@@ -101,7 +101,7 @@ export default async (interaction) => {
   await interaction.reply({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: 'Register Study Buddy Listing',
         description: `${userMention(
           interaction.member.user.id,
@@ -129,7 +129,7 @@ export default async (interaction) => {
   await interaction.followUp({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: 'You have successfully registered your study buddy listing.',
         description: `Now, click the blue text right here </get-study-buddy-listings:${config.GET_STUDY_BUDDY_LISTINGS_COMMAND_ID}> and send it to show all potential study buddies.\n\nIf nobody shows up, that just means that there isn't a perfect match for you in our database yet. Make sure to come back in the future to try again!`,
       },
@@ -156,7 +156,7 @@ export default async (interaction) => {
   await interaction.client.channels.cache.get(channelId).send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title,
         description,
       },

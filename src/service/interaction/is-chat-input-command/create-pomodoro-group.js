@@ -12,7 +12,7 @@ export const finishedPomodoro = async ({ groupName, channel }) => {
   await channel.send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         description: `The pomodoro study group \`${groupName}\` has now finished and will be deleted.`,
       },
     ],
@@ -54,7 +54,7 @@ export const putPomodoroScheduleJob = async ({
           await channel.send({
             embeds: [
               {
-                color: 0x65a69e,
+                color: 0xc3c3e5,
                 description: `There is no one in the pomodoro study group \`${groupName}\`.`,
               },
             ],
@@ -90,7 +90,7 @@ export const putPomodoroScheduleJob = async ({
           await channel.send({
             embeds: [
               {
-                color: 0x65a69e,
+                color: 0xc3c3e5,
                 description,
                 fields,
               },
@@ -132,7 +132,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Timer pattern is not valid.',
         },
       ],
@@ -145,7 +145,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Each time option should be more than 1 minute and less than 100 minutes.',
         },
       ],
@@ -162,7 +162,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'You are already in a pomodoro group.',
         },
       ],
@@ -176,7 +176,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: `A group with the name \`${groupName}\` already exists.`,
         },
       ],
@@ -200,7 +200,7 @@ export default async (interaction) => {
     await interaction.editReply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Failed to create a new group.',
         },
       ],
@@ -214,7 +214,7 @@ export default async (interaction) => {
   await interaction.channel.send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         description: `${userMention(interaction.user.id)} created a new pomodoro study group.`,
         fields: [
           {
@@ -260,7 +260,7 @@ export default async (interaction) => {
   await interaction.channel.send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         description,
         fields,
       },

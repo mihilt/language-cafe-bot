@@ -12,7 +12,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description:
               "There's no match-match topic left.\nPlease ping the moderator to create a new topic.",
           },
@@ -35,7 +35,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description:
               '**Submission has to be a compound word in English.**\n\nSubmission must include the topic word of the day and be a compound word (ex. topic word is water. submissions include: waterfall, saltwater, water bottle, etc)',
           },
@@ -63,7 +63,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: `Submission ${
               res.createdAt.toString() === res.updatedAt.toString() ? 'received' : 'updated'
             } successfully\n\nSubmission in English:\`\`\`\n${submission}\n\`\`\`\nTranslation of Submission in Target Language:\`\`\`\n${submissionInTargetLanguage}\n\`\`\``,
@@ -75,7 +75,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'Failed to create category',
           },
         ],
@@ -88,7 +88,7 @@ export default async (interaction) => {
     await interaction.channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           footer: {
             icon_url: interaction.user.displayAvatarURL(),
             text: `${interaction.user.globalName}(${interaction.user.username}#${
@@ -118,7 +118,7 @@ export default async (interaction) => {
     await interaction.channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: stickyMessageTitle,
           description: `Topic\n\`\`\`\n${
             currentMatchMatchTopic.topic
@@ -139,7 +139,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Failed to create category (Internal Server Error)',
         },
       ],

@@ -13,7 +13,7 @@ export default async (interaction) => {
       interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'You are already in the queue.',
           },
         ],
@@ -29,7 +29,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: `You have been added to the queue.\nCurrent queue position: \`${queueLength}\`\n\nYou're now in the queue. Please wait for your turn. If you wish to remove yourself from the queue, use </remove-me-from-queue:${config.REMOVE_ME_FROM_QUEUE_COMMAND_ID}>`,
         },
       ],
@@ -39,7 +39,7 @@ export default async (interaction) => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           footer: {
             icon_url: interaction.user.avatarURL(),
             text: `${interaction.user.globalName}(${interaction.user.username}#${interaction.user.discriminator}) has been added to the queue.`,
@@ -53,7 +53,7 @@ export default async (interaction) => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: currentQueueDescription,
         },
       ],

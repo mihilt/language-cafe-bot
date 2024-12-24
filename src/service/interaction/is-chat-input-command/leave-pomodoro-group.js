@@ -19,7 +19,7 @@ export default async (interaction) => {
       await interaction.editReply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'You are not in a pomodoro group.',
           },
         ],
@@ -39,7 +39,7 @@ export default async (interaction) => {
       await interaction.editReply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'Failed to leave the pomodoro group.',
           },
         ],
@@ -54,7 +54,7 @@ export default async (interaction) => {
     await interaction.channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: `${userMention(interaction.user.id)} left the pomodoro group \`${
             pomodoroGroup.name
           }\`.`,

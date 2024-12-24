@@ -28,7 +28,7 @@ export default async (message) => {
       message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: generateRandomThreeUniqueEmoji(),
           },
         ],
@@ -39,7 +39,7 @@ export default async (message) => {
       await message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description:
               'Please send a proper message that includes the emojis to continue the game.',
           },
@@ -78,7 +78,7 @@ export default async (message) => {
       await message.channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             footer: {
               icon_url: message.author.avatarURL(),
               text: `${message.author.globalName}(${message.author.username}#${message.author.discriminator}) earned ${point} point(s).`,

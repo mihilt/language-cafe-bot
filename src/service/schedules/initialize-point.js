@@ -16,7 +16,7 @@ const initializePoint = async () => {
       await channel.send({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'There are no points yet',
           },
         ],
@@ -54,7 +54,7 @@ const initializePoint = async () => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: thisMonthDescription,
           thumbnail: {
             url: bestUser.avatarURL(),
@@ -66,7 +66,7 @@ const initializePoint = async () => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: LeaderboardDescription,
         },
       ],

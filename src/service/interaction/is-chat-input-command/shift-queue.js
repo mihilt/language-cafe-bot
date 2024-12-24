@@ -10,7 +10,7 @@ export default async (interaction) => {
       await interaction.reply({
         embeds: [
           {
-            color: 0x65a69e,
+            color: 0xc3c3e5,
             description: 'Queue is empty.',
           },
         ],
@@ -24,7 +24,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: 'Queue has been shifted.',
         },
       ],
@@ -35,7 +35,7 @@ export default async (interaction) => {
     await channel.send({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           description: currentQueueDescription,
         },
       ],

@@ -32,7 +32,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Register Language Exchange Partner Listing',
           description: `Please enter a valid target language(s).\n\nInvalid language(s): ${invalidTargetLanguage
             .map((e) => `\`${e}\``)
@@ -61,7 +61,7 @@ export default async (interaction) => {
     await interaction.reply({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Register Language Exchange Partner Listing',
           description: `Please enter a valid offered language(s).\n\nInvalid language(s): ${invalidOfferedLanguage.join(
             ', ',
@@ -107,7 +107,7 @@ export default async (interaction) => {
   await interaction.reply({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: 'Register Language Exchange Partner Listing',
         description: `${userMention(
           interaction.member.user.id,
@@ -137,7 +137,7 @@ export default async (interaction) => {
   await interaction.followUp({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: 'You have successfully registered your language exchange partner listing.',
         description: `Now, click the blue text right here </get-exchange-listings:${config.GET_EXCHANGE_LISTINGS_COMMAND_ID}> and send it to show all potential exchange partners.\n\nIf nobody shows up, that just means that there isn't a perfect match for you in our database yet. Make sure to come back in the future to try again!`,
       },
@@ -164,7 +164,7 @@ export default async (interaction) => {
   await interaction.client.channels.cache.get(channelId).send({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title,
         description,
       },

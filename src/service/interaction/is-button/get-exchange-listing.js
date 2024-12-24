@@ -13,7 +13,7 @@ export default async (interaction) => {
     await interaction.update({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
@@ -56,7 +56,7 @@ export default async (interaction) => {
     await interaction.update({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
@@ -97,7 +97,7 @@ export default async (interaction) => {
     await interaction.update({
       embeds: [
         {
-          color: 0x65a69e,
+          color: 0xc3c3e5,
           title: 'Get Language Exchange Partner Listing',
           description: `${userMention(
             interaction.user.id,
@@ -116,7 +116,7 @@ export default async (interaction) => {
   await interaction.update({
     embeds: [
       {
-        color: 0x65a69e,
+        color: 0xc3c3e5,
         title: `${page}/${partnerListLength} Partner`,
         description: `${userMention(partnerObject.id)}`,
         fields: [
